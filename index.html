@@ -17,52 +17,53 @@
 
 <meta
     name="theme-color"
-    content="#0a0a0a"
+    content="#090909"
 >
 
-<title>
-    INGEBAM | Arquitectura Modular
-</title>
+<title>INGEBAM | Arquitectura Modular</title>
 
 
 <style>
 
-/* =====================================================
-   CONFIGURACIÓN GENERAL
-===================================================== */
+/* ==========================================================
+   VARIABLES
+========================================================== */
 
 :root{
 
     --bg:#090909;
-    --bg2:#111111;
+    --bg-soft:#101010;
 
     --panel:#151515;
-    --panel2:#1c1c1c;
+    --panel2:#1b1b1b;
 
-    --text:#f4f1ec;
+    --text:#f5f2ed;
     --muted:#aaa59d;
 
     --gold:#c8a06f;
-    --gold2:#e0bd8e;
+    --gold-hover:#e1bd8d;
 
     --line:rgba(255,255,255,.10);
 
     --shadow:
-        0 24px 80px rgba(0,0,0,.42);
+        0 25px 80px
+        rgba(0,0,0,.45);
 
     --radius:20px;
 
-    --max:1180px;
+    --max-width:1180px;
 
 }
 
 
+/* ==========================================================
+   RESET
+========================================================== */
+
 *{
 
     box-sizing:border-box;
-
     margin:0;
-
     padding:0;
 
 }
@@ -93,10 +94,16 @@ body{
 }
 
 
+body.modal-open{
+
+    overflow:hidden;
+
+}
+
+
 a{
 
     color:inherit;
-
     text-decoration:none;
 
 }
@@ -104,9 +111,8 @@ a{
 
 img{
 
-    max-width:100%;
-
     display:block;
+    max-width:100%;
 
 }
 
@@ -131,16 +137,20 @@ button{
 ::selection{
 
     background:var(--gold);
-
     color:#111;
 
 }
 
 
+
+/* ==========================================================
+   ELEMENTOS GENERALES
+========================================================== */
+
 .container{
 
     width:min(
-        var(--max),
+        var(--max-width),
         calc(100% - 40px)
     );
 
@@ -244,9 +254,9 @@ button{
 
 
 
-/* =====================================================
+/* ==========================================================
    BOTONES
-===================================================== */
+========================================================== */
 
 .btn{
 
@@ -265,10 +275,9 @@ button{
     border-radius:999px;
 
     border:
-        1px solid
-        transparent;
+        1px solid transparent;
 
-    font-size:.82rem;
+    font-size:.8rem;
 
     font-weight:800;
 
@@ -276,7 +285,8 @@ button{
 
     text-transform:uppercase;
 
-    transition:.25s;
+    transition:
+        .25s ease;
 
 }
 
@@ -285,14 +295,14 @@ button{
 
     background:var(--gold);
 
-    color:#101010;
+    color:#111;
 
 }
 
 
 .btn-primary:hover{
 
-    background:var(--gold2);
+    background:var(--gold-hover);
 
     transform:
         translateY(-2px);
@@ -307,7 +317,7 @@ button{
             255,
             255,
             255,
-            .22
+            .20
         );
 
 }
@@ -323,9 +333,9 @@ button{
 
 
 
-/* =====================================================
+/* ==========================================================
    NAVEGACIÓN
-===================================================== */
+========================================================== */
 
 nav{
 
@@ -338,14 +348,14 @@ nav{
 
     background:
         rgba(
-            10,
-            10,
-            10,
-            .82
+            9,
+            9,
+            9,
+            .84
         );
 
     backdrop-filter:
-        blur(16px);
+        blur(15px);
 
     border-bottom:
         1px solid var(--line);
@@ -361,8 +371,7 @@ nav{
 
     align-items:center;
 
-    justify-content:
-        space-between;
+    justify-content:space-between;
 
     gap:20px;
 
@@ -373,7 +382,6 @@ nav{
 
     font-family:
         Georgia,
-        "Times New Roman",
         serif;
 
     font-size:1.45rem;
@@ -400,14 +408,13 @@ nav{
 
     gap:22px;
 
-    font-size:.72rem;
+    color:#c7c3bc;
 
-    text-transform:
-        uppercase;
+    font-size:.72rem;
 
     letter-spacing:.12em;
 
-    color:#c9c5be;
+    text-transform:uppercase;
 
 }
 
@@ -430,16 +437,16 @@ nav{
 
     display:none;
 
-    background:
-        transparent;
+    width:44px;
+
+    height:44px;
 
     color:white;
 
+    background:transparent;
+
     border:
         1px solid var(--line);
-
-    padding:
-        10px 12px;
 
     border-radius:10px;
 
@@ -447,25 +454,25 @@ nav{
 
 
 
-/* =====================================================
+/* ==========================================================
    HERO
-===================================================== */
+========================================================== */
 
 .hero{
 
     min-height:100vh;
 
-    padding:
-        140px 0
-        70px;
+    position:relative;
 
     display:grid;
 
     place-items:center;
 
-    position:relative;
-
     overflow:hidden;
+
+    padding:
+        140px 0
+        70px;
 
 }
 
@@ -487,9 +494,10 @@ nav{
                 200,
                 160,
                 111,
-                .23
+                .22
             ),
-            transparent 28%
+            transparent
+            27%
         ),
 
         radial-gradient(
@@ -501,7 +509,8 @@ nav{
                 255,
                 .05
             ),
-            transparent 24%
+            transparent
+            25%
         );
 
 }
@@ -513,7 +522,7 @@ nav{
 
     inset:0;
 
-    opacity:.16;
+    opacity:.15;
 
     background-image:
 
@@ -562,9 +571,9 @@ nav{
 
     z-index:2;
 
-    text-align:center;
-
     max-width:980px;
+
+    text-align:center;
 
 }
 
@@ -653,6 +662,8 @@ nav{
     border:
         1px solid var(--line);
 
+    border-radius:16px;
+
     background:
         rgba(
             255,
@@ -660,8 +671,6 @@ nav{
             255,
             .025
         );
-
-    border-radius:16px;
 
 }
 
@@ -672,7 +681,7 @@ nav{
 
     color:var(--gold);
 
-    font-size:1.05rem;
+    margin-bottom:4px;
 
 }
 
@@ -687,9 +696,9 @@ nav{
 
 
 
-/* =====================================================
+/* ==========================================================
    QUIÉNES SOMOS
-===================================================== */
+========================================================== */
 
 .about-grid{
 
@@ -735,15 +744,15 @@ nav{
 
     padding:34px;
 
+    position:relative;
+
+    overflow:hidden;
+
     display:flex;
 
     flex-direction:column;
 
     justify-content:flex-end;
-
-    position:relative;
-
-    overflow:hidden;
 
 }
 
@@ -796,6 +805,8 @@ nav{
 
     height:230px;
 
+    position:relative;
+
     border:
         1px solid
         rgba(
@@ -818,8 +829,6 @@ nav{
             #101010
         );
 
-    position:relative;
-
 }
 
 
@@ -830,16 +839,13 @@ nav{
     position:absolute;
 
     left:12%;
-
     right:12%;
-
     bottom:12%;
 
     height:52%;
 
     border:
-        1px solid
-        var(--gold);
+        1px solid var(--gold);
 
     background:
         linear-gradient(
@@ -863,13 +869,13 @@ nav{
 
 .about-visual h4{
 
+    margin-top:24px;
+
     font-family:
         Georgia,
         serif;
 
     font-size:1.6rem;
-
-    margin-top:24px;
 
 }
 
@@ -882,9 +888,9 @@ nav{
 
 
 
-/* =====================================================
+/* ==========================================================
    MISIÓN Y VISIÓN
-===================================================== */
+========================================================== */
 
 .mv-grid{
 
@@ -910,15 +916,15 @@ nav{
 
 .mv h3{
 
+    margin:
+        10px 0
+        14px;
+
     font-family:
         Georgia,
         serif;
 
     font-size:1.85rem;
-
-    margin:
-        10px 0
-        14px;
 
 }
 
@@ -931,9 +937,9 @@ nav{
 
 
 
-/* =====================================================
+/* ==========================================================
    VALORES
-===================================================== */
+========================================================== */
 
 .values-grid{
 
@@ -952,9 +958,9 @@ nav{
 
 .value{
 
-    padding:26px;
-
     min-height:220px;
+
+    padding:26px;
 
 }
 
@@ -974,15 +980,15 @@ nav{
 
 .value h3{
 
+    margin:
+        34px 0
+        10px;
+
     font-family:
         Georgia,
         serif;
 
     font-size:1.35rem;
-
-    margin:
-        34px 0
-        10px;
 
 }
 
@@ -997,9 +1003,9 @@ nav{
 
 
 
-/* =====================================================
+/* ==========================================================
    SERVICIOS
-===================================================== */
+========================================================== */
 
 .services{
 
@@ -1023,11 +1029,15 @@ nav{
 }
 
 
-.service .icon{
+.service-icon{
 
     width:52px;
 
     height:52px;
+
+    display:grid;
+
+    place-items:center;
 
     border:
         1px solid
@@ -1040,10 +1050,6 @@ nav{
 
     border-radius:50%;
 
-    display:grid;
-
-    place-items:center;
-
     color:var(--gold);
 
     font-size:1.5rem;
@@ -1053,15 +1059,15 @@ nav{
 
 .service h3{
 
+    margin:
+        22px 0
+        12px;
+
     font-family:
         Georgia,
         serif;
 
     font-size:1.8rem;
-
-    margin:
-        22px 0
-        12px;
 
 }
 
@@ -1077,11 +1083,11 @@ nav{
 
 .service ul{
 
-    list-style:none;
-
     display:grid;
 
     gap:10px;
+
+    list-style:none;
 
     color:#d4d0c9;
 
@@ -1102,17 +1108,17 @@ nav{
 
 
 
-/* =====================================================
-   PROYECTOS
-===================================================== */
+/* ==========================================================
+   PORTAFOLIO
+========================================================== */
 
 .projects-controls{
 
     display:flex;
 
-    gap:10px;
-
     flex-wrap:wrap;
+
+    gap:10px;
 
     margin-bottom:26px;
 
@@ -1121,27 +1127,30 @@ nav{
 
 .filter{
 
+    padding:
+        10px
+        16px;
+
+    color:#aaa;
+
     background:transparent;
 
     border:
         1px solid var(--line);
 
-    color:#aaa;
-
-    padding:
-        10px 16px;
-
     border-radius:999px;
+
+    transition:.2s;
 
 }
 
 
-.filter.active,
-.filter:hover{
-
-    border-color:var(--gold);
+.filter:hover,
+.filter.active{
 
     color:var(--gold);
+
+    border-color:var(--gold);
 
 }
 
@@ -1170,15 +1179,11 @@ nav{
 
 .project-media{
 
-    height:300px;
-
     position:relative;
 
+    height:330px;
+
     overflow:hidden;
-
-    display:grid;
-
-    place-items:center;
 
     background:
         linear-gradient(
@@ -1190,20 +1195,43 @@ nav{
 }
 
 
+.project-media::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:3;
+
+    pointer-events:none;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(
+                0,
+                0,
+                0,
+                .65
+            ),
+            transparent
+            50%
+        );
+
+}
+
+
 .project-media img{
 
-    position:relative;
-
-    z-index:2;
-
     width:100%;
-
     height:100%;
 
     object-fit:cover;
 
     transition:
-        transform .5s;
+        transform .55s ease;
 
 }
 
@@ -1212,34 +1240,92 @@ nav{
 .project-media img{
 
     transform:
-        scale(1.04);
+        scale(1.045);
 
 }
 
 
-.fallback{
+.tour-button{
 
     position:absolute;
 
-    inset:0;
+    z-index:5;
 
-    display:grid;
+    left:50%;
 
-    place-items:center;
+    bottom:24px;
 
-    color:
+    transform:
+        translateX(-50%);
+
+    display:flex;
+
+    align-items:center;
+
+    gap:9px;
+
+    white-space:nowrap;
+
+    padding:
+        12px
+        20px;
+
+    color:white;
+
+    background:
         rgba(
-            200,
-            160,
-            111,
-            .5
+            8,
+            8,
+            8,
+            .76
         );
 
-    font-family:
-        Georgia,
-        serif;
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .30
+        );
 
-    font-size:3rem;
+    border-radius:999px;
+
+    backdrop-filter:
+        blur(12px);
+
+    font-size:.77rem;
+
+    font-weight:800;
+
+    letter-spacing:.1em;
+
+    text-transform:uppercase;
+
+    transition:
+        .25s ease;
+
+}
+
+
+.tour-button:hover{
+
+    color:#111;
+
+    background:var(--gold);
+
+    border-color:var(--gold);
+
+    transform:
+        translateX(-50%)
+        translateY(-3px);
+
+}
+
+
+.tour-icon{
+
+    font-size:1.15rem;
 
 }
 
@@ -1255,15 +1341,16 @@ nav{
 
     color:var(--gold);
 
-    text-transform:
-        uppercase;
-
     letter-spacing:.14em;
+
+    text-transform:uppercase;
 
 }
 
 
 .project-info h3{
+
+    margin-top:7px;
 
     font-family:
         Georgia,
@@ -1271,16 +1358,14 @@ nav{
 
     font-size:1.45rem;
 
-    margin-top:7px;
-
 }
 
 
 .project-info p{
 
-    color:var(--muted);
-
     margin-top:8px;
+
+    color:var(--muted);
 
     font-size:.92rem;
 
@@ -1288,82 +1373,209 @@ nav{
 
 
 
-/* =====================================================
-   TOUR PANORÁMICO 360
-===================================================== */
+/* ==========================================================
+   MODAL TOUR 360
+========================================================== */
 
-.tour360-shell{
+.tour-modal{
 
-    overflow:hidden;
+    position:fixed;
 
-}
+    inset:0;
 
-
-.tour360-top{
-
-    padding:
-        30px
-        30px
-        22px;
+    z-index:9999;
 
     display:flex;
 
-    justify-content:
-        space-between;
+    align-items:center;
 
-    gap:24px;
+    justify-content:center;
 
-    align-items:flex-end;
+    padding:24px;
+
+    visibility:hidden;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            .93
+        );
+
+    backdrop-filter:
+        blur(15px);
+
+    transition:
+        opacity .25s ease,
+        visibility .25s ease;
 
 }
 
 
-.tour360-badge{
+.tour-modal.open{
+
+    visibility:visible;
+
+    opacity:1;
+
+    pointer-events:auto;
+
+}
+
+
+.tour-modal-content{
+
+    width:
+        min(
+            1250px,
+            100%
+        );
+
+    max-height:
+        calc(
+            100vh - 40px
+        );
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:#0e0e0e;
 
     border:
         1px solid
         rgba(
-            200,
-            160,
-            111,
-            .35
+            255,
+            255,
+            255,
+            .13
         );
 
-    color:var(--gold);
+    border-radius:22px;
 
-    padding:
-        9px
-        13px;
-
-    border-radius:999px;
-
-    font-size:.75rem;
-
-    letter-spacing:.1em;
-
-    text-transform:
-        uppercase;
+    box-shadow:
+        0 40px 120px
+        rgba(
+            0,
+            0,
+            0,
+            .75
+        );
 
 }
 
 
-.panorama-wrap{
+.tour-modal-header{
 
-    position:relative;
+    min-height:92px;
 
-    width:100%;
+    display:flex;
 
-    height:560px;
+    align-items:center;
 
-    overflow:hidden;
+    justify-content:space-between;
 
-    background:#080808;
+    gap:20px;
 
-    border-top:
-        1px solid var(--line);
+    padding:
+        20px
+        80px
+        20px
+        28px;
 
     border-bottom:
         1px solid var(--line);
+
+}
+
+
+.tour-modal-title{
+
+    margin-top:4px;
+
+    font-size:
+        clamp(
+            1.6rem,
+            3vw,
+            2.4rem
+        );
+
+}
+
+
+.tour-close{
+
+    position:absolute;
+
+    z-index:30;
+
+    right:18px;
+
+    top:18px;
+
+    width:48px;
+
+    height:48px;
+
+    display:grid;
+
+    place-items:center;
+
+    color:white;
+
+    background:#171717;
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .15
+        );
+
+    border-radius:50%;
+
+    font-size:1.8rem;
+
+    line-height:1;
+
+    transition:.2s;
+
+}
+
+
+.tour-close:hover{
+
+    color:var(--gold);
+
+    border-color:var(--gold);
+
+}
+
+
+.modal-panorama{
+
+    height:
+        min(
+            650px,
+            calc(
+                100vh - 190px
+            )
+        );
+
+    min-height:360px;
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:#050505;
 
     cursor:grab;
 
@@ -1374,14 +1586,14 @@ nav{
 }
 
 
-.panorama-wrap.dragging{
+.modal-panorama.dragging{
 
     cursor:grabbing;
 
 }
 
 
-.panorama-track{
+.modal-panorama-track{
 
     position:absolute;
 
@@ -1391,16 +1603,15 @@ nav{
 
     display:flex;
 
-    will-change:
-        transform;
-
     transform-origin:
         center center;
+
+    will-change:transform;
 
 }
 
 
-.panorama-track img{
+.modal-panorama-track img{
 
     height:100%;
 
@@ -1408,20 +1619,24 @@ nav{
 
     max-width:none;
 
-    object-fit:cover;
-
     flex:none;
+
+    object-fit:cover;
 
     pointer-events:none;
 
 }
 
 
-.panorama-shade{
+.modal-panorama::after{
+
+    content:"";
 
     position:absolute;
 
     inset:0;
+
+    z-index:2;
 
     pointer-events:none;
 
@@ -1433,105 +1648,37 @@ nav{
                 0,
                 0,
                 0,
-                .18
+                .25
             ),
-            transparent 15%,
-            transparent 85%,
+            transparent 12%,
+            transparent 88%,
             rgba(
                 0,
                 0,
                 0,
-                .18
+                .25
             )
         ),
 
         linear-gradient(
-            180deg,
+            to top,
             rgba(
                 0,
                 0,
                 0,
-                .18
+                .45
             ),
-            transparent 25%,
-            transparent 72%,
-            rgba(
-                0,
-                0,
-                0,
-                .32
-            )
+            transparent 30%
         );
 
 }
 
 
-.panorama-label{
+.modal-tour-controls{
 
     position:absolute;
 
-    z-index:3;
-
-    left:22px;
-
-    top:22px;
-
-    padding:
-        13px
-        16px;
-
-    border-radius:14px;
-
-    background:
-        rgba(
-            8,
-            8,
-            8,
-            .74
-        );
-
-    backdrop-filter:
-        blur(10px);
-
-    border:
-        1px solid
-        rgba(
-            255,
-            255,
-            255,
-            .13
-        );
-
-}
-
-
-.panorama-label strong{
-
-    display:block;
-
-    font-family:
-        Georgia,
-        serif;
-
-    font-size:1.1rem;
-
-}
-
-
-.panorama-label span{
-
-    color:#c7c2bb;
-
-    font-size:.82rem;
-
-}
-
-
-.panorama-controls{
-
-    position:absolute;
-
-    z-index:5;
+    z-index:10;
 
     right:18px;
 
@@ -1544,63 +1691,17 @@ nav{
 }
 
 
-.panorama-controls button{
+.modal-tour-controls button{
 
-    width:44px;
+    width:46px;
 
-    height:44px;
+    height:46px;
 
-    border-radius:12px;
+    display:grid;
 
-    border:
-        1px solid
-        rgba(
-            255,
-            255,
-            255,
-            .17
-        );
-
-    background:
-        rgba(
-            8,
-            8,
-            8,
-            .80
-        );
+    place-items:center;
 
     color:white;
-
-    font-size:1.2rem;
-
-    backdrop-filter:
-        blur(9px);
-
-}
-
-
-.panorama-controls button:hover,
-.panorama-controls button.active{
-
-    border-color:var(--gold);
-
-    color:var(--gold);
-
-}
-
-
-.panorama-hint{
-
-    position:absolute;
-
-    z-index:4;
-
-    left:50%;
-
-    bottom:22px;
-
-    transform:
-        translateX(-50%);
 
     background:
         rgba(
@@ -1616,102 +1717,139 @@ nav{
             255,
             255,
             255,
-            .13
+            .18
         );
+
+    border-radius:12px;
 
     backdrop-filter:
         blur(10px);
+
+    font-size:1.2rem;
+
+    transition:.2s;
+
+}
+
+
+.modal-tour-controls button:hover,
+.modal-tour-controls button.active{
+
+    color:var(--gold);
+
+    border-color:var(--gold);
+
+}
+
+
+.modal-tour-hint{
+
+    position:absolute;
+
+    z-index:10;
+
+    left:50%;
+
+    bottom:20px;
+
+    transform:
+        translateX(-50%);
 
     padding:
         10px
         16px;
 
-    border-radius:999px;
+    white-space:nowrap;
 
-    color:#ddd;
+    color:#eee;
 
-    font-size:.82rem;
-
-}
-
-
-.tour360-bottom{
-
-    display:grid;
-
-    grid-template-columns:
-        1fr
-        auto;
-
-    align-items:center;
-
-    gap:20px;
-
-    padding:
-        22px
-        30px
-        30px;
-
-}
-
-
-.poi-list{
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    gap:10px;
-
-}
-
-
-.poi{
-
-    background:#0e0e0e;
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            .70
+        );
 
     border:
-        1px solid var(--line);
-
-    color:#c8c3bc;
-
-    padding:
-        10px
-        14px;
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .18
+        );
 
     border-radius:999px;
 
-}
+    backdrop-filter:
+        blur(10px);
 
-
-.poi:hover,
-.poi.active{
-
-    border-color:var(--gold);
-
-    color:var(--gold);
+    font-size:.8rem;
 
 }
 
 
-.tour360-help{
+.modal-model-name{
 
-    color:#88837c;
+    position:absolute;
 
-    font-size:.84rem;
+    z-index:10;
 
-    text-align:right;
+    left:18px;
 
-    max-width:290px;
+    top:18px;
+
+    max-width:
+        calc(
+            100% - 100px
+        );
+
+    padding:
+        12px
+        15px;
+
+    background:
+        rgba(
+            8,
+            8,
+            8,
+            .76
+        );
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .15
+        );
+
+    border-radius:13px;
+
+    backdrop-filter:
+        blur(10px);
 
 }
 
 
-.tour-note{
+.modal-model-name strong{
 
-    margin-top:15px;
+    display:block;
 
-    color:#777;
+    font-family:
+        Georgia,
+        serif;
+
+    font-size:1.05rem;
+
+}
+
+
+.modal-model-name span{
+
+    color:#bbb5ad;
 
     font-size:.8rem;
 
@@ -1719,9 +1857,9 @@ nav{
 
 
 
-/* =====================================================
+/* ==========================================================
    PROCESO
-===================================================== */
+========================================================== */
 
 .process-grid{
 
@@ -1747,11 +1885,11 @@ nav{
 
 .step b{
 
+    color:var(--gold);
+
     font-family:
         Georgia,
         serif;
-
-    color:var(--gold);
 
     font-size:2rem;
 
@@ -1777,9 +1915,9 @@ nav{
 
 
 
-/* =====================================================
+/* ==========================================================
    POR QUÉ INGEBAM
-===================================================== */
+========================================================== */
 
 .why-grid{
 
@@ -1796,8 +1934,6 @@ nav{
 
 .why-big{
 
-    padding:36px;
-
     min-height:430px;
 
     display:flex;
@@ -1806,8 +1942,9 @@ nav{
 
     justify-content:flex-end;
 
-    background:
+    padding:36px;
 
+    background:
         linear-gradient(
             145deg,
             #1f1b17,
@@ -1819,13 +1956,13 @@ nav{
 
 .why-big h3{
 
+    margin-bottom:14px;
+
     font-family:
         Georgia,
         serif;
 
     font-size:2.5rem;
-
-    margin-bottom:14px;
 
 }
 
@@ -1857,9 +1994,9 @@ nav{
 
     display:block;
 
-    color:var(--gold);
-
     margin-bottom:7px;
+
+    color:var(--gold);
 
 }
 
@@ -1872,9 +2009,9 @@ nav{
 
 
 
-/* =====================================================
+/* ==========================================================
    COTIZADOR
-===================================================== */
+========================================================== */
 
 .quote{
 
@@ -1893,22 +2030,22 @@ nav{
 
 .quote-intro{
 
-    padding:36px;
-
     position:sticky;
 
     top:110px;
+
+    padding:36px;
 
 }
 
 
 .quote-intro h2{
 
-    font-size:3rem;
-
     margin:
         12px 0
         18px;
+
+    font-size:3rem;
 
 }
 
@@ -1959,14 +2096,13 @@ nav{
 
 .field label{
 
-    font-size:.76rem;
+    color:#c6c1b9;
 
-    text-transform:
-        uppercase;
+    font-size:.76rem;
 
     letter-spacing:.12em;
 
-    color:#c6c1b9;
+    text-transform:uppercase;
 
 }
 
@@ -1977,18 +2113,18 @@ nav{
 
     width:100%;
 
-    background:#0e0e0e;
+    padding:
+        14px
+        15px;
 
     color:white;
+
+    background:#0e0e0e;
 
     border:
         1px solid var(--line);
 
     border-radius:12px;
-
-    padding:
-        14px
-        15px;
 
     outline:none;
 
@@ -2015,13 +2151,13 @@ nav{
 
 .form-note{
 
-    color:#8f8a83;
-
-    font-size:.83rem;
-
     margin:
         16px 0
         20px;
+
+    color:#8f8a83;
+
+    font-size:.83rem;
 
 }
 
@@ -2034,14 +2170,7 @@ nav{
 
     padding:14px;
 
-    border:
-        1px solid
-        rgba(
-            200,
-            160,
-            111,
-            .35
-        );
+    color:#e8d1b3;
 
     background:
         rgba(
@@ -2051,17 +2180,24 @@ nav{
             .08
         );
 
-    border-radius:12px;
+    border:
+        1px solid
+        rgba(
+            200,
+            160,
+            111,
+            .35
+        );
 
-    color:#e8d1b3;
+    border-radius:12px;
 
 }
 
 
 
-/* =====================================================
+/* ==========================================================
    FAQ
-===================================================== */
+========================================================== */
 
 .faq{
 
@@ -2092,17 +2228,17 @@ nav{
 
 .faq p{
 
-    color:var(--muted);
-
     padding-top:12px;
+
+    color:var(--muted);
 
 }
 
 
 
-/* =====================================================
+/* ==========================================================
    CTA
-===================================================== */
+========================================================== */
 
 .cta{
 
@@ -2121,7 +2257,8 @@ nav{
                 111,
                 .16
             ),
-            transparent 38%
+            transparent
+            38%
         ),
 
         linear-gradient(
@@ -2135,6 +2272,12 @@ nav{
 
 .cta h2{
 
+    max-width:850px;
+
+    margin:
+        10px auto
+        20px;
+
     font-size:
         clamp(
             2.3rem,
@@ -2142,18 +2285,10 @@ nav{
             4.6rem
         );
 
-    margin:
-        10px auto
-        20px;
-
-    max-width:850px;
-
 }
 
 
 .cta p{
-
-    color:var(--muted);
 
     max-width:680px;
 
@@ -2161,22 +2296,24 @@ nav{
         0 auto
         28px;
 
+    color:var(--muted);
+
 }
 
 
 
-/* =====================================================
+/* ==========================================================
    FOOTER
-===================================================== */
+========================================================== */
 
 footer{
 
     padding:44px 0;
 
+    color:#8d8982;
+
     border-top:
         1px solid var(--line);
-
-    color:#8d8982;
 
     font-size:.85rem;
 
@@ -2187,8 +2324,7 @@ footer{
 
     display:flex;
 
-    justify-content:
-        space-between;
+    justify-content:space-between;
 
     gap:24px;
 
@@ -2205,33 +2341,42 @@ footer{
 
 
 
-/* =====================================================
+/* ==========================================================
    WHATSAPP
-===================================================== */
+========================================================== */
 
 .whatsapp{
 
     position:fixed;
 
+    z-index:90;
+
     right:22px;
 
     bottom:22px;
-
-    z-index:80;
 
     width:58px;
 
     height:58px;
 
-    border-radius:50%;
-
     display:grid;
 
     place-items:center;
 
+    color:white;
+
     background:#25D366;
 
-    color:white;
+    border:
+        3px solid
+        rgba(
+            255,
+            255,
+            255,
+            .15
+        );
+
+    border-radius:50%;
 
     box-shadow:
         0 14px 36px
@@ -2244,24 +2389,15 @@ footer{
 
     font-weight:900;
 
-    font-size:1.25rem;
-
-    border:
-        3px solid
-        rgba(
-            255,
-            255,
-            255,
-            .15
-        );
+    font-size:1.2rem;
 
 }
 
 
 
-/* =====================================================
-   ANIMACIONES
-===================================================== */
+/* ==========================================================
+   REVEAL
+========================================================== */
 
 .reveal{
 
@@ -2270,7 +2406,8 @@ footer{
     transform:
         translateY(18px);
 
-    transition:.65s;
+    transition:
+        .65s ease;
 
 }
 
@@ -2285,9 +2422,9 @@ footer{
 
 
 
-/* =====================================================
+/* ==========================================================
    RESPONSIVE
-===================================================== */
+========================================================== */
 
 @media(max-width:950px){
 
@@ -2307,14 +2444,14 @@ footer{
 
         align-items:stretch;
 
+        padding:18px;
+
         background:#111;
 
         border:
             1px solid var(--line);
 
         border-radius:16px;
-
-        padding:18px;
 
     }
 
@@ -2372,39 +2509,6 @@ footer{
 
     }
 
-
-    .tour360-top{
-
-        flex-direction:column;
-
-        align-items:flex-start;
-
-    }
-
-
-    .panorama-wrap{
-
-        height:460px;
-
-    }
-
-
-    .tour360-bottom{
-
-        grid-template-columns:
-            1fr;
-
-    }
-
-
-    .tour360-help{
-
-        text-align:left;
-
-        max-width:none;
-
-    }
-
 }
 
 
@@ -2415,7 +2519,7 @@ footer{
         width:
             min(
                 100% - 28px,
-                var(--max)
+                var(--max-width)
             );
 
     }
@@ -2438,7 +2542,7 @@ footer{
 
     .hero h1{
 
-        font-size:3.3rem;
+        font-size:3.2rem;
 
     }
 
@@ -2468,53 +2572,80 @@ footer{
 
     .project-media{
 
-        height:220px;
+        height:270px;
 
     }
 
 
-    .tour360-top{
+    .tour-modal{
+
+        padding:10px;
+
+    }
+
+
+    .tour-modal-content{
+
+        max-height:
+            calc(
+                100vh - 20px
+            );
+
+        border-radius:15px;
+
+    }
+
+
+    .tour-modal-header{
+
+        min-height:80px;
 
         padding:
-            22px
-            20px
+            16px
+            70px
+            16px
             18px;
 
     }
 
 
-    .panorama-wrap{
+    .tour-close{
 
-        height:390px;
+        width:42px;
 
-    }
+        height:42px;
 
+        top:15px;
 
-    .tour360-bottom{
-
-        padding:
-            18px
-            20px
-            22px;
+        right:14px;
 
     }
 
 
-    .panorama-label{
+    .modal-panorama{
 
-        left:12px;
-
-        top:12px;
-
-        max-width:
+        height:
             calc(
-                100% - 80px
+                100vh - 130px
             );
 
+        min-height:420px;
+
     }
 
 
-    .panorama-controls{
+    .modal-model-name{
+
+        left:10px;
+
+        top:10px;
+
+        font-size:.8rem;
+
+    }
+
+
+    .modal-tour-controls{
 
         right:10px;
 
@@ -2523,7 +2654,7 @@ footer{
     }
 
 
-    .panorama-controls button{
+    .modal-tour-controls button{
 
         width:40px;
 
@@ -2532,15 +2663,17 @@ footer{
     }
 
 
-    .panorama-hint{
+    .modal-tour-hint{
 
-        bottom:14px;
+        bottom:13px;
 
-        font-size:.72rem;
-
-        max-width:80%;
+        max-width:82%;
 
         text-align:center;
+
+        white-space:normal;
+
+        font-size:.72rem;
 
     }
 
@@ -2579,10 +2712,10 @@ footer{
         scroll-behavior:
             auto !important;
 
-        animation:
+        transition:
             none !important;
 
-        transition:
+        animation:
             none !important;
 
     }
@@ -2606,28 +2739,34 @@ footer{
 <body>
 
 
-<!-- =====================================================
+<!-- ==========================================================
      NAVEGACIÓN
-===================================================== -->
+========================================================== -->
 
 <nav>
 
     <div class="container nav-inner">
 
+
         <a
             href="#inicio"
             class="brand"
         >
+
             INGE<span>BAM</span>
+
         </a>
 
 
         <button
             class="menu-btn"
             id="menuBtn"
+            type="button"
             aria-label="Abrir menú"
         >
+
             ☰
+
         </button>
 
 
@@ -2648,10 +2787,6 @@ footer{
                 Proyectos
             </a>
 
-            <a href="#tour360">
-                Tour 360°
-            </a>
-
             <a href="#proceso">
                 Proceso
             </a>
@@ -2666,12 +2801,11 @@ footer{
         <a
             href="#cotizador"
             class="btn btn-primary"
-            style="
-                padding:
-                11px 16px;
-            "
+            style="padding:11px 16px"
         >
+
             Cotizar
+
         </a>
 
     </div>
@@ -2680,9 +2814,9 @@ footer{
 
 
 
-<!-- =====================================================
+<!-- ==========================================================
      HERO
-===================================================== -->
+========================================================== -->
 
 <header
     class="hero"
@@ -2714,12 +2848,10 @@ footer{
 
         <p>
 
-            Diseñamos y construimos
-            Tiny Houses, viviendas modulares
-            y espacios comerciales con una
-            mirada contemporánea, eficiente
-            y pensada para el clima
-            del sur de Chile.
+            Diseñamos y construimos Tiny Houses,
+            viviendas modulares y espacios comerciales
+            con una mirada contemporánea,
+            eficiente y adaptada al sur de Chile.
 
         </p>
 
@@ -2730,15 +2862,19 @@ footer{
                 class="btn btn-primary"
                 href="#cotizador"
             >
+
                 Iniciar cotización
+
             </a>
 
 
             <a
                 class="btn btn-ghost"
-                href="#tour360"
+                href="#proyectos"
             >
-                Explorar en 360°
+
+                Explorar proyectos
+
             </a>
 
         </div>
@@ -2753,9 +2889,8 @@ footer{
                 </strong>
 
                 <span>
-                    Arquitectura,
-                    distribución y
-                    terminaciones.
+                    Arquitectura, distribución
+                    y terminaciones.
                 </span>
 
             </div>
@@ -2796,9 +2931,9 @@ footer{
 
 
 
-<!-- =====================================================
-     NOSOTROS
-===================================================== -->
+<!-- ==========================================================
+     QUIÉNES SOMOS
+========================================================== -->
 
 <section
     class="section"
@@ -2807,18 +2942,20 @@ footer{
 
     <div class="container">
 
+
         <div class="section-head reveal">
 
             <div class="kicker">
+
                 Quiénes somos
+
             </div>
 
 
             <h2 class="title">
 
-                Creamos espacios que
-                combinan diseño,
-                eficiencia y propósito.
+                Creamos espacios que combinan
+                diseño, eficiencia y propósito.
 
             </h2>
 
@@ -2827,10 +2964,9 @@ footer{
 
                 INGEBAM desarrolla soluciones
                 de arquitectura modular
-                y habilitación comercial,
-                buscando integrar diseño,
-                funcionalidad, planificación
-                y una ejecución profesional.
+                y espacios comerciales
+                con una mirada contemporánea,
+                funcional y profesional.
 
             </p>
 
@@ -2849,41 +2985,39 @@ footer{
                 <h3 class="title">
 
                     Arquitectura pensada
-                    para vivir y
-                    emprender mejor.
+                    para vivir y emprender mejor.
 
                 </h3>
 
 
                 <p>
 
-                    Desarrollamos proyectos
-                    residenciales y comerciales
-                    desde una lógica práctica:
-                    aprovechar cada metro cuadrado
-                    y seleccionar soluciones
-                    adecuadas para cada proyecto.
+                    Desarrollamos proyectos residenciales
+                    y comerciales aprovechando
+                    cada metro cuadrado
+                    y buscando soluciones coherentes
+                    con las necesidades
+                    de nuestros clientes.
 
                 </p>
 
 
                 <p>
 
-                    Nuestro enfoque integra
-                    funcionalidad, eficiencia
-                    térmica, planificación,
-                    materialidad y una
-                    comunicación clara.
+                    Integramos diseño,
+                    funcionalidad,
+                    eficiencia térmica,
+                    materialidad y planificación.
 
                 </p>
 
 
                 <p>
 
-                    Trabajamos especialmente
-                    en proyectos ubicados
-                    en Temuco, Villarrica,
-                    Pucón y distintas comunas
+                    Nuestro trabajo está especialmente
+                    orientado a proyectos ubicados
+                    en Temuco, Villarrica, Pucón
+                    y distintas comunas
                     de La Araucanía.
 
                 </p>
@@ -2902,16 +3036,14 @@ footer{
 
                 <h4>
 
-                    Diseño que se
-                    siente preciso.
+                    Diseño que se siente preciso.
 
                 </h4>
 
 
                 <p>
 
-                    Proporción,
-                    materialidad,
+                    Proporción, materialidad,
                     luz y funcionalidad
                     en una misma propuesta.
 
@@ -2927,9 +3059,9 @@ footer{
 
 
 
-<!-- =====================================================
+<!-- ==========================================================
      MISIÓN Y VISIÓN
-===================================================== -->
+========================================================== -->
 
 <section class="section">
 
@@ -2960,13 +3092,11 @@ footer{
 
                 <p>
 
-                    Entregar soluciones
-                    modulares y comerciales
-                    que respondan a las
-                    necesidades de cada cliente,
-                    combinando diseño,
-                    eficiencia constructiva
-                    y ejecución responsable.
+                    Entregar soluciones modulares
+                    y comerciales que respondan
+                    de forma concreta
+                    a las necesidades
+                    de cada cliente.
 
                 </p>
 
@@ -2995,12 +3125,10 @@ footer{
 
                 <p>
 
-                    Consolidar una forma
+                    Consolidar una manera
                     de construir más eficiente,
-                    flexible y bien diseñada,
-                    reconocida por la calidad
-                    del resultado y la claridad
-                    del proceso.
+                    flexible y orientada
+                    a la calidad del resultado.
 
                 </p>
 
@@ -3014,13 +3142,14 @@ footer{
 
 
 
-<!-- =====================================================
+<!-- ==========================================================
      VALORES
-===================================================== -->
+========================================================== -->
 
 <section class="section">
 
     <div class="container">
+
 
         <div class="section-head reveal">
 
@@ -3042,11 +3171,7 @@ footer{
         <div class="values-grid">
 
 
-            <article
-                class="card
-                value
-                reveal"
-            >
+            <article class="card value reveal">
 
                 <span class="num">
                     01
@@ -3060,19 +3185,14 @@ footer{
 
                     Soluciones bien resueltas,
                     durables y coherentes
-                    con el estándar
-                    de cada proyecto.
+                    con cada proyecto.
 
                 </p>
 
             </article>
 
 
-            <article
-                class="card
-                value
-                reveal"
-            >
+            <article class="card value reveal">
 
                 <span class="num">
                     02
@@ -3084,20 +3204,16 @@ footer{
 
                 <p>
 
-                    Alcances, decisiones,
-                    avances y próximos pasos
-                    comunicados de forma clara.
+                    Comunicación clara
+                    durante las diferentes
+                    etapas del proyecto.
 
                 </p>
 
             </article>
 
 
-            <article
-                class="card
-                value
-                reveal"
-            >
+            <article class="card value reveal">
 
                 <span class="num">
                     03
@@ -3109,20 +3225,16 @@ footer{
 
                 <p>
 
-                    Uso inteligente del espacio,
-                    materiales y tiempos
-                    de ejecución.
+                    Uso inteligente
+                    del espacio,
+                    materiales y tiempos.
 
                 </p>
 
             </article>
 
 
-            <article
-                class="card
-                value
-                reveal"
-            >
+            <article class="card value reveal">
 
                 <span class="num">
                     04
@@ -3150,9 +3262,9 @@ footer{
 
 
 
-<!-- =====================================================
+<!-- ==========================================================
      SERVICIOS
-===================================================== -->
+========================================================== -->
 
 <section
     class="section"
@@ -3160,6 +3272,7 @@ footer{
 >
 
     <div class="container">
+
 
         <div class="section-head reveal">
 
@@ -3178,10 +3291,9 @@ footer{
 
             <p>
 
-                Dos líneas de servicio
-                con procesos diferenciados
-                y el mismo estándar
-                de diseño.
+                Dos líneas de servicio,
+                un mismo estándar
+                de diseño y ejecución.
 
             </p>
 
@@ -3197,8 +3309,10 @@ footer{
                 reveal"
             >
 
-                <div class="icon">
+                <div class="service-icon">
+
                     ⌂
+
                 </div>
 
 
@@ -3214,7 +3328,8 @@ footer{
 
                     Espacios compactos,
                     cómodos y eficientes
-                    para parcelas, turismo,
+                    para parcelas,
+                    turismo,
                     segunda vivienda
                     o proyectos de renta.
 
@@ -3229,18 +3344,12 @@ footer{
                     </li>
 
                     <li>
-                        Aislación adecuada
-                        para clima del sur
-                    </li>
-
-                    <li>
-                        Estructuras de
-                        alto desempeño
+                        Aislación para
+                        clima del sur
                     </li>
 
                     <li>
                         Fabricación controlada
-                        en taller
                     </li>
 
                     <li>
@@ -3258,8 +3367,10 @@ footer{
                 reveal"
             >
 
-                <div class="icon">
+                <div class="service-icon">
+
                     ◇
+
                 </div>
 
 
@@ -3275,7 +3386,7 @@ footer{
 
                     Diseño y habilitación
                     de espacios orientados
-                    a mejorar la experiencia
+                    a una mejor experiencia
                     de marca y operación.
 
                 </p>
@@ -3284,25 +3395,21 @@ footer{
                 <ul>
 
                     <li>
-                        Layout y circulación
-                        de clientes
+                        Layout comercial
                     </li>
 
                     <li>
-                        Interiorismo comercial
+                        Interiorismo
                     </li>
 
                     <li>
-                        Cafeterías y
-                        módulos gastronómicos
+                        Cafeterías
+                        y módulos gastronómicos
                     </li>
 
                     <li>
-                        Showrooms y oficinas
-                    </li>
-
-                    <li>
-                        Ejecución planificada
+                        Showrooms
+                        y oficinas
                     </li>
 
                 </ul>
@@ -3317,9 +3424,9 @@ footer{
 
 
 
-<!-- =====================================================
+<!-- ==========================================================
      PROYECTOS
-===================================================== -->
+========================================================== -->
 
 <section
     class="section"
@@ -3337,53 +3444,67 @@ footer{
 
 
             <h2 class="title">
-                Proyectos destacados.
+
+                Explora nuestros modelos.
+
             </h2>
 
 
             <p>
 
-                Una selección de formatos
-                residenciales y comerciales.
+                Presiona Vista 360°
+                para recorrer cada espacio
+                de forma interactiva.
 
             </p>
 
         </div>
 
 
-        <div
-            class="projects-controls
-            reveal"
-        >
+        <div class="projects-controls reveal">
 
             <button
                 class="filter active"
                 data-filter="todos"
+                type="button"
             >
+
                 Todos
+
             </button>
 
 
             <button
                 class="filter"
                 data-filter="tiny"
+                type="button"
             >
+
                 Tiny Houses
+
             </button>
 
 
             <button
                 class="filter"
                 data-filter="comercial"
+                type="button"
             >
+
                 Comercial
+
             </button>
 
         </div>
 
 
+
         <div class="projects">
 
+
+            <!-- =============================================
+                 VILLARRICA
+            ============================================== -->
 
             <article
                 class="card
@@ -3394,20 +3515,33 @@ footer{
 
                 <div class="project-media">
 
-                    <div class="fallback">
-                        01
-                    </div>
-
 
                     <img
                         src="imagenes/villarrica.png"
-                        alt="Tiny House Villarrica"
+                        alt="Modelo Villarrica Panorama"
                         loading="lazy"
-                        onerror="
-                            this.style.display=
-                            'none'
+                    >
+
+
+                    <button
+                        class="tour-button"
+                        type="button"
+                        onclick="
+                            abrirTour360(
+                                'assets/tour360-villarrica.jpg',
+                                'Modelo Villarrica Panorama',
+                                'Tiny House · 24 m²'
+                            )
                         "
                     >
+
+                        <span class="tour-icon">
+                            ↻
+                        </span>
+
+                        Vista 360°
+
+                    </button>
 
                 </div>
 
@@ -3415,7 +3549,9 @@ footer{
                 <div class="project-info">
 
                     <small>
+
                         Tiny House · Villarrica
+
                     </small>
 
 
@@ -3429,10 +3565,10 @@ footer{
 
                     <p>
 
-                        Propuesta compacta
-                        y luminosa para
-                        entorno lacustre,
-                        vivienda o turismo.
+                        Diseño contemporáneo
+                        con grandes ventanales,
+                        terraza y conexión
+                        con el paisaje.
 
                     </p>
 
@@ -3442,62 +3578,9 @@ footer{
 
 
 
-            <article
-                class="card
-                project
-                reveal"
-                data-category="comercial"
-            >
-
-                <div class="project-media">
-
-                    <div class="fallback">
-                        02
-                    </div>
-
-
-                    <img
-                        src="imagenes/local-1.jpg"
-                        alt="Módulo gastronómico"
-                        loading="lazy"
-                        onerror="
-                            this.style.display=
-                            'none'
-                        "
-                    >
-
-                </div>
-
-
-                <div class="project-info">
-
-                    <small>
-                        Comercial · Pucón
-                    </small>
-
-
-                    <h3>
-
-                        Módulo Gastronómico
-                        & Cafetería
-
-                    </h3>
-
-
-                    <p>
-
-                        Formato eficiente
-                        para atención,
-                        identidad de marca
-                        y operación compacta.
-
-                    </p>
-
-                </div>
-
-            </article>
-
-
+            <!-- =============================================
+                 LLAIMA
+            ============================================== -->
 
             <article
                 class="card
@@ -3508,20 +3591,33 @@ footer{
 
                 <div class="project-media">
 
-                    <div class="fallback">
-                        03
-                    </div>
-
 
                     <img
                         src="imagenes/tiny-house-2.jpg"
-                        alt="Tiny House Curacautín"
+                        alt="Modelo Refugio Llaima"
                         loading="lazy"
-                        onerror="
-                            this.style.display=
-                            'none'
+                    >
+
+
+                    <button
+                        class="tour-button"
+                        type="button"
+                        onclick="
+                            abrirTour360(
+                                'assets/tour360-llaima.jpg',
+                                'Refugio Llaima',
+                                'Tiny House · 28 m²'
+                            )
                         "
                     >
+
+                        <span class="tour-icon">
+                            ↻
+                        </span>
+
+                        Vista 360°
+
+                    </button>
 
                 </div>
 
@@ -3529,7 +3625,9 @@ footer{
                 <div class="project-info">
 
                     <small>
+
                         Tiny House · Curacautín
+
                     </small>
 
 
@@ -3544,9 +3642,9 @@ footer{
                     <p>
 
                         Refugio modular
-                        con énfasis en
-                        confort térmico,
-                        paisaje y distribución.
+                        pensado para ambientes
+                        cordilleranos
+                        y uso durante todo el año.
 
                     </p>
 
@@ -3555,6 +3653,10 @@ footer{
             </article>
 
 
+
+            <!-- =============================================
+                 CAFETERÍA
+            ============================================== -->
 
             <article
                 class="card
@@ -3565,20 +3667,33 @@ footer{
 
                 <div class="project-media">
 
-                    <div class="fallback">
-                        04
-                    </div>
-
 
                     <img
-                        src="imagenes/local-2.jpg"
-                        alt="Showroom comercial"
+                        src="imagenes/local-1.jpg"
+                        alt="Módulo gastronómico y cafetería"
                         loading="lazy"
-                        onerror="
-                            this.style.display=
-                            'none'
+                    >
+
+
+                    <button
+                        class="tour-button"
+                        type="button"
+                        onclick="
+                            abrirTour360(
+                                'assets/tour360-cafeteria.jpg',
+                                'Módulo Gastronómico',
+                                'Cafetería modular · 30 m²'
+                            )
                         "
                     >
+
+                        <span class="tour-icon">
+                            ↻
+                        </span>
+
+                        Vista 360°
+
+                    </button>
 
                 </div>
 
@@ -3586,7 +3701,84 @@ footer{
                 <div class="project-info">
 
                     <small>
+
+                        Comercial · Pucón
+
+                    </small>
+
+
+                    <h3>
+
+                        Módulo Gastronómico
+                        & Cafetería
+
+                    </h3>
+
+
+                    <p>
+
+                        Formato comercial
+                        con área de atención,
+                        mesas y terraza exterior.
+
+                    </p>
+
+                </div>
+
+            </article>
+
+
+
+            <!-- =============================================
+                 SHOWROOM
+            ============================================== -->
+
+            <article
+                class="card
+                project
+                reveal"
+                data-category="comercial"
+            >
+
+                <div class="project-media">
+
+
+                    <img
+                        src="imagenes/local-2.jpg"
+                        alt="Store Retail y Showroom"
+                        loading="lazy"
+                    >
+
+
+                    <button
+                        class="tour-button"
+                        type="button"
+                        onclick="
+                            abrirTour360(
+                                'assets/tour360-showroom.jpg',
+                                'Store Retail & Showroom',
+                                'Local comercial · 28 m²'
+                            )
+                        "
+                    >
+
+                        <span class="tour-icon">
+                            ↻
+                        </span>
+
+                        Vista 360°
+
+                    </button>
+
+                </div>
+
+
+                <div class="project-info">
+
+                    <small>
+
                         Comercial · Temuco
+
                     </small>
 
 
@@ -3600,10 +3792,10 @@ footer{
 
                     <p>
 
-                        Espacio diseñado
-                        para reforzar
-                        marca, recorrido
-                        y exhibición.
+                        Espacio comercial
+                        diseñado para exposición,
+                        atención y experiencia
+                        de marca.
 
                     </p>
 
@@ -3619,336 +3811,9 @@ footer{
 
 
 
-<!-- =====================================================
-     TOUR 360°
-===================================================== -->
-
-<section
-    class="section"
-    id="tour360"
->
-
-    <div class="container">
-
-
-        <div class="section-head reveal">
-
-            <div class="kicker">
-                Experiencia 360°
-            </div>
-
-
-            <h2 class="title">
-
-                Recorre nuestros
-                espacios.
-
-            </h2>
-
-
-            <p>
-
-                Explora el interior
-                del Modelo Villarrica
-                Panorama de forma
-                interactiva.
-
-                Arrastra con el mouse
-                o el dedo, utiliza
-                la rueda para acercarte
-                y entra en pantalla
-                completa.
-
-            </p>
-
-        </div>
-
-
-
-        <div
-            class="card
-            tour360-shell
-            reveal"
-        >
-
-
-            <div class="tour360-top">
-
-                <div>
-
-                    <div class="kicker">
-
-                        Modelo
-                        Villarrica
-                        Panorama
-
-                    </div>
-
-
-                    <h3
-                        class="title"
-                        style="
-                            font-size:
-                            clamp(
-                                1.7rem,
-                                3vw,
-                                2.6rem
-                            );
-                            margin-top:
-                            6px;
-                        "
-                    >
-
-                        Tiny House
-                        · 24 m²
-
-                    </h3>
-
-                </div>
-
-
-                <div class="tour360-badge">
-
-                    Tour interactivo
-
-                </div>
-
-            </div>
-
-
-
-            <!--
-            =================================================
-
-            IMPORTANTE:
-
-            SUBE LA IMAGEN DEL TOUR A:
-
-            assets/tour360-villarrica.jpg
-
-            La estructura en GitHub debe ser:
-
-            index.html
-
-            assets/
-                tour360-villarrica.jpg
-
-            imagenes/
-                villarrica.png
-                tiny-house-2.jpg
-                local-1.jpg
-                local-2.jpg
-
-            =================================================
-            -->
-
-
-            <div
-                class="panorama-wrap"
-                id="panorama360"
-            >
-
-
-                <div
-                    class="panorama-track"
-                    id="panoramaTrack"
-                >
-
-
-                    <img
-                        src="assets/tour360-villarrica.jpg"
-                        alt="Interior panorámico Modelo Villarrica"
-                    >
-
-
-                    <img
-                        src="assets/tour360-villarrica.jpg"
-                        alt=""
-                        aria-hidden="true"
-                    >
-
-
-                    <img
-                        src="assets/tour360-villarrica.jpg"
-                        alt=""
-                        aria-hidden="true"
-                    >
-
-
-                </div>
-
-
-
-                <div class="panorama-shade">
-                </div>
-
-
-
-                <div class="panorama-label">
-
-                    <strong>
-
-                        Modelo Villarrica
-
-                    </strong>
-
-
-                    <span>
-
-                        Living · Cocina
-                        · Dormitorio
-                        · Vista exterior
-
-                    </span>
-
-                </div>
-
-
-
-                <div class="panorama-controls">
-
-
-                    <button
-                        id="tourZoomIn"
-                        type="button"
-                        aria-label="Acercar"
-                    >
-                        +
-                    </button>
-
-
-                    <button
-                        id="tourZoomOut"
-                        type="button"
-                        aria-label="Alejar"
-                    >
-                        −
-                    </button>
-
-
-                    <button
-                        id="tourAuto"
-                        type="button"
-                        aria-label="Rotación automática"
-                    >
-                        ↻
-                    </button>
-
-
-                    <button
-                        id="tourFullscreen"
-                        type="button"
-                        aria-label="Pantalla completa"
-                    >
-                        ⛶
-                    </button>
-
-
-                    <button
-                        id="tourReset"
-                        type="button"
-                        aria-label="Vista inicial"
-                    >
-                        ⌂
-                    </button>
-
-
-                </div>
-
-
-
-                <div class="panorama-hint">
-
-                    ↔ Arrastra para recorrer
-                    · rueda para zoom
-
-                </div>
-
-
-            </div>
-
-
-
-            <div class="tour360-bottom">
-
-
-                <div class="poi-list">
-
-
-                    <button
-                        class="poi active"
-                        type="button"
-                        data-tour-angle="0"
-                    >
-                        Living
-                    </button>
-
-
-                    <button
-                        class="poi"
-                        type="button"
-                        data-tour-angle="-24"
-                    >
-                        Cocina
-                    </button>
-
-
-                    <button
-                        class="poi"
-                        type="button"
-                        data-tour-angle="-48"
-                    >
-                        Dormitorio
-                    </button>
-
-
-                    <button
-                        class="poi"
-                        type="button"
-                        data-tour-angle="35"
-                    >
-                        Vista exterior
-                    </button>
-
-
-                </div>
-
-
-
-                <div class="tour360-help">
-
-                    Compatible con mouse,
-                    pantalla táctil,
-                    zoom y pantalla completa.
-
-                </div>
-
-
-            </div>
-
-        </div>
-
-
-        <p class="tour-note reveal">
-
-            Visualización conceptual
-            para presentación comercial.
-            Materiales, dimensiones
-            y características definitivas
-            deben validarse con el
-            proyecto técnico.
-
-        </p>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
+<!-- ==========================================================
      PROCESO
-===================================================== -->
+========================================================== -->
 
 <section
     class="section"
@@ -3956,6 +3821,7 @@ footer{
 >
 
     <div class="container">
+
 
         <div class="section-head reveal">
 
@@ -3971,27 +3837,13 @@ footer{
 
             </h2>
 
-
-            <p>
-
-                Organizamos cada proyecto
-                en etapas simples
-                para facilitar decisiones
-                y reducir incertidumbre.
-
-            </p>
-
         </div>
 
 
         <div class="process-grid">
 
 
-            <article
-                class="card
-                step
-                reveal"
-            >
+            <article class="card step reveal">
 
                 <b>
                     01
@@ -4003,22 +3855,16 @@ footer{
 
                 <p>
 
-                    Necesidades,
+                    Revisamos necesidades,
                     ubicación,
-                    presupuesto
-                    y condicionantes
-                    del proyecto.
+                    programa y presupuesto.
 
                 </p>
 
             </article>
 
 
-            <article
-                class="card
-                step
-                reveal"
-            >
+            <article class="card step reveal">
 
                 <b>
                     02
@@ -4030,21 +3876,16 @@ footer{
 
                 <p>
 
-                    Distribución,
-                    materialidad,
-                    terminaciones
-                    y criterios técnicos.
+                    Definimos distribución,
+                    materialidad
+                    y propuesta arquitectónica.
 
                 </p>
 
             </article>
 
 
-            <article
-                class="card
-                step
-                reveal"
-            >
+            <article class="card step reveal">
 
                 <b>
                     03
@@ -4056,21 +3897,16 @@ footer{
 
                 <p>
 
-                    Ejecución,
-                    planificación
-                    y control
-                    de calidad.
+                    Ejecutamos el proyecto
+                    bajo planificación
+                    y control de calidad.
 
                 </p>
 
             </article>
 
 
-            <article
-                class="card
-                step
-                reveal"
-            >
+            <article class="card step reveal">
 
                 <b>
                     04
@@ -4082,9 +3918,8 @@ footer{
 
                 <p>
 
-                    Traslado,
-                    montaje,
-                    revisión
+                    Coordinamos traslado,
+                    montaje
                     y entrega final.
 
                 </p>
@@ -4099,9 +3934,9 @@ footer{
 
 
 
-<!-- =====================================================
+<!-- ==========================================================
      POR QUÉ INGEBAM
-===================================================== -->
+========================================================== -->
 
 <section class="section">
 
@@ -4124,20 +3959,17 @@ footer{
                 <h3>
 
                     Diseño premium
-                    sin perder de vista
-                    la funcionalidad.
+                    sin perder funcionalidad.
 
                 </h3>
 
 
                 <p>
 
-                    Una propuesta orientada
-                    a clientes que valoran
-                    un proceso profesional,
-                    una estética cuidada
-                    y soluciones pensadas
-                    para durar.
+                    Arquitectura,
+                    eficiencia y ejecución
+                    organizadas bajo
+                    una misma propuesta.
 
                 </p>
 
@@ -4148,11 +3980,7 @@ footer{
             <div class="why-list">
 
 
-                <article
-                    class="card
-                    why-item
-                    reveal"
-                >
+                <article class="card why-item reveal">
 
                     <strong>
                         Diseño con propósito
@@ -4160,8 +3988,8 @@ footer{
 
                     <p>
 
-                        Cada decisión debe
-                        aportar a uso,
+                        Cada decisión busca
+                        aportar funcionalidad,
                         estética o desempeño.
 
                     </p>
@@ -4169,17 +3997,10 @@ footer{
                 </article>
 
 
-                <article
-                    class="card
-                    why-item
-                    reveal"
-                >
+                <article class="card why-item reveal">
 
                     <strong>
-
-                        Adaptación
-                        al sur de Chile
-
+                        Adaptación al sur
                     </strong>
 
                     <p>
@@ -4193,11 +4014,7 @@ footer{
                 </article>
 
 
-                <article
-                    class="card
-                    why-item
-                    reveal"
-                >
+                <article class="card why-item reveal">
 
                     <strong>
                         Proceso ordenado
@@ -4205,34 +4022,25 @@ footer{
 
                     <p>
 
-                        Etapas y decisiones
-                        claras durante
-                        todo el proyecto.
+                        Organizamos cada proyecto
+                        mediante etapas definidas.
 
                     </p>
 
                 </article>
 
 
-                <article
-                    class="card
-                    why-item
-                    reveal"
-                >
+                <article class="card why-item reveal">
 
                     <strong>
-
-                        Mirada residencial
-                        y comercial
-
+                        Mirada integral
                     </strong>
 
                     <p>
 
                         Arquitectura,
-                        interiorismo,
-                        operación y experiencia
-                        del usuario.
+                        interiorismo
+                        y experiencia del usuario.
 
                     </p>
 
@@ -4249,9 +4057,9 @@ footer{
 
 
 
-<!-- =====================================================
+<!-- ==========================================================
      COTIZADOR
-===================================================== -->
+========================================================== -->
 
 <section
     class="section"
@@ -4261,11 +4069,7 @@ footer{
     <div class="container quote">
 
 
-        <div
-            class="card
-            quote-intro
-            reveal"
-        >
+        <div class="card quote-intro reveal">
 
             <div class="kicker">
                 Cotizador
@@ -4274,21 +4078,16 @@ footer{
 
             <h2 class="title">
 
-                Cuéntanos
-                tu proyecto.
+                Cuéntanos tu proyecto.
 
             </h2>
 
 
             <p>
 
-                Completa los datos
-                principales.
-
-                Al enviar,
-                la página abrirá WhatsApp
-                con un mensaje preparado
-                para INGEBAM.
+                Completa los datos principales
+                y enviaremos la solicitud
+                directamente a WhatsApp.
 
             </p>
 
@@ -4346,8 +4145,7 @@ footer{
 
                     <label for="type">
 
-                        Tipo
-                        de proyecto
+                        Tipo de proyecto
 
                     </label>
 
@@ -4387,8 +4185,7 @@ footer{
 
                     <label for="model">
 
-                        Modelo /
-                        formato
+                        Modelo
 
                     </label>
 
@@ -4415,8 +4212,7 @@ footer{
 
                     <label for="location">
 
-                        Comuna
-                        o sector
+                        Comuna o sector
 
                     </label>
 
@@ -4469,14 +4265,14 @@ footer{
 
                     <label for="details">
 
-                        Cuéntanos más
+                        Detalles
 
                     </label>
 
 
                     <textarea
                         id="details"
-                        placeholder="Metros cuadrados, uso, terreno, estilo o requerimientos especiales..."
+                        placeholder="Cuéntanos sobre el terreno, uso, dimensiones o características que buscas..."
                     ></textarea>
 
                 </div>
@@ -4488,23 +4284,21 @@ footer{
 
             <p class="form-note">
 
-                Este formulario
-                no almacena datos.
-
-                Solo prepara
-                el mensaje que
-                enviarás por WhatsApp.
+                El formulario prepara
+                automáticamente un mensaje
+                para WhatsApp.
 
             </p>
 
 
 
             <button
-                class="btn btn-primary"
+                class="btn
+                btn-primary"
                 type="submit"
             >
 
-                Enviar por WhatsApp
+                Cotizar por WhatsApp
 
             </button>
 
@@ -4516,10 +4310,8 @@ footer{
             >
 
                 Mensaje preparado.
-
-                Si WhatsApp no se abrió,
-                revisa que el navegador
-                permita ventanas emergentes.
+                Se abrirá WhatsApp
+                en una nueva ventana.
 
             </div>
 
@@ -4532,9 +4324,9 @@ footer{
 
 
 
-<!-- =====================================================
-     PREGUNTAS FRECUENTES
-===================================================== -->
+<!-- ==========================================================
+     FAQ
+========================================================== -->
 
 <section class="section">
 
@@ -4557,48 +4349,14 @@ footer{
         </div>
 
 
-
         <div class="faq">
 
 
-            <details
-                class="card
-                reveal"
-            >
+            <details class="card reveal">
 
                 <summary>
 
-                    ¿Trabajan solo
-                    en La Araucanía?
-
-                </summary>
-
-
-                <p>
-
-                    La propuesta está
-                    enfocada principalmente
-                    en La Araucanía.
-
-                    Para otras regiones,
-                    la factibilidad dependerá
-                    del proyecto y la logística.
-
-                </p>
-
-            </details>
-
-
-
-            <details
-                class="card
-                reveal"
-            >
-
-                <summary>
-
-                    ¿Los modelos se
-                    pueden personalizar?
+                    ¿Los modelos se pueden personalizar?
 
                 </summary>
 
@@ -4606,60 +4364,65 @@ footer{
                 <p>
 
                     Sí.
-
-                    La personalización
-                    puede considerar
-                    distribución,
-                    terminaciones,
-                    equipamiento
-                    y elementos de diseño,
-                    sujeto a evaluación
-                    técnica.
+                    La distribución,
+                    materialidad
+                    y terminaciones pueden adaptarse
+                    según evaluación técnica.
 
                 </p>
 
             </details>
 
 
-
-            <details
-                class="card
-                reveal"
-            >
+            <details class="card reveal">
 
                 <summary>
 
-                    ¿El precio incluye
-                    traslado e instalación?
+                    ¿Trabajan solamente en La Araucanía?
 
                 </summary>
 
 
                 <p>
 
-                    Debe definirse
-                    en cada cotización,
-                    ya que depende
-                    de ubicación,
-                    accesos,
-                    distancia,
-                    terreno y montaje.
+                    El foco principal está
+                    en La Araucanía,
+                    aunque otros proyectos
+                    pueden evaluarse
+                    según ubicación y logística.
 
                 </p>
 
             </details>
 
 
-
-            <details
-                class="card
-                reveal"
-            >
+            <details class="card reveal">
 
                 <summary>
 
-                    ¿También diseñan
-                    locales comerciales?
+                    ¿El traslado está incluido?
+
+                </summary>
+
+
+                <p>
+
+                    Se define dentro
+                    de cada cotización
+                    según distancia,
+                    accesos y condiciones
+                    de instalación.
+
+                </p>
+
+            </details>
+
+
+            <details class="card reveal">
+
+                <summary>
+
+                    ¿Realizan proyectos comerciales?
 
                 </summary>
 
@@ -4667,12 +4430,11 @@ footer{
                 <p>
 
                     Sí.
-
-                    Podemos trabajar
-                    desde diagnóstico
-                    y layout hasta
-                    interiorismo,
-                    ejecución y montaje.
+                    Trabajamos cafeterías,
+                    retail,
+                    showrooms,
+                    oficinas
+                    y otros formatos.
 
                 </p>
 
@@ -4687,19 +4449,15 @@ footer{
 
 
 
-<!-- =====================================================
+<!-- ==========================================================
      CTA FINAL
-===================================================== -->
+========================================================== -->
 
 <section class="section">
 
     <div class="container">
 
-        <div
-            class="card
-            cta
-            reveal"
-        >
+        <div class="card cta reveal">
 
             <div class="kicker">
                 Conversemos
@@ -4718,19 +4476,16 @@ footer{
 
             <p>
 
-                Cuéntanos qué quieres
-                construir o transformar
-                y evaluemos la mejor
-                manera de llevarlo
-                a proyecto.
+                Cuéntanos qué quieres construir
+                y evaluemos la mejor manera
+                de desarrollar tu proyecto.
 
             </p>
 
 
             <a
                 href="#cotizador"
-                class="btn
-                btn-primary"
+                class="btn btn-primary"
             >
 
                 Solicitar cotización
@@ -4745,23 +4500,18 @@ footer{
 
 
 
-<!-- =====================================================
+<!-- ==========================================================
      FOOTER
-===================================================== -->
+========================================================== -->
 
 <footer>
 
-    <div
-        class="container
-        footer-grid"
-    >
+    <div class="container footer-grid">
+
 
         <div>
 
-            <span
-                class="footer-brand
-                brand"
-            >
+            <span class="brand footer-brand">
 
                 INGE<span>BAM</span>
 
@@ -4787,25 +4537,200 @@ footer{
 
         </div>
 
+
     </div>
 
 </footer>
 
 
 
-<!-- =====================================================
-     BOTÓN FLOTANTE
-===================================================== -->
+<!-- ==========================================================
+     WHATSAPP FLOTANTE
+========================================================== -->
 
 <a
-    class="whatsapp"
     href="#cotizador"
-    aria-label="Ir al cotizador"
+    class="whatsapp"
+    aria-label="Cotizar por WhatsApp"
 >
+
     W
+
 </a>
 
 
+
+<!-- ==========================================================
+     MODAL TOUR 360
+========================================================== -->
+
+<div
+    class="tour-modal"
+    id="tourModal"
+    aria-hidden="true"
+>
+
+
+    <div
+        class="tour-modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tourTitle"
+    >
+
+
+        <button
+            class="tour-close"
+            id="tourClose"
+            type="button"
+            aria-label="Cerrar recorrido"
+        >
+
+            ×
+
+        </button>
+
+
+
+        <div class="tour-modal-header">
+
+            <div>
+
+                <div class="kicker">
+
+                    Experiencia 360°
+
+                </div>
+
+
+                <h2
+                    class="title
+                    tour-modal-title"
+                    id="tourTitle"
+                >
+
+                    Recorrido 360°
+
+                </h2>
+
+            </div>
+
+        </div>
+
+
+
+        <div
+            class="modal-panorama"
+            id="modalPanorama"
+        >
+
+
+            <div
+                class="modal-panorama-track"
+                id="modalPanoramaTrack"
+            >
+            </div>
+
+
+
+            <div
+                class="modal-model-name"
+                id="modalModelName"
+            >
+
+                <strong>
+                    Modelo
+                </strong>
+
+                <span>
+                    Recorrido interactivo
+                </span>
+
+            </div>
+
+
+
+            <div class="modal-tour-controls">
+
+
+                <button
+                    id="modalZoomIn"
+                    type="button"
+                    aria-label="Acercar"
+                >
+
+                    +
+
+                </button>
+
+
+                <button
+                    id="modalZoomOut"
+                    type="button"
+                    aria-label="Alejar"
+                >
+
+                    −
+
+                </button>
+
+
+                <button
+                    id="modalAuto"
+                    type="button"
+                    aria-label="Rotación automática"
+                >
+
+                    ↻
+
+                </button>
+
+
+                <button
+                    id="modalFullscreen"
+                    type="button"
+                    aria-label="Pantalla completa"
+                >
+
+                    ⛶
+
+                </button>
+
+
+                <button
+                    id="modalReset"
+                    type="button"
+                    aria-label="Restablecer vista"
+                >
+
+                    ⌂
+
+                </button>
+
+
+            </div>
+
+
+
+            <div class="modal-tour-hint">
+
+                ↔ Arrastra para recorrer
+                · usa la rueda para zoom
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ==========================================================
+     JAVASCRIPT
+========================================================== -->
 
 <script>
 
@@ -4814,28 +4739,25 @@ footer{
 "use strict";
 
 
-/* =====================================================
+/* ==========================================================
    WHATSAPP
 
-   CAMBIA ESTE NÚMERO POR EL REAL DE INGEBAM.
+   CAMBIA ESTE NÚMERO POR EL NÚMERO REAL DE INGEBAM.
 
    EJEMPLO:
    56912345678
 
-   SIN:
-   +
-   ESPACIOS
-   GUIONES
-===================================================== */
+   SIN +, ESPACIOS NI GUIONES
+========================================================== */
 
 const WHATSAPP_NUMBER =
     "56912345678";
 
 
 
-/* =====================================================
-   MENÚ RESPONSIVE
-===================================================== */
+/* ==========================================================
+   MENÚ MÓVIL
+========================================================== */
 
 const menuBtn =
     document.getElementById(
@@ -4888,18 +4810,18 @@ navLinks
 
 
 
-/* =====================================================
-   FILTRO DE PROYECTOS
-===================================================== */
+/* ==========================================================
+   FILTROS PORTAFOLIO
+========================================================== */
 
 document
     .querySelectorAll(
         ".filter"
     )
     .forEach(
-        function(btn){
+        function(button){
 
-            btn.addEventListener(
+            button.addEventListener(
                 "click",
                 function(){
 
@@ -4908,9 +4830,9 @@ document
                             ".filter"
                         )
                         .forEach(
-                            function(button){
+                            function(item){
 
-                                button
+                                item
                                     .classList
                                     .remove(
                                         "active"
@@ -4920,7 +4842,7 @@ document
                         );
 
 
-                    btn
+                    button
                         .classList
                         .add(
                             "active"
@@ -4928,7 +4850,7 @@ document
 
 
                     const filter =
-                        btn.dataset.filter;
+                        button.dataset.filter;
 
 
                     document
@@ -4936,7 +4858,7 @@ document
                             ".project"
                         )
                         .forEach(
-                            function(card){
+                            function(project){
 
                                 const visible =
 
@@ -4945,13 +4867,13 @@ document
 
                                     ||
 
-                                    card
+                                    project
                                         .dataset
                                         .category ===
                                     filter;
 
 
-                                card.style.display =
+                                project.style.display =
 
                                     visible
 
@@ -4974,9 +4896,9 @@ document
 
 
 
-/* =====================================================
-   COTIZADOR INTELIGENTE
-===================================================== */
+/* ==========================================================
+   COTIZADOR
+========================================================== */
 
 const type =
     document.getElementById(
@@ -4998,8 +4920,6 @@ const models = {
 
         "Refugio Llaima (28 m²)",
 
-        "Studio Modular (15 m²)",
-
         "Proyecto personalizado"
 
     ],
@@ -5009,9 +4929,7 @@ const models = {
 
         "Módulo Gastronómico / Cafetería",
 
-        "Habilitación de Local Comercial",
-
-        "Oficina / Showroom Modular",
+        "Store Retail & Showroom",
 
         "Proyecto comercial personalizado"
 
@@ -5028,7 +4946,7 @@ type.addEventListener(
             '<option value="">Selecciona</option>';
 
 
-        const availableModels =
+        const options =
             models[
                 type.value
             ]
@@ -5036,40 +4954,38 @@ type.addEventListener(
             [];
 
 
-        availableModels
-            .forEach(
-                function(text){
+        options.forEach(
+            function(text){
 
-                    const option =
-                        document
-                            .createElement(
-                                "option"
-                            );
-
-
-                    option.value =
-                        text;
-
-
-                    option.textContent =
-                        text;
-
-
-                    model.appendChild(
-                        option
+                const option =
+                    document.createElement(
+                        "option"
                     );
 
-                }
-            );
+
+                option.value =
+                    text;
+
+
+                option.textContent =
+                    text;
+
+
+                model.appendChild(
+                    option
+                );
+
+            }
+        );
 
     }
 );
 
 
 
-/* =====================================================
-   ENVÍO A WHATSAPP
-===================================================== */
+/* ==========================================================
+   WHATSAPP
+========================================================== */
 
 document
     .getElementById(
@@ -5140,7 +5056,7 @@ document
                     .trim();
 
 
-            const projectType =
+            const selectedType =
 
                 type.options[
                     type.selectedIndex
@@ -5155,14 +5071,14 @@ document
 
                 "",
 
-                "Me gustaría solicitar información para cotizar un proyecto con INGEBAM.",
+                "Me interesa cotizar un proyecto con INGEBAM.",
 
                 "",
 
                 "• Tipo: " +
-                projectType,
+                selectedType,
 
-                "• Modelo / Formato: " +
+                "• Modelo: " +
                 model.value,
 
                 "• Ubicación: " +
@@ -5185,14 +5101,14 @@ document
 
                 "",
 
-                "¿Podrían orientarme sobre los próximos pasos?"
+                "¿Podrían entregarme más información sobre el proyecto y los próximos pasos?"
 
             ].join(
                 "\n"
             );
 
 
-            const url =
+            const whatsappURL =
 
                 "https://wa.me/" +
 
@@ -5215,7 +5131,7 @@ document
 
 
             window.open(
-                url,
+                whatsappURL,
                 "_blank",
                 "noopener,noreferrer"
             );
@@ -5225,9 +5141,9 @@ document
 
 
 
-/* =====================================================
-   ANIMACIONES AL HACER SCROLL
-===================================================== */
+/* ==========================================================
+   REVEAL
+========================================================== */
 
 function revealElements(){
 
@@ -5238,7 +5154,7 @@ function revealElements(){
         .forEach(
             function(element){
 
-                const position =
+                const top =
 
                     element
                         .getBoundingClientRect()
@@ -5246,7 +5162,7 @@ function revealElements(){
 
 
                 if(
-                    position <
+                    top <
                     window.innerHeight -
                     60
                 ){
@@ -5278,638 +5194,771 @@ window.addEventListener(
 
 
 
-/* =====================================================
-   TOUR INTERACTIVO 360
-===================================================== */
+/* ==========================================================
+   TOUR 360 MODAL
+========================================================== */
 
-const panorama =
-
+const tourModal =
     document.getElementById(
-        "panorama360"
+        "tourModal"
     );
 
 
-const panoramaTrack =
-
+const modalPanorama =
     document.getElementById(
-        "panoramaTrack"
+        "modalPanorama"
     );
 
 
-if(
-    panorama &&
-    panoramaTrack
+const modalPanoramaTrack =
+    document.getElementById(
+        "modalPanoramaTrack"
+    );
+
+
+const tourTitle =
+    document.getElementById(
+        "tourTitle"
+    );
+
+
+const modalModelName =
+    document.getElementById(
+        "modalModelName"
+    );
+
+
+let modalOffset =
+    -80;
+
+
+let modalZoom =
+    1;
+
+
+let modalDragging =
+    false;
+
+
+let modalLastX =
+    0;
+
+
+let modalAutoRotate =
+    false;
+
+
+let modalAutoFrame =
+    null;
+
+
+
+/* ==========================================================
+   ABRIR TOUR
+
+   ESTA FUNCIÓN SE USA DESDE LOS BOTONES
+   VISTA 360°
+========================================================== */
+
+window.abrirTour360 =
+function(
+    imagen,
+    titulo,
+    descripcion
 ){
 
-    let offset =
+    detenerRotacion();
+
+
+    modalOffset =
         -80;
 
 
-    let zoom =
+    modalZoom =
         1;
 
 
-    let dragging =
-        false;
+    tourTitle.textContent =
+        titulo;
 
 
-    let lastX =
-        0;
+    modalModelName.innerHTML =
 
+        "<strong>" +
 
-    let autoRotate =
-        false;
+        titulo +
 
+        "</strong>" +
 
-    let autoFrame =
-        null;
+        "<span>" +
 
+        descripcion +
 
+        "</span>";
 
-    function imageWidth(){
 
-        const firstImage =
+    modalPanoramaTrack.innerHTML =
 
-            panoramaTrack
-                .querySelector(
-                    "img"
-                );
+        '<img src="' +
+        imagen +
+        '" alt="' +
+        titulo +
+        '">' +
 
+        '<img src="' +
+        imagen +
+        '" alt="" aria-hidden="true">' +
 
-        if(
-            !firstImage
-        ){
+        '<img src="' +
+        imagen +
+        '" alt="" aria-hidden="true">';
 
-            return 0;
 
-        }
+    tourModal
+        .classList
+        .add(
+            "open"
+        );
 
 
-        return firstImage
-            .getBoundingClientRect()
-            .width;
-
-    }
-
-
-
-    function normalizeOffset(){
-
-        const width =
-            imageWidth();
-
-
-        if(
-            !width
-        ){
-
-            return;
-
-        }
-
-
-        while(
-            offset <=
-            -width * 2
-        ){
-
-            offset +=
-                width;
-
-        }
-
-
-        while(
-            offset >= 0
-        ){
-
-            offset -=
-                width;
-
-        }
-
-    }
-
-
-
-    function renderTour(){
-
-        normalizeOffset();
-
-
-        panoramaTrack
-            .style
-            .transform =
-
-            "translate3d(" +
-
-            offset +
-
-            "px,0,0) scale(" +
-
-            zoom +
-
-            ")";
-
-    }
-
-
-
-    function stopAuto(){
-
-        autoRotate =
-            false;
-
-
-        const button =
-            document
-                .getElementById(
-                    "tourAuto"
-                );
-
-
-        button
-            .classList
-            .remove(
-                "active"
-            );
-
-
-        if(
-            autoFrame
-        ){
-
-            cancelAnimationFrame(
-                autoFrame
-            );
-
-        }
-
-
-        autoFrame =
-            null;
-
-    }
-
-
-
-    function autoStep(){
-
-        if(
-            !autoRotate
-        ){
-
-            return;
-
-        }
-
-
-        offset -=
-            .35;
-
-
-        renderTour();
-
-
-        autoFrame =
-            requestAnimationFrame(
-                autoStep
-            );
-
-    }
-
-
-
-    panorama.addEventListener(
-        "pointerdown",
-        function(event){
-
-            dragging =
-                true;
-
-
-            lastX =
-                event.clientX;
-
-
-            panorama
-                .classList
-                .add(
-                    "dragging"
-                );
-
-
-            panorama
-                .setPointerCapture(
-                    event.pointerId
-                );
-
-
-            stopAuto();
-
-        }
+    tourModal.setAttribute(
+        "aria-hidden",
+        "false"
     );
 
 
-
-    panorama.addEventListener(
-        "pointermove",
-        function(event){
-
-            if(
-                !dragging
-            ){
-
-                return;
-
-            }
-
-
-            const difference =
-
-                event.clientX -
-                lastX;
-
-
-            lastX =
-                event.clientX;
-
-
-            offset +=
-
-                difference /
-                zoom;
-
-
-            renderTour();
-
-        }
-    );
-
-
-
-    panorama.addEventListener(
-        "pointerup",
-        function(){
-
-            dragging =
-                false;
-
-
-            panorama
-                .classList
-                .remove(
-                    "dragging"
-                );
-
-        }
-    );
-
-
-
-    panorama.addEventListener(
-        "pointercancel",
-        function(){
-
-            dragging =
-                false;
-
-
-            panorama
-                .classList
-                .remove(
-                    "dragging"
-                );
-
-        }
-    );
-
-
-
-    panorama.addEventListener(
-        "wheel",
-        function(event){
-
-            event.preventDefault();
-
-
-            if(
-                event.deltaY <
-                0
-            ){
-
-                zoom +=
-                    .08;
-
-            }
-
-            else{
-
-                zoom -=
-                    .08;
-
-            }
-
-
-            zoom =
-
-                Math.min(
-
-                    1.7,
-
-                    Math.max(
-                        1,
-                        zoom
-                    )
-
-                );
-
-
-            renderTour();
-
-        },
-        {
-            passive:false
-        }
-    );
-
-
-
-    document
-        .getElementById(
-            "tourZoomIn"
-        )
-        .addEventListener(
-            "click",
-            function(){
-
-                zoom =
-                    Math.min(
-                        1.7,
-                        zoom +
-                        .12
-                    );
-
-
-                renderTour();
-
-            }
+    document.body
+        .classList
+        .add(
+            "modal-open"
         );
 
 
+    const firstImage =
 
-    document
-        .getElementById(
-            "tourZoomOut"
-        )
-        .addEventListener(
-            "click",
-            function(){
-
-                zoom =
-                    Math.max(
-                        1,
-                        zoom -
-                        .12
-                    );
-
-
-                renderTour();
-
-            }
-        );
-
-
-
-    document
-        .getElementById(
-            "tourReset"
-        )
-        .addEventListener(
-            "click",
-            function(){
-
-                stopAuto();
-
-
-                offset =
-                    -80;
-
-
-                zoom =
-                    1;
-
-
-                renderTour();
-
-            }
-        );
-
-
-
-    document
-        .getElementById(
-            "tourAuto"
-        )
-        .addEventListener(
-            "click",
-            function(){
-
-                autoRotate =
-                    !autoRotate;
-
-
-                this
-                    .classList
-                    .toggle(
-                        "active",
-                        autoRotate
-                    );
-
-
-                if(
-                    autoRotate
-                ){
-
-                    autoStep();
-
-                }
-
-                else{
-
-                    stopAuto();
-
-                }
-
-            }
-        );
-
-
-
-    document
-        .getElementById(
-            "tourFullscreen"
-        )
-        .addEventListener(
-            "click",
-            async function(){
-
-                try{
-
-                    if(
-                        !document
-                            .fullscreenElement
-                    ){
-
-                        await panorama
-                            .requestFullscreen();
-
-                    }
-
-                    else{
-
-                        await document
-                            .exitFullscreen();
-
-                    }
-
-                }
-
-                catch(error){
-
-                    console.log(
-                        error
-                    );
-
-                }
-
-            }
-        );
-
-
-
-    document
-        .querySelectorAll(
-            "[data-tour-angle]"
-        )
-        .forEach(
-            function(button){
-
-                button.addEventListener(
-                    "click",
-                    function(){
-
-                        stopAuto();
-
-
-                        document
-                            .querySelectorAll(
-                                "[data-tour-angle]"
-                            )
-                            .forEach(
-                                function(item){
-
-                                    item
-                                        .classList
-                                        .remove(
-                                            "active"
-                                        );
-
-                                }
-                            );
-
-
-                        button
-                            .classList
-                            .add(
-                                "active"
-                            );
-
-
-                        const percentage =
-
-                            Number(
-                                button
-                                    .dataset
-                                    .tourAngle
-                                ||
-                                0
-                            );
-
-
-                        const width =
-                            imageWidth();
-
-
-                        offset =
-
-                            -(
-                                width *
-
-                                (
-                                    .5 +
-
-                                    percentage /
-                                    100
-                                )
-                            );
-
-
-                        renderTour();
-
-                    }
-                );
-
-            }
-        );
-
-
-
-    const tourImage =
-
-        panoramaTrack
+        modalPanoramaTrack
             .querySelector(
                 "img"
             );
 
 
     if(
-        tourImage
+        firstImage.complete
     ){
 
+        renderTour();
+
+    }
+
+    else{
+
+        firstImage.addEventListener(
+            "load",
+            renderTour,
+            {
+                once:true
+            }
+        );
+
+    }
+
+};
+
+
+
+/* ==========================================================
+   CERRAR TOUR
+========================================================== */
+
+function cerrarTour360(){
+
+    detenerRotacion();
+
+
+    tourModal
+        .classList
+        .remove(
+            "open"
+        );
+
+
+    tourModal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+
+    document.body
+        .classList
+        .remove(
+            "modal-open"
+        );
+
+}
+
+
+document
+    .getElementById(
+        "tourClose"
+    )
+    .addEventListener(
+        "click",
+        cerrarTour360
+    );
+
+
+
+/* ==========================================================
+   ANCHO DE IMAGEN
+========================================================== */
+
+function modalImageWidth(){
+
+    const image =
+
+        modalPanoramaTrack
+            .querySelector(
+                "img"
+            );
+
+
+    if(
+        !image
+    ){
+
+        return 0;
+
+    }
+
+
+    return image
+        .getBoundingClientRect()
+        .width;
+
+}
+
+
+
+/* ==========================================================
+   LOOP INFINITO
+========================================================== */
+
+function normalizeModalOffset(){
+
+    const width =
+        modalImageWidth();
+
+
+    if(
+        !width
+    ){
+
+        return;
+
+    }
+
+
+    while(
+        modalOffset <=
+        -width * 2
+    ){
+
+        modalOffset +=
+            width;
+
+    }
+
+
+    while(
+        modalOffset >= 0
+    ){
+
+        modalOffset -=
+            width;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   RENDER DEL TOUR
+========================================================== */
+
+function renderTour(){
+
+    normalizeModalOffset();
+
+
+    modalPanoramaTrack
+        .style
+        .transform =
+
+        "translate3d(" +
+
+        modalOffset +
+
+        "px,0,0) scale(" +
+
+        modalZoom +
+
+        ")";
+
+}
+
+
+
+/* ==========================================================
+   ARRASTRAR
+========================================================== */
+
+modalPanorama.addEventListener(
+    "pointerdown",
+    function(event){
+
+        modalDragging =
+            true;
+
+
+        modalLastX =
+            event.clientX;
+
+
+        modalPanorama
+            .classList
+            .add(
+                "dragging"
+            );
+
+
+        modalPanorama
+            .setPointerCapture(
+                event.pointerId
+            );
+
+
+        detenerRotacion();
+
+    }
+);
+
+
+modalPanorama.addEventListener(
+    "pointermove",
+    function(event){
+
         if(
-            tourImage.complete
+            !modalDragging
+        ){
+
+            return;
+
+        }
+
+
+        const movement =
+
+            event.clientX -
+            modalLastX;
+
+
+        modalLastX =
+            event.clientX;
+
+
+        modalOffset +=
+
+            movement /
+            modalZoom;
+
+
+        renderTour();
+
+    }
+);
+
+
+function terminarArrastre(){
+
+    modalDragging =
+        false;
+
+
+    modalPanorama
+        .classList
+        .remove(
+            "dragging"
+        );
+
+}
+
+
+modalPanorama.addEventListener(
+    "pointerup",
+    terminarArrastre
+);
+
+
+modalPanorama.addEventListener(
+    "pointercancel",
+    terminarArrastre
+);
+
+
+
+/* ==========================================================
+   ZOOM CON RUEDA
+========================================================== */
+
+modalPanorama.addEventListener(
+    "wheel",
+    function(event){
+
+        event.preventDefault();
+
+
+        if(
+            event.deltaY <
+            0
+        ){
+
+            modalZoom +=
+                .08;
+
+        }
+
+        else{
+
+            modalZoom -=
+                .08;
+
+        }
+
+
+        modalZoom =
+            Math.min(
+                1.8,
+                Math.max(
+                    1,
+                    modalZoom
+                )
+            );
+
+
+        renderTour();
+
+    },
+    {
+        passive:false
+    }
+);
+
+
+
+/* ==========================================================
+   BOTÓN ZOOM +
+========================================================== */
+
+document
+    .getElementById(
+        "modalZoomIn"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            modalZoom =
+                Math.min(
+                    1.8,
+                    modalZoom +
+                    .12
+                );
+
+
+            renderTour();
+
+        }
+    );
+
+
+
+/* ==========================================================
+   BOTÓN ZOOM -
+========================================================== */
+
+document
+    .getElementById(
+        "modalZoomOut"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            modalZoom =
+                Math.max(
+                    1,
+                    modalZoom -
+                    .12
+                );
+
+
+            renderTour();
+
+        }
+    );
+
+
+
+/* ==========================================================
+   ROTACIÓN AUTOMÁTICA
+========================================================== */
+
+function detenerRotacion(){
+
+    modalAutoRotate =
+        false;
+
+
+    document
+        .getElementById(
+            "modalAuto"
+        )
+        .classList
+        .remove(
+            "active"
+        );
+
+
+    if(
+        modalAutoFrame
+    ){
+
+        cancelAnimationFrame(
+            modalAutoFrame
+        );
+
+    }
+
+
+    modalAutoFrame =
+        null;
+
+}
+
+
+function rotarAutomaticamente(){
+
+    if(
+        !modalAutoRotate
+    ){
+
+        return;
+
+    }
+
+
+    modalOffset -=
+        .38;
+
+
+    renderTour();
+
+
+    modalAutoFrame =
+        requestAnimationFrame(
+            rotarAutomaticamente
+        );
+
+}
+
+
+document
+    .getElementById(
+        "modalAuto"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            if(
+                modalAutoRotate
+            ){
+
+                detenerRotacion();
+
+                return;
+
+            }
+
+
+            modalAutoRotate =
+                true;
+
+
+            this
+                .classList
+                .add(
+                    "active"
+                );
+
+
+            rotarAutomaticamente();
+
+        }
+    );
+
+
+
+/* ==========================================================
+   RESET
+========================================================== */
+
+document
+    .getElementById(
+        "modalReset"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            detenerRotacion();
+
+
+            modalOffset =
+                -80;
+
+
+            modalZoom =
+                1;
+
+
+            renderTour();
+
+        }
+    );
+
+
+
+/* ==========================================================
+   PANTALLA COMPLETA
+========================================================== */
+
+document
+    .getElementById(
+        "modalFullscreen"
+    )
+    .addEventListener(
+        "click",
+        async function(){
+
+            try{
+
+                if(
+                    !document
+                        .fullscreenElement
+                ){
+
+                    await modalPanorama
+                        .requestFullscreen();
+
+                }
+
+                else{
+
+                    await document
+                        .exitFullscreen();
+
+                }
+
+            }
+
+            catch(error){
+
+                console.log(
+                    "No se pudo activar pantalla completa.",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+
+
+/* ==========================================================
+   CERRAR AL HACER CLIC AFUERA
+========================================================== */
+
+tourModal.addEventListener(
+    "click",
+    function(event){
+
+        if(
+            event.target ===
+            tourModal
+        ){
+
+            cerrarTour360();
+
+        }
+
+    }
+);
+
+
+
+/* ==========================================================
+   ESCAPE
+========================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key ===
+            "Escape"
+        ){
+
+            cerrarTour360();
+
+        }
+
+    }
+);
+
+
+
+/* ==========================================================
+   RESIZE
+========================================================== */
+
+window.addEventListener(
+    "resize",
+    function(){
+
+        if(
+            tourModal
+                .classList
+                .contains(
+                    "open"
+                )
         ){
 
             renderTour();
 
         }
 
-        else{
-
-            tourImage
-                .addEventListener(
-                    "load",
-                    renderTour
-                );
-
-        }
-
     }
-
-
-    window.addEventListener(
-        "resize",
-        renderTour
-    );
-
-}
+);
 
 
 
-/* =====================================================
+/* ==========================================================
    AÑO AUTOMÁTICO
-===================================================== */
+========================================================== */
 
 document
     .getElementById(
