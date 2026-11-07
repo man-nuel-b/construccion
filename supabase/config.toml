@@ -1,0 +1,4 @@
+# Supabase Edge Functions: autenticar en el código validando el JWT del usuario.
+# No confiar en API keys como autorización administrativa.
+[functions.ingebam-admin]
+verify_jwt = false
