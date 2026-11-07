@@ -2749,7 +2749,7 @@ footer{
 .btn:focus-visible,.nav-links a:focus-visible,.tour-button:focus-visible{outline:3px solid #e1bd8d;outline-offset:3px}
 .project-media img{aspect-ratio:1.5/1;object-fit:cover}
 .whatsapp{box-shadow:0 10px 35px #0008}
-.project:not(:first-child) .tour-button{display:none}
+.ingebam-card-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.ingebam-quote-btn,.ingebam-photo-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 13px;border:1px solid #c8a06f;border-radius:8px;font-weight:700;font-size:.8rem;background:#c8a06f;color:#161616;cursor:pointer}.ingebam-photo-btn{background:transparent;color:#f6ead8}.ingebam-no-image{min-height:220px;display:grid;place-items:center;color:#ccc;background:#202923}#ingebam-gallery{max-width:min(880px,94vw);max-height:88vh;margin:auto;padding:24px;background:#111d1a;color:white;border:1px solid #bda479;border-radius:18px}#ingebam-gallery::backdrop{background:#000c}#ingebam-gallery h2{font-size:1.5rem;padding-right:46px;margin-bottom:15px}.ingebam-gallery-photos{max-height:65vh;overflow:auto;display:grid;gap:12px}.ingebam-gallery-photos img{max-width:100%;height:auto;border-radius:10px}#ingebam-gallery .close-gallery{position:absolute;right:18px;top:13px;border:0;background:#c8a06f;color:#151515;border-radius:8px;padding:6px 12px}
 .conversion-note{margin-top:14px;color:#d4c6ae;font-size:.85rem;line-height:1.5}
 .form .success{background:#273e30;color:#f4f4e6}
 @media (max-width:700px){.hero{min-height:90svh}.hero h1{font-size:clamp(2.6rem,11vw,4.6rem)}.hero::after{background-position:45% center}.nav-inner{height:70px}.hero-actions .btn{min-height:52px}}
@@ -6003,6 +6003,8 @@ document
 </script>
 
 
+<dialog id="ingebam-gallery" aria-label="Galería de fotografías"><form method="dialog"><button class="close-gallery" aria-label="Cerrar galería">Cerrar ×</button></form><h2>Fotografías</h2><div class="ingebam-gallery-photos"></div></dialog>
+<script defer src="catalogo.js"></script>
 </body>
 
 </html>
