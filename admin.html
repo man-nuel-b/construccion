@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src https://api.github.com; base-uri 'self'; form-action 'none'; object-src 'none'">
-<title>INGEBAM · Panel de modelos</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src https://*.supabase.co; base-uri 'self'; form-action 'none'; object-src 'none'">
+<title>INGEBAM · Administración de modelos</title>
 <style>
 :root{--page:#f6f4f0;--card:#fff;--ink:#1a241f;--muted:#6d746f;--line:#e4e7e1;--accent:#c69b5b;--accent-soft:#f3e6d2;--green:#24533f;--green-soft:#edf5ef;--red:#9f3838;--red-soft:#fff1f0;--shadow:0 15px 48px rgba(17,34,25,.07)}
 *{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #d2ad72;outline-offset:2px}h1,h2,h3,p{margin-top:0}.hidden,[hidden]{display:none!important}.muted{color:var(--muted)}.small{font-size:12px}.shell{max-width:1290px;margin:0 auto;padding:27px 23px 60px}.brand{display:flex;gap:12px;align-items:center}.logo{width:48px;height:48px;display:grid;place-items:center;background:var(--ink);border-radius:15px;color:#fff;font-weight:900;letter-spacing:-.08em;font-size:19px}.logo span{color:#ddbd88}.brand-title{font-weight:900;font-size:20px;letter-spacing:.02em}.brand-caption{font-size:12px;color:var(--muted)}.topbar{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:25px}.top-actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
@@ -14,23 +14,27 @@
 dialog{border:0;padding:0;background:transparent;max-width:min(920px,calc(100vw - 26px));width:100%;max-height:94vh}dialog::backdrop{background:rgba(6,18,12,.68);backdrop-filter:blur(5px)}.modal-card{background:#fff;border-radius:19px;padding:23px;max-height:94vh;overflow:auto}.modal-head{display:flex;gap:16px;align-items:start;justify-content:space-between;margin-bottom:15px}.modal-head h2{margin-bottom:5px;font-size:23px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}.checkline{display:flex;align-items:center;gap:9px;padding:12px;background:#f7f8f5;border-radius:11px}.checkline input{width:18px;height:18px}.drop{background:#f8f9f6;border:1px dashed #cdd6ca;border-radius:13px;padding:14px}.drop input[type=file]{margin-top:10px;max-width:100%;font-size:12px}.photo-preview{width:min(250px,100%);max-height:170px;object-fit:cover;border-radius:12px;border:1px solid var(--line);margin-top:9px}.thumb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:10px;margin-top:12px}.thumb-item{border:1px solid var(--line);border-radius:12px;padding:8px;overflow:hidden}.thumb-item img{width:100%;aspect-ratio:1.3;object-fit:cover;border-radius:8px}.thumb-item button{width:100%;margin-top:7px;background:#fff;border:1px solid #e4c4c1;color:var(--red);border-radius:8px;padding:6px}.modal-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:9px;position:sticky;bottom:-23px;background:linear-gradient(transparent,#fff 15%);padding:24px 0 4px;margin-top:8px}.toast{position:fixed;bottom:22px;right:20px;z-index:100;padding:13px 16px;background:var(--ink);color:#fff;border-radius:12px;max-width:min(90vw,450px);box-shadow:var(--shadow)}.toast.error{background:var(--red)}.busy{opacity:.55;pointer-events:none}.section-caption{font-size:12px;color:var(--muted);margin:2px 0 10px}.inline-note{font-size:12px;padding:9px 11px;background:#fff8eb;border:1px solid #ebdcb9;border-radius:9px;color:#795e33;margin:10px 0}
 @media(max-width:980px){.model-row{grid-template-columns:80px 1fr auto}.model-row .row-category,.model-row .row-surface{display:none}.thumb{width:80px;height:74px}.toolbar{grid-template-columns:1fr 170px 135px}}@media(max-width:650px){.shell{padding:16px 14px 45px}.topbar{align-items:start}.top-actions{justify-content:flex-end}.page-head{align-items:start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.model-row{grid-template-columns:65px 1fr;gap:10px}.model-row .row-actions{grid-column:1/-1;justify-content:flex-end}.thumb{width:65px;height:68px}.toolbar,.settings-grid,.form-grid{grid-template-columns:1fr}.modal-card{padding:17px}dialog{max-height:96vh}.models-head{align-items:start;flex-direction:column}.settings .btn{width:100%}}
 </style>
-<script src="./admin.js" defer></script>
+<script src="./admin-auth-config.js" defer></script>
+<script src="./admin-email.js" defer></script>
 </head>
 <body>
 <main id="login-view" class="login-wrap">
   <section class="login-card card">
     <div class="logo" aria-hidden="true">IN<span>B</span></div>
     <div class="eyebrow">Panel privado · INGEBAM</div>
-    <h1>Gestiona tus modelos desde un solo lugar.</h1>
-    <p class="muted">Un panel como el de TIMELESS, adaptado a Tiny Houses, oficinas, baños y módulos comerciales.</p>
+    <h1>Ingresa al panel de INGEBAM.</h1>
+    <p class="muted">Administra tus Tiny Houses, oficinas, módulos comerciales, fotografías y cotizaciones.</p>
     <div class="field">
-      <label for="token">Acceso de GitHub</label>
-      <input id="token" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Token con permiso solo para INGEBAM">
+      <label for="login-email">Correo electrónico</label>
+      <input id="login-email" type="email" autocomplete="username" required placeholder="tu-correo@empresa.cl">
     </div>
-    <button type="button" id="login" class="btn primary">Entrar al panel</button>
+    <div class="field">
+      <label for="login-password">Contraseña</label>
+      <input id="login-password" type="password" autocomplete="current-password" required minlength="8" placeholder="Tu contraseña personal">
+    </div>
+    <button type="button" id="login" class="btn primary">Ingresar al panel</button>
     <div class="help" style="margin-top:15px">
-      <strong>Acceso seguro:</strong> utiliza un token de acceso específico para el repositorio <code>man-nuel-b/construccion</code> con permiso <strong>Contents: Read and write</strong>. Se mantiene solo durante esta sesión, no se guarda en el navegador ni se sube al repositorio.
-      <div style="margin-top:8px"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Crear token en GitHub</a> · <a href="https://app.pagescms.org/" target="_blank" rel="noopener noreferrer">Usar Pages CMS en su lugar</a></div>
+      <strong>Acceso privado INGEBAM.</strong> Inicia sesión con el correo administrador habilitado para INGEBAM. Los datos se verifican en el servicio de autenticación, no en esta página. No se utiliza tu contraseña de GitHub.
     </div>
     <p id="login-error" class="status error hidden" role="alert" style="margin-top:12px"></p>
   </section>
