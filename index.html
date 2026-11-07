@@ -2753,6 +2753,58 @@ footer{
 .conversion-note{margin-top:14px;color:#d4c6ae;font-size:.85rem;line-height:1.5}
 .form .success{background:#273e30;color:#f4f4e6}
 @media (max-width:700px){.hero{min-height:90svh}.hero h1{font-size:clamp(2.6rem,11vw,4.6rem)}.hero::after{background-position:45% center}.nav-inner{height:70px}.hero-actions .btn{min-height:52px}}
+
+/* Experiencia cliente INGEBAM — navegación y asesoría comercial */
+html{scroll-padding-top:105px}
+#proyectos,#cotizador,#elige-tu-solucion{scroll-margin-top:100px}
+.hero-actions .btn,.btn-primary{min-height:48px}
+.quick-path{padding:54px 0 30px;background:linear-gradient(180deg,#10110f,#171a17)}
+.quick-path-head{max-width:850px;margin:0 0 22px}
+.quick-path h2{font-size:clamp(1.9rem,4.4vw,3.2rem);line-height:1.1;margin:12px 0}
+.quick-path .subcopy{font-size:.95rem;color:#bab9b4;max-width:640px}
+.quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.quick-choice{border:1px solid #ffffff36;border-radius:17px;padding:23px 16px;text-align:left;color:#f7f1e7;background:linear-gradient(152deg,#242925,#161915);display:flex;align-items:flex-start;flex-direction:column;min-height:190px;transition:transform .2s,border-color .2s,background .2s}
+.quick-choice:hover,.quick-choice:focus-visible{transform:translateY(-3px);border-color:var(--gold);background:#242921}
+.quick-icon{font-size:1.75rem;line-height:1.1;color:var(--gold);margin-bottom:16px}
+.quick-choice strong{display:block;font-size:1.08rem;margin:0 0 8px}
+.quick-choice span:last-child{color:#babdb4;font-size:.82rem;line-height:1.5}
+.quick-foot{color:#a6aaa2;font-size:.82rem;margin:16px 0 0}
+.quote-primer{margin:20px 0;padding:18px 20px;background:#ffffff08;border:1px solid #ffffff22;border-radius:14px}
+.quote-primer b{color:#e8c48b}
+.quote-primer p{color:#c9c7bf;font-size:.86rem;margin:4px 0 0}
+#selectedProjectNotice{color:#cfaa75;font-size:.9rem;padding:12px 0;min-height:22px}
+#whatsappWarning{display:block;padding:12px 15px;border:1px solid #d5a46c75;border-radius:12px;color:#e6cba9;background:#d5a46c16;font-size:.82rem;margin-top:14px}
+#whatsappWarning[hidden]{display:none!important}
+.customer-steps{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.customer-steps span{font-size:.74rem;border-radius:999px;padding:7px 11px;color:#ded9d0;border:1px solid #ffffff2d}
+.mobile-quote-bar{display:none}
+.nav-contact-note{font-size:.73rem;color:#b6b1a6}
+#quoteForm .field label{font-weight:700}
+#quoteForm .field input,#quoteForm .field select,#quoteForm .field textarea{min-height:46px}
+#quoteForm .field textarea{min-height:112px}
+#quoteForm [type="submit"]{width:100%;font-size:1.02rem;letter-spacing:.01em}
+#quoteForm .success{line-height:1.5;white-space:pre-line}
+.service-guide{padding:16px 20px;margin-top:16px;border-radius:14px;background:#c69e6724;border:1px solid #c69e6740;color:#f2e0c6}
+.service-guide strong{display:block;margin-bottom:6px}
+.service-guide span{font-size:.83rem;color:#d2c7b5}
+@media(max-width:1000px){.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){
+ .quick-path{padding:37px 0 22px}
+ .quick-grid{gap:10px}
+ .quick-choice{min-height:169px;padding:16px 13px}
+ .quick-choice strong{font-size:.95rem}
+ .quick-choice span:last-child{font-size:.78rem}
+ .quick-icon{margin-bottom:11px}
+ .hero-actions{display:flex;flex-direction:column;align-items:stretch}
+ .hero-actions .btn{width:100%;justify-content:center}
+ .mobile-quote-bar{display:flex;position:fixed;z-index:89;bottom:0;left:0;right:0;padding:10px max(14px,env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-right));background:#121b17eb;backdrop-filter:blur(12px);border-top:1px solid #ffffff28;align-items:center;gap:10px}
+ .mobile-quote-bar .btn{flex:1;text-align:center;justify-content:center;min-height:46px;white-space:nowrap}
+ .mobile-quote-bar span{font-size:.75rem;color:#dedbd2}
+ .whatsapp{bottom:94px}
+ footer{padding-bottom:108px}
+}
+@media(prefers-reduced-motion:reduce){.quick-choice{transition:none}}
+
 </style>
 
 <script src="config.js"></script>
@@ -2798,9 +2850,7 @@ footer{
             id="navLinks"
         >
 
-            <a href="#nosotros">
-                Nosotros
-            </a>
+            <a href="#elige-tu-solucion">Soluciones</a>
 
             <a href="#servicios">
                 Servicios
@@ -2950,6 +3000,22 @@ footer{
 </header>
 
 
+
+
+<section class="quick-path" id="elige-tu-solucion" aria-labelledby="quick-title">
+ <div class="container">
+  <div class="quick-path-head"><div class="kicker">Te ayudamos a elegir</div>
+  <h2 class="title" id="quick-title">¿Qué espacio necesitas construir?</h2>
+  <p class="subcopy">No necesitas conocer medidas, planos ni materiales para comenzar. Elige una opción y revisa modelos o cuéntanos tu idea.</p></div>
+  <div class="quick-grid">
+   <button class="quick-choice" type="button" data-quick-type="tiny"><span class="quick-icon" aria-hidden="true">⌂</span><strong>Tiny House o vivienda</strong><span>Un espacio habitable para descanso, arriendo o uso personal.</span></button>
+   <button class="quick-choice" type="button" data-quick-type="oficina"><span class="quick-icon" aria-hidden="true">▣</span><strong>Oficina modular</strong><span>Espacios de trabajo adaptados a tu operación.</span></button>
+   <button class="quick-choice" type="button" data-quick-type="banos"><span class="quick-icon" aria-hidden="true">▤</span><strong>Baños modulares</strong><span>Módulos sanitarios para distintas necesidades.</span></button>
+   <button class="quick-choice" type="button" data-quick-type="comercial"><span class="quick-icon" aria-hidden="true">▦</span><strong>Local comercial</strong><span>Tu cafetería, showroom o punto de atención.</span></button>
+  </div>
+  <p class="quick-foot">¿Tienes otra idea? <a href="#cotizador">Cuéntanos tu proyecto personalizado</a>.</p>
+ </div>
+</section>
 
 <!-- ==========================================================
      QUIÉNES SOMOS
@@ -4101,13 +4167,9 @@ footer{
             </h2>
 
 
-            <p>
-
-                Completa los datos principales
-                y enviaremos la solicitud
-                directamente a WhatsApp.
-
-            </p>
+            <p>En menos de un minuto puedes contar lo que necesitas. No hace falta saber de construcción: te ayudaremos a definir el proyecto.</p>
+            <div class="customer-steps" aria-label="Pasos de tu consulta"><span>1. Elige tu idea</span><span>2. Cuéntanos dónde</span><span>3. Prepara tu consulta</span></div>
+            <div class="quote-primer"><b>Cotización personalizada</b><p>El valor final depende de dimensiones, terminaciones, traslado e instalación. No mostramos precios inventados.</p></div>
 
         </div>
 
@@ -4121,6 +4183,7 @@ footer{
         >
 
 
+            <div id="selectedProjectNotice" role="status" aria-live="polite">Puedes consultar por un modelo o por un diseño personalizado.</div>
             <div class="form-grid">
 
 
@@ -4134,6 +4197,7 @@ footer{
                     <input
                         id="name"
                         type="text"
+                        autocomplete="name"
                         required
                         placeholder="Tu nombre"
                     >
@@ -4152,6 +4216,8 @@ footer{
                     <input
                         id="phone"
                         type="tel"
+                        inputmode="tel"
+                        autocomplete="tel"
                         placeholder="+56 9 1234 5678"
                     >
 
@@ -4173,9 +4239,7 @@ footer{
                         required
                     >
 
-                        <option value="">
-                            Selecciona
-                        </option>
+                        <option value="">¿Qué te gustaría construir?</option>
 
 
                         <option value="tiny">
@@ -4186,12 +4250,10 @@ footer{
                         </option>
 
 
-                        <option value="comercial">
-
-                            Local comercial /
-                            Retail
-
-                        </option>
+                        <option value="oficina">Oficina modular</option>
+                        <option value="banos">Batería de baños</option>
+                        <option value="comercial">Local comercial / Retail</option>
+                        <option value="personalizado">Otro proyecto / Aún no lo sé</option>
 
                     </select>
 
@@ -4210,7 +4272,6 @@ footer{
 
                     <select
                         id="model"
-                        required
                     >
 
                         <option value="">
@@ -4238,6 +4299,7 @@ footer{
                     <input
                         id="location"
                         type="text"
+                        autocomplete="address-level2"
                         required
                         placeholder="Ej: Villarrica"
                     >
@@ -4302,9 +4364,7 @@ footer{
 
             <p class="form-note">
 
-                El formulario prepara
-                automáticamente un mensaje
-                para WhatsApp.
+                Los datos que escribas se utilizarán para preparar tu consulta. Antes de enviarla, podrás revisar el mensaje en WhatsApp.
 
             </p>
 
@@ -4322,9 +4382,12 @@ footer{
 
 
 
+            <div id="whatsappWarning" role="status" aria-live="polite" hidden></div>
             <div
                 class="success"
                 id="success"
+                role="status"
+                aria-live="polite"
             >
 
                 Mensaje preparado.
@@ -4334,6 +4397,7 @@ footer{
             </div>
 
 
+            <button type="button" id="copyRequest" class="btn btn-ghost" hidden style="margin-top:12px;width:100%;justify-content:center">Copiar consulta preparada</button>
         </form>
 
     </div>
@@ -4562,6 +4626,7 @@ footer{
 
 
 
+<aside class="mobile-quote-bar" aria-label="Acceso rápido a cotización"><span>¿Tienes una idea?</span><a class="btn btn-primary" href="#cotizador">Solicitar cotización</a></aside>
 <!-- ==========================================================
      WHATSAPP FLOTANTE
 ========================================================== -->
@@ -4569,10 +4634,10 @@ footer{
 <a
     href="#cotizador"
     class="whatsapp"
-    aria-label="Cotizar por WhatsApp"
+    aria-label="Ir al formulario para preparar una consulta"
 >
 
-    W
+    <span aria-hidden="true">✉</span>
 
 </a>
 
@@ -4931,28 +4996,11 @@ const model =
 
 
 const models = {
-
-    tiny:[
-
-        "Modelo Villarrica Panorama (24 m²)",
-
-        "Refugio Llaima (28 m²)",
-
-        "Proyecto personalizado"
-
-    ],
-
-
-    comercial:[
-
-        "Módulo Gastronómico / Cafetería",
-
-        "Store Retail & Showroom",
-
-        "Proyecto comercial personalizado"
-
-    ]
-
+    tiny:["Modelo Villarrica Panorama","Refugio Llaima","Diseño personalizado"],
+    oficina:["Proyecto personalizado"],
+    banos:["Proyecto personalizado"],
+    comercial:["Módulo gastronómico y cafetería","Store Retail y Showroom","Diseño personalizado"],
+    personalizado:["Proyecto personalizado"]
 };
 
 
@@ -5075,10 +5123,7 @@ document
 
 
             const selectedType =
-
-                type.options[
-                    type.selectedIndex
-                ].text;
+                type.options[type.selectedIndex]?.text || "Proyecto sin definir";
 
 
             const message = [
@@ -5097,7 +5142,7 @@ document
                 selectedType,
 
                 "• Modelo: " +
-                model.value,
+                (model.value || "Aún no definido"),
 
                 "• Ubicación: " +
                 location,
@@ -5127,11 +5172,13 @@ document
 
 
             if(!WHATSAPP_READY){
-  const status=document.getElementById("success");
-  status.style.display="block";
-  status.textContent="La cotización está preparada, pero falta configurar el WhatsApp Business de INGEBAM. No se enviará a un número de prueba.";
-  return;
-}
+              const status=document.getElementById("success");
+              status.style.display="block";
+              status.textContent="Tu solicitud está lista, pero el WhatsApp de INGEBAM aún no se encuentra habilitado. No podemos enviarla automáticamente.";
+              const copy=document.getElementById("copyRequest");
+              if(copy){copy.hidden=false;copy.dataset.message=message;}
+              return;
+            }
 const whatsappURL =
 
                 "https://wa.me/" +
@@ -5154,11 +5201,13 @@ const whatsappURL =
                 "block";
 
 
-            window.open(
-                whatsappURL,
-                "_blank",
-                "noopener,noreferrer"
-            );
+            const target=window.open(whatsappURL,"_blank","noopener,noreferrer");
+            const copy=document.getElementById("copyRequest");
+            if(copy){copy.hidden=false;copy.dataset.message=message;}
+            if(!target){
+              const status=document.getElementById("success");
+              status.textContent="Tu solicitud está preparada. Si WhatsApp no se abrió, utiliza el botón para copiar el mensaje.";
+            }
 
         }
     );
@@ -6005,6 +6054,9 @@ document
 
 <dialog id="ingebam-gallery" aria-label="Galería de fotografías"><form method="dialog"><button class="close-gallery" aria-label="Cerrar galería">Cerrar ×</button></form><h2>Fotografías</h2><div class="ingebam-gallery-photos"></div></dialog>
 <script defer src="catalogo.js"></script>
+
+<script defer src="experiencia-cliente.js"></script>
+
 </body>
 
 </html>
