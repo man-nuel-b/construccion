@@ -43,9 +43,9 @@
     }
     if(typeSelect){
       const previous=typeSelect.value;
-      typeSelect.innerHTML='<option value="">Selecciona</option>'+
-        [...new Set(data.map(x=>x.tipo))].map(k=>'<option value="'+esc(k)+'">'+esc(categories[k]||k)+'</option>').join("")+
-        '<option value="personalizado">Proyecto personalizado</option>';
+      typeSelect.innerHTML='<option value="">¿Qué tipo de proyecto tienes en mente?</option>'+
+        ["tiny","oficina","banos","comercial"].map(k=>'<option value="'+esc(k)+'">'+esc(categories[k])+'</option>').join("")+
+        '<option value="personalizado">Otro proyecto / Aún no lo sé</option>';
       if(previous&&[...typeSelect.options].some(o=>o.value===previous))typeSelect.value=previous;
       populateModel();
     }
@@ -53,9 +53,9 @@
   function populateModel(selection){
     if(!modelSelect||!typeSelect)return;
     const matches=data.filter(m=>m.tipo===typeSelect.value);
-    modelSelect.replaceChildren(new Option("Selecciona un modelo",""));
+    modelSelect.replaceChildren(new Option("Aún no tengo un modelo definido",""));
     for(const m of matches)modelSelect.add(new Option(m.nombre,m.nombre));
-    modelSelect.add(new Option("Proyecto personalizado","Proyecto personalizado"));
+    modelSelect.add(new Option("Diseño personalizado","Proyecto personalizado"));
     if(selection)modelSelect.value=selection;
   }
   // Se registra después del formulario existente, y reemplaza sus opciones.
@@ -66,7 +66,7 @@
     const idx=Number(target.dataset.selectModel??target.dataset.gallery??target.dataset.panorama),m=data[idx];
     if(!m)return;
     if(target.hasAttribute("data-select-model")){
-      if(typeSelect){typeSelect.value=m.tipo;populateModel(m.nombre)}
+      if(typeSelect){typeSelect.value=m.tipo;populateModel(m.nombre);typeSelect.dispatchEvent(new Event("change",{bubbles:false}));populateModel(m.nombre);document.getElementById("selectedProjectNotice")?.replaceChildren(document.createTextNode("Elegiste: "+m.nombre+". Puedes cambiarlo en el formulario."));document.getElementById("name")?.focus({preventScroll:true})}
     }else if(target.hasAttribute("data-panorama")){
       const panorama=path(m.panorama);
       if(panorama)location.href="tour-360.html?imagen="+encodeURIComponent(panorama)+"&modelo="+encodeURIComponent(m.nombre);
