@@ -20,7 +20,16 @@
     content="#090909"
 >
 
-<title>INGEBAM | Arquitectura Modular</title>
+<title>INGEBAM | Tiny Houses, oficinas y construcción modular en La Araucanía</title>
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="INGEBAM | Construcción modular en el sur de Chile">
+<meta property="og:description" content="Conoce Tiny Houses, oficinas y soluciones comerciales modulares. Solicita una propuesta personalizada.">
+<meta property="og:image" content="https://man-nuel-b.github.io/construccion/imagenes/villarrica.png">
+<meta property="og:url" content="https://man-nuel-b.github.io/construccion/">
+<link rel="canonical" href="https://man-nuel-b.github.io/construccion/">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="color-scheme" content="dark">
 
 
 <style>
@@ -2731,8 +2740,22 @@ footer{
 
 }
 
+
+/* INGEBAM · Enfoque comercial y mejoras móviles */
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,16,16,.86) 8%,rgba(5,16,16,.65) 57%,rgba(5,16,16,.30)),url("imagenes/villarrica.png") center/cover no-repeat;opacity:.68;pointer-events:none}
+.hero-grid{z-index:1;opacity:.07}
+.hero-inner{z-index:3}
+.hero p{color:#f2ede4}
+.btn:focus-visible,.nav-links a:focus-visible,.tour-button:focus-visible{outline:3px solid #e1bd8d;outline-offset:3px}
+.project-media img{aspect-ratio:1.5/1;object-fit:cover}
+.whatsapp{box-shadow:0 10px 35px #0008}
+.project:not(:first-child) .tour-button{display:none}
+.conversion-note{margin-top:14px;color:#d4c6ae;font-size:.85rem;line-height:1.5}
+.form .success{background:#273e30;color:#f4f4e6}
+@media (max-width:700px){.hero{min-height:90svh}.hero h1{font-size:clamp(2.6rem,11vw,4.6rem)}.hero::after{background-position:45% center}.nav-inner{height:70px}.hero-actions .btn{min-height:52px}}
 </style>
 
+<script src="config.js"></script>
 </head>
 
 
@@ -2837,10 +2860,10 @@ footer{
 
         <h1 class="title">
 
-            Arquitectura modular
+            Construye tu próximo espacio
 
             <em>
-                con carácter.
+                con INGEBAM.
             </em>
 
         </h1>
@@ -2848,10 +2871,7 @@ footer{
 
         <p>
 
-            Diseñamos y construimos Tiny Houses,
-            viviendas modulares y espacios comerciales
-            con una mirada contemporánea,
-            eficiente y adaptada al sur de Chile.
+            Explora Tiny Houses, oficinas modulares y espacios comerciales. Inspírate con nuestros modelos y solicita una propuesta personalizada directamente por WhatsApp.
 
         </p>
 
@@ -2863,7 +2883,7 @@ footer{
                 href="#cotizador"
             >
 
-                Iniciar cotización
+                Cotizar por WhatsApp
 
             </a>
 
@@ -2873,7 +2893,7 @@ footer{
                 href="#proyectos"
             >
 
-                Explorar proyectos
+                Conocer modelos
 
             </a>
 
@@ -3452,9 +3472,7 @@ footer{
 
             <p>
 
-                Presiona Vista 360°
-                para recorrer cada espacio
-                de forma interactiva.
+                Conoce nuestros modelos y solicita una propuesta. El recorrido panorámico disponible es conceptual; los demás modelos se muestran mediante fotografías.
 
             </p>
 
@@ -4750,8 +4768,8 @@ footer{
    SIN +, ESPACIOS NI GUIONES
 ========================================================== */
 
-const WHATSAPP_NUMBER =
-    "56912345678";
+const WHATSAPP_NUMBER = (window.INGEBAM_CONFIG && window.INGEBAM_CONFIG.whatsappNumber) || "";
+const WHATSAPP_READY = /^569[0-9]{8}$/.test(WHATSAPP_NUMBER);
 
 
 
@@ -5108,7 +5126,13 @@ document
             );
 
 
-            const whatsappURL =
+            if(!WHATSAPP_READY){
+  const status=document.getElementById("success");
+  status.style.display="block";
+  status.textContent="La cotización está preparada, pero falta configurar el WhatsApp Business de INGEBAM. No se enviará a un número de prueba.";
+  return;
+}
+const whatsappURL =
 
                 "https://wa.me/" +
 
@@ -5266,6 +5290,10 @@ function(
     titulo,
     descripcion
 ){
+  if(imagen === "assets/tour360-villarrica.jpg"){
+    window.location.href = "tour-360.html";
+    return;
+  }
 
     detenerRotacion();
 
