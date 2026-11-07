@@ -6053,6 +6053,12 @@ document
 
 
 <dialog id="ingebam-gallery" aria-label="Galería de fotografías"><form method="dialog"><button class="close-gallery" aria-label="Cerrar galería">Cerrar ×</button></form><h2>Fotografías</h2><div class="ingebam-gallery-photos"></div></dialog>
+<dialog id="ingebam-copy-dialog" aria-label="Copiar consulta" style="max-width:min(620px,94vw);width:100%;padding:24px;background:#181e1a;color:#f4ede3;border:1px solid #bda479;border-radius:16px">
+<h2 style="margin:0 0 12px">Tu consulta está preparada</h2>
+<p style="color:#d3c9ba">Selecciona y copia este mensaje para enviarlo por tu canal de contacto habitual.</p>
+<textarea id="ingebam-copy-text" readonly aria-label="Texto de la consulta para copiar" style="width:100%;height:260px;border-radius:10px;padding:12px;font:inherit"></textarea>
+<button type="button" id="ingebam-copy-close" class="btn btn-primary" style="margin-top:12px">Cerrar</button>
+</dialog>
 <script defer src="catalogo.js"></script>
 
 <script defer src="experiencia-cliente.js"></script>
