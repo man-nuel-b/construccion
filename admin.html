@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src https://api.github.com; base-uri 'self'; form-action 'none'; object-src 'none'">
+<title>INGEBAM · Panel de modelos</title>
+<style>
+:root{--page:#f6f4f0;--card:#fff;--ink:#1a241f;--muted:#6d746f;--line:#e4e7e1;--accent:#c69b5b;--accent-soft:#f3e6d2;--green:#24533f;--green-soft:#edf5ef;--red:#9f3838;--red-soft:#fff1f0;--shadow:0 15px 48px rgba(17,34,25,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #d2ad72;outline-offset:2px}h1,h2,h3,p{margin-top:0}.hidden,[hidden]{display:none!important}.muted{color:var(--muted)}.small{font-size:12px}.shell{max-width:1290px;margin:0 auto;padding:27px 23px 60px}.brand{display:flex;gap:12px;align-items:center}.logo{width:48px;height:48px;display:grid;place-items:center;background:var(--ink);border-radius:15px;color:#fff;font-weight:900;letter-spacing:-.08em;font-size:19px}.logo span{color:#ddbd88}.brand-title{font-weight:900;font-size:20px;letter-spacing:.02em}.brand-caption{font-size:12px;color:var(--muted)}.topbar{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:25px}.top-actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.btn{border:1px solid transparent;display:inline-flex;justify-content:center;align-items:center;gap:8px;text-decoration:none;border-radius:11px;padding:11px 15px;font-weight:750;line-height:1.2}.btn.primary{background:var(--ink);color:#fff}.btn.gold{background:var(--accent);color:#1e251e}.btn.soft{background:#fff;border-color:var(--line);color:var(--ink)}.btn.danger{background:var(--red-soft);color:var(--red)}.btn:disabled{opacity:.45;cursor:not-allowed}.card{background:var(--card);border:1px solid var(--line);border-radius:19px;box-shadow:var(--shadow)}.login-wrap{display:grid;place-items:center;min-height:100svh;padding:22px}.login-card{width:min(100%,505px);padding:30px}.login-card .logo{margin-bottom:18px}.login-card h1{font-size:27px;line-height:1.18}.login-card p{line-height:1.55}.login-card .btn{width:100%;margin-top:8px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;font-weight:800}.field input,.field select,.field textarea,.toolbar input,.toolbar select{width:100%;border:1px solid #cfd8d0;padding:11px 12px;border-radius:11px;background:#fff;color:var(--ink)}.field textarea{min-height:112px;resize:vertical}.login-card .field{margin:18px 0 10px}.help{padding:12px 14px;background:#f8f6f0;border:1px solid #e5ded3;border-radius:12px;font-size:12px}.help a{color:#295a44;text-decoration:underline}.status{border-radius:12px;padding:10px 13px;background:var(--green-soft);color:#184b31;font-weight:650;font-size:13px}.status.error{background:var(--red-soft);color:var(--red)}.eyebrow{font-size:11px;font-weight:850;letter-spacing:.13em;text-transform:uppercase;color:#866b4b}.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:19px}.page-head h1{font-size:clamp(24px,3vw,34px);line-height:1.1;margin:5px 0 7px;letter-spacing:-.025em}.page-head p{margin:0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:0 0 22px}.stat{padding:18px}.stat .number{font-size:34px;font-weight:850;line-height:1.2;letter-spacing:-.04em}.stat .label{font-size:12px;color:var(--muted);font-weight:650}.stat .symbol{float:right;color:var(--accent);font-size:22px}.settings{padding:19px;margin-bottom:23px}.settings h2,.models-head h2{font-size:17px;margin-bottom:5px}.settings-grid{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end;max-width:730px}.settings small{display:block;margin-top:9px}.models-head{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}.toolbar{display:grid;grid-template-columns:minmax(220px,1fr) 205px 145px;gap:10px;margin-bottom:15px}.model-list{display:grid;gap:10px}.model-row{display:grid;grid-template-columns:88px minmax(180px,1.8fr) 1fr .55fr auto;gap:14px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:15px;padding:12px;box-shadow:0 3px 12px #1a241f05}.thumb{width:88px;height:78px;object-fit:cover;background:#e7ede7;border-radius:11px}.row-title{font-weight:820}.row-sub{font-size:12px;color:var(--muted);max-width:470px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pill{font-size:11px;font-weight:800;border-radius:999px;padding:5px 10px;display:inline-flex;align-items:center;gap:4px;background:#f4f5f2;color:#515852}.pill.live{background:var(--green-soft);color:var(--green)}.pill.off{background:#f3ebe6;color:#8c5d48}.row-actions{display:flex;gap:7px;align-items:center}.icon-btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 11px;font-weight:700;white-space:nowrap}.icon-btn.danger{color:var(--red)}.empty{padding:34px;text-align:center;background:#fff;border:1px dashed #d4dad2;border-radius:15px;color:var(--muted)}.footer-note{font-size:12px;color:var(--muted);margin-top:20px}
+dialog{border:0;padding:0;background:transparent;max-width:min(920px,calc(100vw - 26px));width:100%;max-height:94vh}dialog::backdrop{background:rgba(6,18,12,.68);backdrop-filter:blur(5px)}.modal-card{background:#fff;border-radius:19px;padding:23px;max-height:94vh;overflow:auto}.modal-head{display:flex;gap:16px;align-items:start;justify-content:space-between;margin-bottom:15px}.modal-head h2{margin-bottom:5px;font-size:23px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}.checkline{display:flex;align-items:center;gap:9px;padding:12px;background:#f7f8f5;border-radius:11px}.checkline input{width:18px;height:18px}.drop{background:#f8f9f6;border:1px dashed #cdd6ca;border-radius:13px;padding:14px}.drop input[type=file]{margin-top:10px;max-width:100%;font-size:12px}.photo-preview{width:min(250px,100%);max-height:170px;object-fit:cover;border-radius:12px;border:1px solid var(--line);margin-top:9px}.thumb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:10px;margin-top:12px}.thumb-item{border:1px solid var(--line);border-radius:12px;padding:8px;overflow:hidden}.thumb-item img{width:100%;aspect-ratio:1.3;object-fit:cover;border-radius:8px}.thumb-item button{width:100%;margin-top:7px;background:#fff;border:1px solid #e4c4c1;color:var(--red);border-radius:8px;padding:6px}.modal-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:9px;position:sticky;bottom:-23px;background:linear-gradient(transparent,#fff 15%);padding:24px 0 4px;margin-top:8px}.toast{position:fixed;bottom:22px;right:20px;z-index:100;padding:13px 16px;background:var(--ink);color:#fff;border-radius:12px;max-width:min(90vw,450px);box-shadow:var(--shadow)}.toast.error{background:var(--red)}.busy{opacity:.55;pointer-events:none}.section-caption{font-size:12px;color:var(--muted);margin:2px 0 10px}.inline-note{font-size:12px;padding:9px 11px;background:#fff8eb;border:1px solid #ebdcb9;border-radius:9px;color:#795e33;margin:10px 0}
+@media(max-width:980px){.model-row{grid-template-columns:80px 1fr auto}.model-row .row-category,.model-row .row-surface{display:none}.thumb{width:80px;height:74px}.toolbar{grid-template-columns:1fr 170px 135px}}@media(max-width:650px){.shell{padding:16px 14px 45px}.topbar{align-items:start}.top-actions{justify-content:flex-end}.page-head{align-items:start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.model-row{grid-template-columns:65px 1fr;gap:10px}.model-row .row-actions{grid-column:1/-1;justify-content:flex-end}.thumb{width:65px;height:68px}.toolbar,.settings-grid,.form-grid{grid-template-columns:1fr}.modal-card{padding:17px}dialog{max-height:96vh}.models-head{align-items:start;flex-direction:column}.settings .btn{width:100%}}
+</style>
+<script src="./admin.js" defer></script>
+</head>
+<body>
+<main id="login-view" class="login-wrap">
+  <section class="login-card card">
+    <div class="logo" aria-hidden="true">IN<span>B</span></div>
+    <div class="eyebrow">Panel privado · INGEBAM</div>
+    <h1>Gestiona tus modelos desde un solo lugar.</h1>
+    <p class="muted">Un panel como el de TIMELESS, adaptado a Tiny Houses, oficinas, baños y módulos comerciales.</p>
+    <div class="field">
+      <label for="token">Acceso de GitHub</label>
+      <input id="token" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Token con permiso solo para INGEBAM">
+    </div>
+    <button type="button" id="login" class="btn primary">Entrar al panel</button>
+    <div class="help" style="margin-top:15px">
+      <strong>Acceso seguro:</strong> utiliza un token de acceso específico para el repositorio <code>man-nuel-b/construccion</code> con permiso <strong>Contents: Read and write</strong>. Se mantiene solo durante esta sesión, no se guarda en el navegador ni se sube al repositorio.
+      <div style="margin-top:8px"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Crear token en GitHub</a> · <a href="https://app.pagescms.org/" target="_blank" rel="noopener noreferrer">Usar Pages CMS en su lugar</a></div>
+    </div>
+    <p id="login-error" class="status error hidden" role="alert" style="margin-top:12px"></p>
+  </section>
+</main>
+
+<main id="app-view" class="shell hidden">
+  <header class="topbar">
+    <div class="brand"><div class="logo" aria-hidden="true">IN<span>B</span></div><div><div class="brand-title">INGEBAM</div><div class="brand-caption">Gestión de catálogo · <span id="admin-user">GitHub</span></div></div></div>
+    <div class="top-actions"><a class="btn soft" href="./index.html" target="_blank" rel="noopener">Ver página web ↗</a><button type="button" id="refresh" class="btn soft">Actualizar</button><button type="button" id="logout" class="btn soft">Salir</button></div>
+  </header>
+  <div class="page-head"><div><div class="eyebrow">Administración comercial</div><h1>Catálogo de modelos</h1><p class="muted">Publica nuevas construcciones, sube fotografías y administra tus recorridos 360°.</p></div><button type="button" id="new-model" class="btn gold">＋ Agregar modelo</button></div>
+  <section class="stats" aria-label="Resumen del catálogo">
+    <div class="stat card"><span class="symbol">▣</span><div class="label">Modelos</div><div id="stat-total" class="number">—</div></div>
+    <div class="stat card"><span class="symbol">●</span><div class="label">Publicados</div><div id="stat-live" class="number">—</div></div>
+    <div class="stat card"><span class="symbol">▧</span><div class="label">Fotografías</div><div id="stat-images" class="number">—</div></div>
+    <div class="stat card"><span class="symbol">◎</span><div class="label">Recorridos 360°</div><div id="stat-360" class="number">—</div></div>
+  </section>
+  <section class="settings card">
+    <h2>WhatsApp comercial</h2><p class="section-caption">Define dónde llegarán las consultas desde INGEBAM. El número se guarda en la configuración pública de la web, nunca como una credencial.</p>
+    <div class="settings-grid"><div class="field"><label for="whatsapp">Número chileno con código país</label><input id="whatsapp" inputmode="numeric" autocomplete="off" placeholder="569XXXXXXXX"></div><button type="button" id="save-whatsapp" class="btn primary">Guardar WhatsApp</button></div>
+    <small id="whatsapp-status" class="muted">Sin verificar.</small>
+  </section>
+  <section aria-labelledby="models-title">
+    <div class="models-head"><div><h2 id="models-title">Todos los modelos</h2><p class="section-caption">Los cambios publicados se reflejan en el catálogo tras la actualización de GitHub Pages.</p></div><a class="btn soft" href="https://app.pagescms.org/" target="_blank" rel="noopener noreferrer">Alternativa: Pages CMS ↗</a></div>
+    <div class="toolbar"><input id="search" placeholder="Buscar por modelo o comuna" aria-label="Buscar modelos"><select id="category-filter" aria-label="Filtrar por categoría"><option value="all">Todas las categorías</option><option value="tiny">Tiny Houses</option><option value="oficina">Oficinas</option><option value="banos">Baterías de baños</option><option value="comercial">Comerciales</option></select><select id="status-filter" aria-label="Filtrar por estado"><option value="all">Todos</option><option value="live">Publicados</option><option value="draft">Borradores</option></select></div>
+    <p id="dashboard-error" class="status error hidden" role="alert"></p>
+    <div id="model-list" class="model-list" aria-live="polite"></div>
+  </section>
+  <p class="footer-note">Administrador INGEBAM · Almacena modelos e imágenes en GitHub, sin servidor ni base de datos extra. No se registra información privada de clientes en este panel.</p>
+</main>
+
+<dialog id="editor" aria-labelledby="editor-title">
+  <div class="modal-card">
+    <div class="modal-head"><div><div class="eyebrow">Ficha de proyecto</div><h2 id="editor-title">Nuevo modelo</h2><p class="section-caption">Completa la información que verán tus clientes.</p></div><button type="button" id="close-editor" class="btn soft" aria-label="Cerrar editor">✕</button></div>
+    <form id="model-form">
+      <div class="form-grid">
+        <div class="field"><label for="name">Nombre del modelo *</label><input id="name" maxlength="110" required placeholder="Ej.: Tiny House Arco"></div>
+        <div class="field"><label for="type">Categoría *</label><select id="type" required><option value="tiny">Tiny House</option><option value="oficina">Oficina modular</option><option value="banos">Batería de baños</option><option value="comercial">Local comercial</option></select></div>
+        <div class="field"><label for="location">Comuna o referencia</label><input id="location" maxlength="100" placeholder="Ej.: Temuco"></div>
+        <div class="field"><label for="surface">Superficie</label><input id="surface" maxlength="40" placeholder="Ej.: 24 m²"></div>
+        <div class="field full"><label for="description">Descripción comercial *</label><textarea id="description" maxlength="900" required placeholder="Describe sus ventajas, usos, diseño y terminaciones disponibles."></textarea></div>
+        <div class="field full"><label class="checkline"><input type="checkbox" id="published" checked> Publicar este modelo en la página INGEBAM</label></div>
+        <div class="drop">
+          <strong>Fotografía de portada *</strong><div class="section-caption">JPG, PNG o WEBP · hasta 8 MB</div>
+          <input id="main-photo" type="file" accept="image/jpeg,image/png,image/webp">
+          <p id="main-path" class="small muted"></p><img id="main-preview" class="photo-preview hidden" alt="Vista previa de portada">
+          <button type="button" id="remove-main" class="btn soft hidden" style="margin-top:7px">Quitar fotografía</button>
+        </div>
+        <div class="drop">
+          <strong>Recorrido 360° (opcional)</strong><div class="section-caption">Imagen equirectangular 2:1, no fotografía común</div>
+          <input id="pano-photo" type="file" accept="image/jpeg,image/png,image/webp">
+          <p id="pano-path" class="small muted"></p><img id="pano-preview" class="photo-preview hidden" alt="Vista previa panorámica">
+          <button type="button" id="remove-pano" class="btn soft hidden" style="margin-top:7px">Quitar panorámica</button>
+        </div>
+        <div class="drop full">
+          <strong>Galería adicional</strong><div class="section-caption">Hasta 12 imágenes por modelo, máximo 8 MB cada una.</div>
+          <input id="gallery-photos" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+          <div id="gallery-preview" class="thumb-grid"></div>
+        </div>
+      </div>
+      <p id="save-error" class="status error hidden" role="alert"></p>
+      <div class="inline-note">Los cambios se guardan directamente en GitHub. Si la página pública aún no cambia, espera la publicación automática o actualiza el navegador.</div>
+      <div class="modal-actions"><button id="cancel-editor" class="btn soft" type="button">Cancelar</button><button id="save-model" class="btn primary" type="submit">Guardar modelo</button></div>
+    </form>
+  </div>
+</dialog>
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+</body></html>
