@@ -1,0 +1,46 @@
+[
+  {
+    "nombre": "Modelo Villarrica Panorama",
+    "tipo": "tiny",
+    "ubicacion": "Villarrica",
+    "superficie": "24 m²",
+    "descripcion": "Diseño contemporáneo con grandes ventanales, terraza y conexión con el paisaje.",
+    "imagen": "imagenes/villarrica.png",
+    "galeria": [],
+    "panorama": "assets/tour360-villarrica.jpg",
+    "publicado": true
+  },
+  {
+    "nombre": "Refugio Llaima",
+    "tipo": "tiny",
+    "ubicacion": "La Araucanía",
+    "superficie": "28 m²",
+    "descripcion": "Modelo compacto de arquitectura modular para disfrutar del entorno natural.",
+    "imagen": "imagenes/tiny-house-2.jpg",
+    "galeria": [],
+    "panorama": "",
+    "publicado": true
+  },
+  {
+    "nombre": "Módulo gastronómico y cafetería",
+    "tipo": "comercial",
+    "ubicacion": "Pucón",
+    "superficie": "30 m²",
+    "descripcion": "Propuesta modular para cafetería con área de atención y espacios adaptables.",
+    "imagen": "imagenes/local-1.jpg",
+    "galeria": [],
+    "panorama": "",
+    "publicado": true
+  },
+  {
+    "nombre": "Store Retail y Showroom",
+    "tipo": "comercial",
+    "ubicacion": "La Araucanía",
+    "superficie": "28 m²",
+    "descripcion": "Espacio comercial modular adaptable a tienda, exhibición o punto de venta.",
+    "imagen": "imagenes/local-2.jpg",
+    "galeria": [],
+    "panorama": "",
+    "publicado": true
+  }
+]

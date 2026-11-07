@@ -9,5 +9,12 @@
 <div class="note">Imagen panorámica de presentación · No equivale a un modelo constructivo 3D verificado. Arrastra para mirar alrededor, amplía con la rueda o los controles.</div>
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <script>
-(function(){var ok=false;try{if(window.pannellum){pannellum.viewer('pano',{type:'equirectangular',panorama:'./assets/tour360-villarrica.jpg',autoLoad:true,showZoomCtrl:true,showFullscreenCtrl:true,autoRotate:-1.5,compass:false,mouseZoom:true,hfov:100,friction:.2});ok=true;}}catch(e){console.warn('Visor 360:',e)}if(!ok){document.getElementById('fallback').style.display='flex';document.getElementById('pano').style.display='none';}})();
+(function(){
+var qs=new URLSearchParams(location.search),requested=qs.get('imagen')||'./assets/tour360-villarrica.jpg',title=(qs.get('modelo')||'Modelo Villarrica').slice(0,120);
+var safe=/^(\.\/|\/construccion\/)(?!.*\.\.)(?:[a-zA-Z0-9_\-\/%.]+)\.(?:jpg|jpeg|png|webp)$/i.test(requested);
+var picture=safe?requested:'./assets/tour360-villarrica.jpg';
+document.title='Recorrido panorámico · '+title+' | INGEBAM';
+document.querySelector('.brand small').textContent='/ '+title;
+document.querySelector('#fallback img').src=picture;
+var ok=false;try{if(window.pannellum){pannellum.viewer('pano',{type:'equirectangular',panorama:picture,autoLoad:true,showZoomCtrl:true,showFullscreenCtrl:true,autoRotate:-1.5,compass:false,mouseZoom:true,hfov:100,friction:.2});ok=true;}}catch(e){console.warn('Visor 360:',e)}if(!ok){document.getElementById('fallback').style.display='flex';document.getElementById('pano').style.display='none';}})();
 </script></body></html>

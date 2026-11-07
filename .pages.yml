@@ -1,0 +1,67 @@
+# INGEBAM: catálogo administrable sin editar HTML
+# Inicia sesión en https://app.pagescms.org con la cuenta GitHub con permisos al repositorio.
+media:
+  input: media
+  output: /construccion/media
+  rename: safe
+
+content:
+  - name: catalogo
+    label: Catálogo de modelos INGEBAM
+    type: file
+    path: data/modelos.json
+    format: json
+    list: true
+    fields:
+      - name: nombre
+        label: Nombre comercial del modelo
+        type: string
+        required: true
+      - name: tipo
+        label: Categoría
+        type: select
+        required: true
+        options:
+          values:
+            - name: tiny
+              label: Tiny House
+            - name: oficina
+              label: Oficina modular
+            - name: banos
+              label: Batería de baños
+            - name: comercial
+              label: Local o módulo comercial
+      - name: ubicacion
+        label: Ubicación o referencia (opcional)
+        type: string
+      - name: superficie
+        label: Superficie (opcional, ejemplo 24 m²)
+        type: string
+      - name: descripcion
+        label: Descripción del modelo
+        type: text
+        required: true
+      - name: imagen
+        label: Fotografía principal
+        type: image
+        required: true
+        description: Sube una imagen horizontal (recomendado JPG o WebP) o selecciona una imagen del repositorio.
+        options:
+          extensions: [jpg, jpeg, png, webp]
+      - name: galeria
+        label: Galería adicional (opcional)
+        type: image
+        description: Se muestran al presionar «Ver fotografías».
+        options:
+          multiple:
+            max: 12
+          extensions: [jpg, jpeg, png, webp]
+      - name: panorama
+        label: Panorámica 360° (opcional)
+        type: image
+        description: Solo imágenes panorámicas esféricas equirectangulares de proporción 2:1. Una fotografía normal no genera un recorrido 360°.
+        options:
+          extensions: [jpg, jpeg, png, webp]
+      - name: publicado
+        label: Mostrar modelo en la web
+        type: boolean
