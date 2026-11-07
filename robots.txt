@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://man-nuel-b.github.io/construccion/sitemap.xml
