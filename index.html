@@ -2805,6 +2805,45 @@ html{scroll-padding-top:105px}
 }
 @media(prefers-reduced-motion:reduce){.quick-choice{transition:none}}
 
+
+/* Asistente de cotización para clientes sin experiencia técnica */
+.quote-wizard{display:grid;gap:16px;min-width:0}
+.wizard-progress-wrap{padding:2px 0 8px}
+.wizard-counter{color:var(--gold);font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin:0 0 11px}
+.wizard-progress{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.wizard-progress li{min-width:0}
+.wizard-progress button{width:100%;border:1px solid #ffffff30;border-radius:11px;background:#ffffff07;color:#a9ada7;padding:10px 5px;display:flex;justify-content:center;align-items:center;gap:7px;min-height:48px;font-size:.74rem}
+.wizard-progress button span{display:inline-grid;place-items:center;border:1px solid currentColor;border-radius:50%;width:23px;height:23px;flex-shrink:0;font-size:.72rem}
+.wizard-progress button[aria-current="step"]{border-color:#c8a06f;background:#c8a06f21;color:#f2d7a9}
+.wizard-progress button.completed{border-color:#8da99580;color:#cae0cb}
+.wizard-progress button:disabled{cursor:default;opacity:.58}
+.wizard-panel[hidden],.wizard-actions button[hidden]{display:none!important}
+.wizard-panel h3{font-size:clamp(1.3rem,2.8vw,1.75rem);margin:8px 0 6px}
+.wizard-panel h3:focus{outline:none}
+.wizard-hint{font-size:.9rem;color:#b9b7af;margin:0 0 17px}
+.wizard-type-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+.wizard-type-grid button{min-height:72px;border-radius:13px;border:1px solid #ffffff29;background:#ffffff08;color:#e5e5df;padding:12px 15px;text-align:left;display:flex;align-items:center;gap:9px;font-size:.94rem;font-weight:650}
+.wizard-type-grid button span{color:#d3af75;font-size:1.35rem}
+.wizard-type-grid button.selected{border-color:#c8a06f;background:#c8a06f1e}
+.wizard-fields{margin:14px 0}
+.wizard-extras{border:1px solid #ffffff30;padding:16px;border-radius:13px;margin:17px 0}
+.wizard-extras legend{font-weight:750;font-size:.92rem;padding:0 7px}
+.wizard-extras small{color:#b8b5ab;font-weight:400}
+.wizard-extra-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.wizard-extra{display:flex;gap:8px;align-items:center;padding:11px;background:#ffffff0b;border:1px solid #ffffff20;border-radius:10px;cursor:pointer;font-size:.84rem}
+.wizard-extra input{width:17px;height:17px;accent-color:#c8a06f}
+.wizard-actions{display:flex;justify-content:space-between;gap:10px;margin-top:10px}
+.wizard-actions button{min-height:46px}
+.wizard-actions #wizardNext{margin-left:auto;min-width:175px}
+.wizard-live{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.wizard-privacy{font-size:.78rem;color:#b9b6aa;line-height:1.6}
+.wizard-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:16px 0}
+.wizard-summary-grid>div{min-width:0;border:1px solid #ffffff25;border-radius:10px;padding:12px;background:#ffffff08;overflow-wrap:anywhere}
+.wizard-summary dt{color:#aaa99f;font-size:.74rem;margin:0 0 4px}
+.wizard-summary dd{font-weight:680;font-size:.9rem;margin:0}
+.wizard-submit{width:100%;min-height:50px}
+@media(max-width:620px){.wizard-progress button{flex-direction:column;gap:3px;padding:7px 2px;font-size:.64rem;min-height:58px}.wizard-type-grid{gap:8px}.wizard-type-grid button{padding:10px;font-size:.83rem;min-height:74px}.wizard-extra-grid,.wizard-summary-grid{grid-template-columns:1fr}.wizard-actions{flex-wrap:wrap}.wizard-actions button{flex:1;white-space:nowrap}}
+
 </style>
 
 <script src="config.js"></script>
@@ -5161,6 +5200,11 @@ document
                     details ||
                     "Sin detalles adicionales"
                 ),
+                "• Uso del espacio: " + (document.getElementById("wizardUsage")?.value || "Por definir"),
+                "• Medidas aproximadas: " + (document.getElementById("wizardSize")?.value?.trim() || "Por definir"),
+                "• Modificaciones que me interesan: " + (
+                  [...document.querySelectorAll('input[name="wizardExtra"]:checked')].map(x=>x.value).join(", ") || "Por definir"
+                ),
 
                 "",
 
@@ -6062,6 +6106,7 @@ document
 <script defer src="catalogo.js"></script>
 
 <script defer src="experiencia-cliente.js"></script>
+<script defer src="asistente-cotizacion.js"></script>
 
 </body>
 
