@@ -17,30 +17,12 @@ dialog{border:0;padding:0;background:transparent;max-width:min(920px,calc(100vw 
 <script src="./admin.js" defer></script>
 </head>
 <body>
-<main id="login-view" class="login-wrap">
-  <section class="login-card card">
-    <div class="logo" aria-hidden="true">IN<span>B</span></div>
-    <div class="eyebrow">Panel privado · INGEBAM</div>
-    <h1>Gestiona tus modelos desde un solo lugar.</h1>
-    <p class="muted">Administra los proyectos de construcción modular y el catálogo de INGEBAM. Los cambios se publican desde GitHub.</p>
-    <div class="field">
-      <label for="token">Acceso de GitHub</label>
-      <input id="token" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Token con permiso solo para INGEBAM">
-    </div>
-    <button type="button" id="login" class="btn primary">Entrar al panel</button>
-    <div class="help" style="margin-top:15px">
-      <strong>Acceso seguro:</strong> utiliza un token de acceso específico para el repositorio <code>man-nuel-b/construccion</code> con permiso <strong>Contents: Read and write</strong>. Se mantiene solo durante esta sesión, no se guarda en el navegador ni se sube al repositorio.
-      <div style="margin-top:8px"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Crear token en GitHub</a> · <a href="https://app.pagescms.org/" target="_blank" rel="noopener noreferrer">Usar Pages CMS en su lugar</a></div>
-    </div>
-    <p id="login-error" class="status error hidden" role="alert" style="margin-top:12px"></p>
-  </section>
-</main>
-
-<main id="app-view" class="shell hidden">
+<main id="app-view" class="shell">
   <header class="topbar">
-    <div class="brand"><div class="logo" aria-hidden="true">IN<span>B</span></div><div><div class="brand-title">INGEBAM</div><div class="brand-caption">Gestión de catálogo · <span id="admin-user">GitHub</span></div></div></div>
-    <div class="top-actions"><a class="btn soft" href="./index.html" target="_blank" rel="noopener">Ver página web ↗</a><button type="button" id="refresh" class="btn soft">Actualizar</button><button type="button" id="export-catalog" class="btn soft">Descargar respaldo</button><button type="button" id="logout" class="btn soft">Salir</button></div>
+    <div class="brand"><div class="logo" aria-hidden="true">IN<span>B</span></div><div><div class="brand-title">INGEBAM</div><div class="brand-caption">Gestión de catálogo · <span id="admin-user">Vista pública</span></div></div></div>
+    <div class="top-actions"><a class="btn soft" href="./index.html" target="_blank" rel="noopener">Ver página web ↗</a><button type="button" id="refresh" class="btn soft">Actualizar</button><button type="button" id="export-catalog" class="btn soft">Descargar respaldo</button><button type="button" id="logout" class="btn soft hidden">Desactivar edición</button></div>
   </header>
+  <section class="settings card" id="edit-access"><h2>Panel sin inicio de sesión</h2><p class="section-caption">Puedes revisar el catálogo sin ingresar. Para guardar cambios en GitHub, habilita la edición con un token del repositorio. No se almacena ni se publica el token.</p><div class="settings-grid"><div class="field"><label for="token">Token de edición (solo cuando necesites modificar)</label><input id="token" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Token GitHub para guardar cambios"></div><button type="button" id="login" class="btn primary">Habilitar edición</button></div><p id="login-error" class="status error hidden" role="alert" style="margin-top:12px"></p></section>
   <div class="page-head"><div><div class="eyebrow">Administración comercial</div><h1>Catálogo de modelos</h1><p class="muted">Publica nuevas construcciones, sube fotografías y administra tus recorridos 360°.</p></div><button type="button" id="new-model" class="btn gold">＋ Agregar modelo</button></div>
   <section class="stats" aria-label="Resumen del catálogo">
     <div class="stat card"><span class="symbol">▣</span><div class="label">Modelos</div><div id="stat-total" class="number">—</div></div>
