@@ -22,7 +22,7 @@ dialog{border:0;padding:0;background:transparent;max-width:min(920px,calc(100vw 
     <div class="logo" aria-hidden="true">IN<span>B</span></div>
     <div class="eyebrow">Panel privado · INGEBAM</div>
     <h1>Gestiona tus modelos desde un solo lugar.</h1>
-    <p class="muted">Un panel como el de TIMELESS, adaptado a Tiny Houses, oficinas, baños y módulos comerciales.</p>
+    <p class="muted">Administra los proyectos de construcción modular y el catálogo de INGEBAM. Los cambios se publican desde GitHub.</p>
     <div class="field">
       <label for="token">Acceso de GitHub</label>
       <input id="token" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Token con permiso solo para INGEBAM">
@@ -39,7 +39,7 @@ dialog{border:0;padding:0;background:transparent;max-width:min(920px,calc(100vw 
 <main id="app-view" class="shell hidden">
   <header class="topbar">
     <div class="brand"><div class="logo" aria-hidden="true">IN<span>B</span></div><div><div class="brand-title">INGEBAM</div><div class="brand-caption">Gestión de catálogo · <span id="admin-user">GitHub</span></div></div></div>
-    <div class="top-actions"><a class="btn soft" href="./index.html" target="_blank" rel="noopener">Ver página web ↗</a><button type="button" id="refresh" class="btn soft">Actualizar</button><button type="button" id="logout" class="btn soft">Salir</button></div>
+    <div class="top-actions"><a class="btn soft" href="./index.html" target="_blank" rel="noopener">Ver página web ↗</a><button type="button" id="refresh" class="btn soft">Actualizar</button><button type="button" id="export-catalog" class="btn soft">Descargar respaldo</button><button type="button" id="logout" class="btn soft">Salir</button></div>
   </header>
   <div class="page-head"><div><div class="eyebrow">Administración comercial</div><h1>Catálogo de modelos</h1><p class="muted">Publica nuevas construcciones, sube fotografías y administra tus recorridos 360°.</p></div><button type="button" id="new-model" class="btn gold">＋ Agregar modelo</button></div>
   <section class="stats" aria-label="Resumen del catálogo">
@@ -54,12 +54,12 @@ dialog{border:0;padding:0;background:transparent;max-width:min(920px,calc(100vw 
     <small id="whatsapp-status" class="muted">Sin verificar.</small>
   </section>
   <section aria-labelledby="models-title">
-    <div class="models-head"><div><h2 id="models-title">Todos los modelos</h2><p class="section-caption">Los cambios publicados se reflejan en el catálogo tras la actualización de GitHub Pages.</p></div><a class="btn soft" href="https://app.pagescms.org/" target="_blank" rel="noopener noreferrer">Alternativa: Pages CMS ↗</a></div>
-    <div class="toolbar"><input id="search" placeholder="Buscar por modelo o comuna" aria-label="Buscar modelos"><select id="category-filter" aria-label="Filtrar por categoría"><option value="all">Todas las categorías</option><option value="tiny">Tiny Houses</option><option value="oficina">Oficinas</option><option value="banos">Baterías de baños</option><option value="comercial">Comerciales</option></select><select id="status-filter" aria-label="Filtrar por estado"><option value="all">Todos</option><option value="live">Publicados</option><option value="draft">Borradores</option></select></div>
+    <div class="models-head"><div><h2 id="models-title">Todos los modelos</h2><p class="section-caption">Puedes editar, duplicar, ocultar o volver a publicar cada modelo. Los cambios se reflejan tras la publicación de GitHub Pages.</p></div><a class="btn soft" href="https://app.pagescms.org/" target="_blank" rel="noopener noreferrer">Alternativa: Pages CMS ↗</a></div>
+    <div class="toolbar"><input id="search" placeholder="Buscar por modelo o comuna" aria-label="Buscar modelos"><select id="category-filter" aria-label="Filtrar por categoría"><option value="all">Todas las categorías</option><option value="tiny">Tiny Houses</option><option value="oficina">Oficinas</option><option value="banos">Baterías de baños</option><option value="comercial">Comerciales</option></select><select id="status-filter" aria-label="Filtrar por estado"><option value="all">Todos</option><option value="live">Publicados</option><option value="draft">Ocultos / borradores</option></select></div>
     <p id="dashboard-error" class="status error hidden" role="alert"></p>
     <div id="model-list" class="model-list" aria-live="polite"></div>
   </section>
-  <p class="footer-note">Administrador INGEBAM · Almacena modelos e imágenes en GitHub, sin servidor ni base de datos extra. No se registra información privada de clientes en este panel.</p>
+  <p class="footer-note">Nunca compartas tu token de GitHub. Descarga respaldos del catálogo periódicamente. · Administrador INGEBAM · Almacena modelos e imágenes en GitHub, sin servidor ni base de datos extra. No se registra información privada de clientes en este panel.</p>
 </main>
 
 <dialog id="editor" aria-labelledby="editor-title">
