@@ -2876,6 +2876,13 @@ html{scroll-padding-top:105px}
 @media(max-width:950px){.fitout-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fitout-next{flex-direction:column;align-items:flex-start}}
 @media(max-width:620px){.fitout-grid{grid-template-columns:1fr}.fitout-next{padding:22px}.fitout-next .btn{width:100%;white-space:normal;justify-content:center}}
 
+
+.wizard-fitout-choice{grid-column:1/-1;border-color:#c8a06f75!important}
+.wizard-fitout-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;grid-column:1/-1}
+.wizard-fitout-tip{grid-column:1/-1;color:#d2c2a6;font-size:.86rem;margin:5px 0}
+.wizard-fields>[hidden],.wizard-fitout-fields[hidden],.wizard-fitout-tip[hidden]{display:none!important}
+@media(max-width:620px){.wizard-fitout-fields{grid-template-columns:1fr}}
+
 </style>
 
 <script src="config.js"></script>
@@ -2928,7 +2935,7 @@ html{scroll-padding-top:105px}
             </a>
 
             <a href="#proyectos">
-                Proyectos
+                Modelos
             </a>
 
             <a href="#proceso">
@@ -5243,8 +5250,7 @@ document
                 "• Tipo: " +
                 selectedType,
 
-                "• Modelo: " +
-                (model.value || "Aún no definido"),
+                ...(type.value==="habilitacion" ? [] : ["• Modelo: " + (model.value || "Aún no definido")]),
 
                 "• Ubicación: " +
                 location,
@@ -5263,9 +5269,16 @@ document
                     details ||
                     "Sin detalles adicionales"
                 ),
-                "• Uso del espacio: " + (document.getElementById("wizardUsage")?.value || "Por definir"),
-                "• Medidas aproximadas: " + (document.getElementById("wizardSize")?.value?.trim() || "Por definir"),
-                "• Modificaciones que me interesan: " + (
+                ...(type.value==="habilitacion" ? [
+                  "• Rubro comercial: " + (document.getElementById("fitoutRubro")?.value || "Por definir"),
+                  "• Estado actual del local: " + (document.getElementById("fitoutEstado")?.value || "Por definir"),
+                  "• Superficie aproximada: " + (document.getElementById("fitoutSuperficie")?.value?.trim() || "Por definir"),
+                  "• Apertura esperada: " + (document.getElementById("fitoutApertura")?.value || "Por definir")
+                ] : [
+                  "• Uso del espacio: " + (document.getElementById("wizardUsage")?.value || "Por definir"),
+                  "• Medidas aproximadas: " + (document.getElementById("wizardSize")?.value?.trim() || "Por definir")
+                ]),
+                "• Necesidades o modificaciones: " + (
                   [...document.querySelectorAll('input[name="wizardExtra"]:checked')].map(x=>x.value).join(", ") || "Por definir"
                 ),
 
