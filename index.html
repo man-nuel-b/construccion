@@ -2883,6 +2883,7 @@ html{scroll-padding-top:105px}
 .wizard-fields>[hidden],.wizard-fitout-fields[hidden],.wizard-fitout-tip[hidden]{display:none!important}
 @media(max-width:620px){.wizard-fitout-fields{grid-template-columns:1fr}}
 
+.fitout-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.fitout-actions .btn{white-space:nowrap}@media(max-width:620px){.fitout-actions{width:100%}.fitout-actions .btn{width:100%;white-space:normal}}
 </style>
 
 <script src="config.js"></script>
@@ -3117,7 +3118,7 @@ html{scroll-padding-top:105px}
         <h3>Transformamos tu local existente.</h3>
         <p>Proyectos de adecuación comercial a partir de las condiciones del inmueble, la actividad del negocio y sus necesidades de funcionamiento.</p>
         <ul><li>Locales, cafeterías y oficinas</li><li>Diagnóstico de estado y necesidades</li><li>Propuesta con alcance por evaluar</li></ul>
-        <div class="business-actions"><a class="btn btn-primary" href="#habilitacion-comercial" data-business-line="habilitacion">Conocer habilitación</a><a class="btn btn-ghost" href="#cotizador" data-business-line="habilitacion">Cotizar habilitación</a></div>
+        <div class="business-actions"><a class="btn btn-primary" href="habilitacion-comercial.html">Conocer habilitación</a><a class="btn btn-ghost" href="#cotizador" data-business-line="habilitacion">Cotizar habilitación</a></div>
       </article>
     </div>
   </div>
@@ -3667,7 +3668,7 @@ html{scroll-padding-top:105px}
   </div>
   <div class="fitout-next card">
    <div><h3>¿Ya tienes un local para habilitar?</h3><p>Indica qué actividad tendrá, cuántos metros cuadrados tiene y qué cambios necesitas. Puedes compartir fotografías o planos con nuestro equipo posteriormente.</p></div>
-   <a href="#cotizador" class="btn btn-primary" data-business-line="habilitacion">Evaluar mi local</a>
+   <div class="fitout-actions"><a href="#cotizador" class="btn btn-primary" data-business-line="habilitacion">Evaluar mi local</a><a href="habilitacion-comercial.html" class="btn btn-ghost">Detalles del servicio</a></div>
   </div>
   <p class="fitout-disclaimer">Los ejemplos describen necesidades de habilitación, no casos de obra verificados. Alcance, factibilidad, permisos, instalaciones y costos se determinan para cada proyecto.</p>
  </div>
