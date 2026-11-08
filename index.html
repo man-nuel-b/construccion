@@ -2886,26 +2886,24 @@ html{scroll-padding-top:105px}
 .fitout-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.fitout-actions .btn{white-space:nowrap}@media(max-width:620px){.fitout-actions{width:100%}.fitout-actions .btn{width:100%;white-space:normal}}
 </style>
 
-<script src="config.js?v=20261108-2"></script>
+<script src="config.js?v=20261108-reparado"></script>
 <script>
 (function(){
-  const image=window.INGEBAM_CONFIG&&window.INGEBAM_CONFIG.heroImage;
-  if(typeof image==="string" && /^(?:imagenes|media|assets)\/[a-zA-Z0-9_./%-]+$/.test(image) && !image.includes("..")){
-    document.documentElement.style.setProperty("--ingebam-hero-image",'url("'+image+'")');
-  } else if(typeof image==="string" && /^\/construccion\/(?:imagenes|media|assets)\/[a-zA-Z0-9_./%-]+$/.test(image) && !image.includes("..")){
-    document.documentElement.style.setProperty("--ingebam-hero-image",'url("'+image+'")');
+  var settings=window.INGEBAM_CONFIG||{};
+  var initial=settings.heroImage;
+  function applyImage(path){
+    if(typeof path!=="string" || path.includes("..") || /["'()\\]/.test(path))return;
+    var folders=["imagenes/","media/","assets/","/construccion/imagenes/","/construccion/media/","/construccion/assets/"];
+    if(folders.some(function(prefix){return path.startsWith(prefix)})){
+      document.documentElement.style.setProperty("--ingebam-hero-image",'url("'+path+'")');
+    }
   }
+  applyImage(initial);
+  fetch("./data/site.json?v=20261108-reparado",{cache:"no-store"})
+    .then(function(r){if(!r.ok)throw Error("Portada no disponible");return r.json()})
+    .then(function(data){if(data)applyImage(data.heroImage)})
+    .catch(function(){/* La imagen de respaldo permanece visible. */});
 })();
-</script>
-<script>
-fetch("./data/site.json?_=20261108",{cache:"no-store"})
-.then(function(r){if(!r.ok)throw Error("Sin configuración");return r.json()})
-.then(function(c){
- var path=c&&c.heroImage;
- var allowed=typeof path==="string" && !path.includes("..") && !/["'()\\\\]/.test(path);
- var local=allowed && (["imagenes/","media/","assets/","/construccion/imagenes/","/construccion/media/","/construccion/assets/"].some(function(prefix){return path.startsWith(prefix)}));
- if(local)document.documentElement.style.setProperty("--ingebam-hero-image",'url("'+path+'")');
-}).catch(function(){/* Mantener imagen de respaldo */});
 </script>
 </head>
 
@@ -5017,3 +5015,1197 @@ navLinks
                         .remove(
                             "open"
                         );
+
+                }
+            );
+
+        }
+    );
+
+
+
+/* ==========================================================
+   FILTROS PORTAFOLIO
+========================================================== */
+
+document
+    .querySelectorAll(
+        ".filter"
+    )
+    .forEach(
+        function(button){
+
+            button.addEventListener(
+                "click",
+                function(){
+
+                    document
+                        .querySelectorAll(
+                            ".filter"
+                        )
+                        .forEach(
+                            function(item){
+
+                                item
+                                    .classList
+                                    .remove(
+                                        "active"
+                                    );
+
+                            }
+                        );
+
+
+                    button
+                        .classList
+                        .add(
+                            "active"
+                        );
+
+
+                    const filter =
+                        button.dataset.filter;
+
+
+                    document
+                        .querySelectorAll(
+                            ".project"
+                        )
+                        .forEach(
+                            function(project){
+
+                                const visible =
+
+                                    filter ===
+                                    "todos"
+
+                                    ||
+
+                                    project
+                                        .dataset
+                                        .category ===
+                                    filter;
+
+
+                                project.style.display =
+
+                                    visible
+
+                                    ?
+
+                                    "block"
+
+                                    :
+
+                                    "none";
+
+                            }
+                        );
+
+                }
+            );
+
+        }
+    );
+
+
+
+/* ==========================================================
+   COTIZADOR
+========================================================== */
+
+const type =
+    document.getElementById(
+        "type"
+    );
+
+
+const model =
+    document.getElementById(
+        "model"
+    );
+
+
+const models = {
+    tiny:["Modelo Villarrica Panorama","Refugio Llaima","Diseño personalizado"],
+    oficina:["Proyecto personalizado"],
+    banos:["Proyecto personalizado"],
+    comercial:["Módulo gastronómico y cafetería","Store Retail y Showroom","Diseño personalizado"],
+    personalizado:["Proyecto personalizado"]
+};
+
+
+type.addEventListener(
+    "change",
+    function(){
+
+        model.innerHTML =
+            '<option value="">Selecciona</option>';
+
+
+        const options =
+            models[
+                type.value
+            ]
+            ||
+            [];
+
+
+        options.forEach(
+            function(text){
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    text;
+
+
+                option.textContent =
+                    text;
+
+
+                model.appendChild(
+                    option
+                );
+
+            }
+        );
+
+    }
+);
+
+
+
+/* ==========================================================
+   WHATSAPP
+========================================================== */
+
+document
+    .getElementById(
+        "quoteForm"
+    )
+    .addEventListener(
+        "submit",
+        function(event){
+
+            event.preventDefault();
+
+
+            if(
+                !this.reportValidity()
+            ){
+
+                return;
+
+            }
+
+
+            const name =
+
+                document
+                    .getElementById(
+                        "name"
+                    )
+                    .value
+                    .trim();
+
+
+            const phone =
+
+                document
+                    .getElementById(
+                        "phone"
+                    )
+                    .value
+                    .trim();
+
+
+            const location =
+
+                document
+                    .getElementById(
+                        "location"
+                    )
+                    .value
+                    .trim();
+
+
+            const timeframe =
+
+                document
+                    .getElementById(
+                        "timeframe"
+                    )
+                    .value;
+
+
+            const details =
+
+                document
+                    .getElementById(
+                        "details"
+                    )
+                    .value
+                    .trim();
+
+
+            const selectedType =
+                type.options[type.selectedIndex]?.text || "Proyecto sin definir";
+
+
+            const message = [
+
+                "Hola, mi nombre es " +
+                name +
+                ".",
+
+                "",
+
+                "Me interesa cotizar un proyecto con INGEBAM.",
+
+                "",
+
+                "• Tipo: " +
+                selectedType,
+
+                ...(type.value==="habilitacion" ? [] : ["• Modelo: " + (model.value || "Aún no definido")]),
+
+                "• Ubicación: " +
+                location,
+
+                "• Teléfono: " +
+                (
+                    phone ||
+                    "No indicado"
+                ),
+
+                "• Plazo estimado: " +
+                timeframe,
+
+                "• Detalles: " +
+                (
+                    details ||
+                    "Sin detalles adicionales"
+                ),
+                ...(type.value==="habilitacion" ? [
+                  "• Rubro comercial: " + (document.getElementById("fitoutRubro")?.value || "Por definir"),
+                  "• Estado actual del local: " + (document.getElementById("fitoutEstado")?.value || "Por definir"),
+                  "• Superficie aproximada: " + (document.getElementById("fitoutSuperficie")?.value?.trim() || "Por definir"),
+                  "• Apertura esperada: " + (document.getElementById("fitoutApertura")?.value || "Por definir")
+                ] : [
+                  "• Uso del espacio: " + (document.getElementById("wizardUsage")?.value || "Por definir"),
+                  "• Medidas aproximadas: " + (document.getElementById("wizardSize")?.value?.trim() || "Por definir")
+                ]),
+                "• Necesidades o modificaciones: " + (
+                  [...document.querySelectorAll('input[name="wizardExtra"]:checked')].map(x=>x.value).join(", ") || "Por definir"
+                ),
+
+                "",
+
+                "¿Podrían entregarme más información sobre el proyecto y los próximos pasos?"
+
+            ].join(
+                "\n"
+            );
+
+
+            if(!WHATSAPP_READY){
+              const status=document.getElementById("success");
+              status.style.display="block";
+              status.textContent="Tu solicitud está lista, pero el WhatsApp de INGEBAM aún no se encuentra habilitado. No podemos enviarla automáticamente.";
+              const copy=document.getElementById("copyRequest");
+              if(copy){copy.hidden=false;copy.dataset.message=message;}
+              return;
+            }
+const whatsappURL =
+
+                "https://wa.me/" +
+
+                WHATSAPP_NUMBER +
+
+                "?text=" +
+
+                encodeURIComponent(
+                    message
+                );
+
+
+            document
+                .getElementById(
+                    "success"
+                )
+                .style
+                .display =
+                "block";
+
+
+            const target=window.open(whatsappURL,"_blank","noopener,noreferrer");
+            const copy=document.getElementById("copyRequest");
+            if(copy){copy.hidden=false;copy.dataset.message=message;}
+            if(!target){
+              const status=document.getElementById("success");
+              status.textContent="Tu solicitud está preparada. Si WhatsApp no se abrió, utiliza el botón para copiar el mensaje.";
+            }
+
+        }
+    );
+
+
+
+/* ==========================================================
+   REVEAL
+========================================================== */
+
+function revealElements(){
+
+    document
+        .querySelectorAll(
+            ".reveal"
+        )
+        .forEach(
+            function(element){
+
+                const top =
+
+                    element
+                        .getBoundingClientRect()
+                        .top;
+
+
+                if(
+                    top <
+                    window.innerHeight -
+                    60
+                ){
+
+                    element
+                        .classList
+                        .add(
+                            "visible"
+                        );
+
+                }
+
+            }
+        );
+
+}
+
+
+revealElements();
+
+
+window.addEventListener(
+    "scroll",
+    revealElements,
+    {
+        passive:true
+    }
+);
+
+
+
+/* ==========================================================
+   TOUR 360 MODAL
+========================================================== */
+
+const tourModal =
+    document.getElementById(
+        "tourModal"
+    );
+
+
+const modalPanorama =
+    document.getElementById(
+        "modalPanorama"
+    );
+
+
+const modalPanoramaTrack =
+    document.getElementById(
+        "modalPanoramaTrack"
+    );
+
+
+const tourTitle =
+    document.getElementById(
+        "tourTitle"
+    );
+
+
+const modalModelName =
+    document.getElementById(
+        "modalModelName"
+    );
+
+
+let modalOffset =
+    -80;
+
+
+let modalZoom =
+    1;
+
+
+let modalDragging =
+    false;
+
+
+let modalLastX =
+    0;
+
+
+let modalAutoRotate =
+    false;
+
+
+let modalAutoFrame =
+    null;
+
+
+
+/* ==========================================================
+   ABRIR TOUR
+
+   ESTA FUNCIÓN SE USA DESDE LOS BOTONES
+   VISTA 360°
+========================================================== */
+
+window.abrirTour360 =
+function(
+    imagen,
+    titulo,
+    descripcion
+){
+  if(imagen === "assets/tour360-villarrica.jpg"){
+    window.location.href = "tour-360.html";
+    return;
+  }
+
+    detenerRotacion();
+
+
+    modalOffset =
+        -80;
+
+
+    modalZoom =
+        1;
+
+
+    tourTitle.textContent =
+        titulo;
+
+
+    modalModelName.innerHTML =
+
+        "<strong>" +
+
+        titulo +
+
+        "</strong>" +
+
+        "<span>" +
+
+        descripcion +
+
+        "</span>";
+
+
+    modalPanoramaTrack.innerHTML =
+
+        '<img src="' +
+        imagen +
+        '" alt="' +
+        titulo +
+        '">' +
+
+        '<img src="' +
+        imagen +
+        '" alt="" aria-hidden="true">' +
+
+        '<img src="' +
+        imagen +
+        '" alt="" aria-hidden="true">';
+
+
+    tourModal
+        .classList
+        .add(
+            "open"
+        );
+
+
+    tourModal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+
+    document.body
+        .classList
+        .add(
+            "modal-open"
+        );
+
+
+    const firstImage =
+
+        modalPanoramaTrack
+            .querySelector(
+                "img"
+            );
+
+
+    if(
+        firstImage.complete
+    ){
+
+        renderTour();
+
+    }
+
+    else{
+
+        firstImage.addEventListener(
+            "load",
+            renderTour,
+            {
+                once:true
+            }
+        );
+
+    }
+
+};
+
+
+
+/* ==========================================================
+   CERRAR TOUR
+========================================================== */
+
+function cerrarTour360(){
+
+    detenerRotacion();
+
+
+    tourModal
+        .classList
+        .remove(
+            "open"
+        );
+
+
+    tourModal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+
+    document.body
+        .classList
+        .remove(
+            "modal-open"
+        );
+
+}
+
+
+document
+    .getElementById(
+        "tourClose"
+    )
+    .addEventListener(
+        "click",
+        cerrarTour360
+    );
+
+
+
+/* ==========================================================
+   ANCHO DE IMAGEN
+========================================================== */
+
+function modalImageWidth(){
+
+    const image =
+
+        modalPanoramaTrack
+            .querySelector(
+                "img"
+            );
+
+
+    if(
+        !image
+    ){
+
+        return 0;
+
+    }
+
+
+    return image
+        .getBoundingClientRect()
+        .width;
+
+}
+
+
+
+/* ==========================================================
+   LOOP INFINITO
+========================================================== */
+
+function normalizeModalOffset(){
+
+    const width =
+        modalImageWidth();
+
+
+    if(
+        !width
+    ){
+
+        return;
+
+    }
+
+
+    while(
+        modalOffset <=
+        -width * 2
+    ){
+
+        modalOffset +=
+            width;
+
+    }
+
+
+    while(
+        modalOffset >= 0
+    ){
+
+        modalOffset -=
+            width;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   RENDER DEL TOUR
+========================================================== */
+
+function renderTour(){
+
+    normalizeModalOffset();
+
+
+    modalPanoramaTrack
+        .style
+        .transform =
+
+        "translate3d(" +
+
+        modalOffset +
+
+        "px,0,0) scale(" +
+
+        modalZoom +
+
+        ")";
+
+}
+
+
+
+/* ==========================================================
+   ARRASTRAR
+========================================================== */
+
+modalPanorama.addEventListener(
+    "pointerdown",
+    function(event){
+
+        modalDragging =
+            true;
+
+
+        modalLastX =
+            event.clientX;
+
+
+        modalPanorama
+            .classList
+            .add(
+                "dragging"
+            );
+
+
+        modalPanorama
+            .setPointerCapture(
+                event.pointerId
+            );
+
+
+        detenerRotacion();
+
+    }
+);
+
+
+modalPanorama.addEventListener(
+    "pointermove",
+    function(event){
+
+        if(
+            !modalDragging
+        ){
+
+            return;
+
+        }
+
+
+        const movement =
+
+            event.clientX -
+            modalLastX;
+
+
+        modalLastX =
+            event.clientX;
+
+
+        modalOffset +=
+
+            movement /
+            modalZoom;
+
+
+        renderTour();
+
+    }
+);
+
+
+function terminarArrastre(){
+
+    modalDragging =
+        false;
+
+
+    modalPanorama
+        .classList
+        .remove(
+            "dragging"
+        );
+
+}
+
+
+modalPanorama.addEventListener(
+    "pointerup",
+    terminarArrastre
+);
+
+
+modalPanorama.addEventListener(
+    "pointercancel",
+    terminarArrastre
+);
+
+
+
+/* ==========================================================
+   ZOOM CON RUEDA
+========================================================== */
+
+modalPanorama.addEventListener(
+    "wheel",
+    function(event){
+
+        event.preventDefault();
+
+
+        if(
+            event.deltaY <
+            0
+        ){
+
+            modalZoom +=
+                .08;
+
+        }
+
+        else{
+
+            modalZoom -=
+                .08;
+
+        }
+
+
+        modalZoom =
+            Math.min(
+                1.8,
+                Math.max(
+                    1,
+                    modalZoom
+                )
+            );
+
+
+        renderTour();
+
+    },
+    {
+        passive:false
+    }
+);
+
+
+
+/* ==========================================================
+   BOTÓN ZOOM +
+========================================================== */
+
+document
+    .getElementById(
+        "modalZoomIn"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            modalZoom =
+                Math.min(
+                    1.8,
+                    modalZoom +
+                    .12
+                );
+
+
+            renderTour();
+
+        }
+    );
+
+
+
+/* ==========================================================
+   BOTÓN ZOOM -
+========================================================== */
+
+document
+    .getElementById(
+        "modalZoomOut"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            modalZoom =
+                Math.max(
+                    1,
+                    modalZoom -
+                    .12
+                );
+
+
+            renderTour();
+
+        }
+    );
+
+
+
+/* ==========================================================
+   ROTACIÓN AUTOMÁTICA
+========================================================== */
+
+function detenerRotacion(){
+
+    modalAutoRotate =
+        false;
+
+
+    document
+        .getElementById(
+            "modalAuto"
+        )
+        .classList
+        .remove(
+            "active"
+        );
+
+
+    if(
+        modalAutoFrame
+    ){
+
+        cancelAnimationFrame(
+            modalAutoFrame
+        );
+
+    }
+
+
+    modalAutoFrame =
+        null;
+
+}
+
+
+function rotarAutomaticamente(){
+
+    if(
+        !modalAutoRotate
+    ){
+
+        return;
+
+    }
+
+
+    modalOffset -=
+        .38;
+
+
+    renderTour();
+
+
+    modalAutoFrame =
+        requestAnimationFrame(
+            rotarAutomaticamente
+        );
+
+}
+
+
+document
+    .getElementById(
+        "modalAuto"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            if(
+                modalAutoRotate
+            ){
+
+                detenerRotacion();
+
+                return;
+
+            }
+
+
+            modalAutoRotate =
+                true;
+
+
+            this
+                .classList
+                .add(
+                    "active"
+                );
+
+
+            rotarAutomaticamente();
+
+        }
+    );
+
+
+
+/* ==========================================================
+   RESET
+========================================================== */
+
+document
+    .getElementById(
+        "modalReset"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            detenerRotacion();
+
+
+            modalOffset =
+                -80;
+
+
+            modalZoom =
+                1;
+
+
+            renderTour();
+
+        }
+    );
+
+
+
+/* ==========================================================
+   PANTALLA COMPLETA
+========================================================== */
+
+document
+    .getElementById(
+        "modalFullscreen"
+    )
+    .addEventListener(
+        "click",
+        async function(){
+
+            try{
+
+                if(
+                    !document
+                        .fullscreenElement
+                ){
+
+                    await modalPanorama
+                        .requestFullscreen();
+
+                }
+
+                else{
+
+                    await document
+                        .exitFullscreen();
+
+                }
+
+            }
+
+            catch(error){
+
+                console.log(
+                    "No se pudo activar pantalla completa.",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+
+
+/* ==========================================================
+   CERRAR AL HACER CLIC AFUERA
+========================================================== */
+
+tourModal.addEventListener(
+    "click",
+    function(event){
+
+        if(
+            event.target ===
+            tourModal
+        ){
+
+            cerrarTour360();
+
+        }
+
+    }
+);
+
+
+
+/* ==========================================================
+   ESCAPE
+========================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key ===
+            "Escape"
+        ){
+
+            cerrarTour360();
+
+        }
+
+    }
+);
+
+
+
+/* ==========================================================
+   RESIZE
+========================================================== */
+
+window.addEventListener(
+    "resize",
+    function(){
+
+        if(
+            tourModal
+                .classList
+                .contains(
+                    "open"
+                )
+        ){
+
+            renderTour();
+
+        }
+
+    }
+);
+
+
+
+/* ==========================================================
+   AÑO AUTOMÁTICO
+========================================================== */
+
+document
+    .getElementById(
+        "year"
+    )
+    .textContent =
+
+    new Date()
+        .getFullYear();
+
+
+})();
+
+</script>
+
+
+<dialog id="ingebam-gallery" aria-label="Galería de fotografías"><form method="dialog"><button class="close-gallery" aria-label="Cerrar galería">Cerrar ×</button></form><h2>Fotografías</h2><div class="ingebam-gallery-photos"></div></dialog>
+<dialog id="ingebam-copy-dialog" aria-label="Copiar consulta" style="max-width:min(620px,94vw);width:100%;padding:24px;background:#181e1a;color:#f4ede3;border:1px solid #bda479;border-radius:16px">
+<h2 style="margin:0 0 12px">Tu consulta está preparada</h2>
+<p style="color:#d3c9ba">Selecciona y copia este mensaje para enviarlo por tu canal de contacto habitual.</p>
+<textarea id="ingebam-copy-text" readonly aria-label="Texto de la consulta para copiar" style="width:100%;height:260px;border-radius:10px;padding:12px;font:inherit"></textarea>
+<button type="button" id="ingebam-copy-close" class="btn btn-primary" style="margin-top:12px">Cerrar</button>
+</dialog>
+<script defer src="catalogo.js"></script>
+
+<script defer src="experiencia-cliente.js"></script>
+<script defer src="asistente-cotizacion.js"></script>
+
+</body>
+
+</html>
