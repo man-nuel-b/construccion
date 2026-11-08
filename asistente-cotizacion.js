@@ -158,5 +158,10 @@ document.querySelectorAll("[data-quick-type]").forEach(b=>b.addEventListener("cl
  sync();renderExtras();
  if(type.value&&!document.querySelector('#proyectos .filter[data-filter="'+type.value+'"]'))showStep(1,false);
 }));
+if(new URLSearchParams(window.location.search).get("servicio")==="habilitacion"){
+ type.value="habilitacion";
+ type.dispatchEvent(new Event("change",{bubbles:false}));
+ model.value="";
+}
 sync();renderExtras();showStep(type.value?1:0);
 })();
