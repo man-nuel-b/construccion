@@ -7,7 +7,7 @@
   const typeSelect=document.getElementById("type"),modelSelect=document.getElementById("model");
   if(!root)return;
   const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  const categories={tiny:"Tiny Houses",oficina:"Oficinas modulares",banos:"Baterías de baños",comercial:"Locales comerciales"};
+  const categories={tiny:"Tiny Houses",oficina:"Oficinas modulares",banos:"Baterías de baños",comercial:"Módulos comerciales"};
   let data=[];
   function path(v){
     const s=String(v||"").trim();
@@ -45,6 +45,7 @@
       const previous=typeSelect.value;
       typeSelect.innerHTML='<option value="">¿Qué tipo de proyecto tienes en mente?</option>'+
         ["tiny","oficina","banos","comercial"].map(k=>'<option value="'+esc(k)+'">'+esc(categories[k])+'</option>').join("")+
+        '<option value="habilitacion">Habilitación de local comercial existente</option>'+
         '<option value="personalizado">Otro proyecto / Aún no lo sé</option>';
       if(previous&&[...typeSelect.options].some(o=>o.value===previous))typeSelect.value=previous;
       populateModel();
@@ -53,7 +54,7 @@
   function populateModel(selection){
     if(!modelSelect||!typeSelect)return;
     const matches=data.filter(m=>m.tipo===typeSelect.value);
-    modelSelect.replaceChildren(new Option("Aún no tengo un modelo definido",""));
+    modelSelect.replaceChildren(new Option(typeSelect.value==="habilitacion"?"No aplica: habilitación de espacio existente":"Aún no tengo un modelo definido",""));
     for(const m of matches)modelSelect.add(new Option(m.nombre,m.nombre));
     modelSelect.add(new Option("Diseño personalizado","Proyecto personalizado"));
     if(selection)modelSelect.value=selection;
