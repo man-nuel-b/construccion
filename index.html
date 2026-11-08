@@ -2897,6 +2897,16 @@ html{scroll-padding-top:105px}
   }
 })();
 </script>
+<script>
+fetch("./data/site.json?_=20261108",{cache:"no-store"})
+.then(function(r){if(!r.ok)throw Error("Sin configuración");return r.json()})
+.then(function(c){
+ var path=c&&c.heroImage;
+ if(typeof path==="string" && !path.includes("..") && /^(?:\\/construccion\\/)?(?:imagenes|media|assets)\\/[A-Za-z0-9_./%-]+$/.test(path)){
+   document.documentElement.style.setProperty("--ingebam-hero-image",'url("'+path+'")');
+ }
+}).catch(function(){/* Mantener la imagen de respaldo */});
+</script>
 </head>
 
 
