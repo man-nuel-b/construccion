@@ -172,16 +172,17 @@ async function saveWhatsapp(){
  await putFile("config.js",changed,configSha,"INGEBAM: cambiar WhatsApp comercial");await reload();flash("WhatsApp actualizado.");
  }catch(e){flash(e.message,true)}finally{$("save-whatsapp").disabled=false}
 }
-function ensureEdit(){if(token)return true;flash("Para guardar, habilita la edición con un token de GitHub.",true);$("token").focus();window.scrollTo({top:0,behavior:"smooth"});return false}
-$("login").addEventListener("click",login);$("token").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
-$("logout").addEventListener("click",()=>{token="";$("token").value="";$("admin-user").textContent="Vista pública";show("edit-access",true);show("logout",false);flash("Edición desactivada.")});
+function openCMS(){window.open("https://app.pagescms.org/","_blank","noopener,noreferrer");flash("Abre el editor de contenido e inicia sesión con GitHub; no necesitas copiar tokens.");}
+function ensureEdit(){openCMS();return false}
+
+
 $("refresh").addEventListener("click",()=>reload().then(()=>flash("Catálogo actualizado.")).catch(e=>flash(e.message,true)));
-$("new-model").addEventListener("click",()=>openEditor());
+$("new-model").addEventListener("click",openCMS);
 $("export-catalog").addEventListener("click",exportCatalog);
-$("save-whatsapp").addEventListener("click",()=>{if(ensureEdit())saveWhatsapp()});
+$("save-whatsapp").addEventListener("click",openCMS);
 ["search","category-filter","status-filter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",render));
 $("model-list").addEventListener("click",e=>{const b=e.target.closest("[data-action]");if(!b)return;const i=Number(b.dataset.index);if(catalogBusy||saving||!Number.isInteger(i)||!models[i])return;
- if(b.dataset.action==="edit")openEditor(i);if(b.dataset.action==="copy")openEditor(i,true);if(b.dataset.action==="toggle"&&ensureEdit())togglePublish(i);if(b.dataset.action==="delete"&&ensureEdit())del(i)});
+ openCMS()});
 $("close-editor").addEventListener("click",()=>{if(!saving)$("editor").close()});
 $("cancel-editor").addEventListener("click",()=>{if(!saving)$("editor").close()});
 $("editor").addEventListener("cancel",e=>{if(saving)e.preventDefault()});
@@ -196,8 +197,8 @@ $("remove-pano").addEventListener("click",()=>{pano="";panoFile=null;$("pano-pho
 
 async function saveHero(){
  msg("hero-error","");
- if(!heroFile)return msg("hero-error","Primero selecciona una imagen nueva.");
- if(!ensureEdit())return msg("hero-error","Puedes previsualizarla, pero necesitas habilitar la edición para publicarla en GitHub.");
+ if(!heroFile)return msg("hero-error","Para publicar la portada abre el editor de contenido de INGEBAM.");
+ openCMS();return;
  $("save-hero").disabled=true;
  try{
   const curr=await getFile("config.js");
