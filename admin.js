@@ -12,7 +12,7 @@ function bytesB64(v){let s="";for(let i=0;i<v.length;i+=32000)s+=String.fromChar
 function fromB64(s){const raw=atob(s.replace(/\s/g,""));return new TextDecoder().decode(Uint8Array.from(raw,c=>c.charCodeAt(0)))}
 function encPath(path){return path.split("/").map(encodeURIComponent).join("/")}
 async function api(url,opt={}){
- const h={Accept:"application/vnd.github+json",Authorization:"Bearer "+token,"X-GitHub-Api-Version":"2022-11-28"};
+ const h={Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"};if(token)h.Authorization="Bearer "+token;
  if(opt.body)h["Content-Type"]="application/json";
  const r=await fetch(url.startsWith("https://")?url:BASE+url,{...opt,headers:h,cache:"no-store"});
  let data={};try{data=await r.json()}catch(e){}
@@ -30,7 +30,7 @@ async function login(){
  try{const [u,repo]=await Promise.all([api("https://api.github.com/user"),api("")]);
  if(repo.full_name!=="man-nuel-b/construccion"||!repo.permissions||!repo.permissions.push)throw Error("Sin permisos de escritura en INGEBAM.");
  $("token").value="";$("admin-user").textContent=u.login||"GitHub";
- await reload();show("login-view",false);show("app-view",true);flash("Conectado a GitHub");
+ show("edit-access",false);show("logout",true);flash("Edición habilitada.");
  }catch(e){token="";msg("login-error",e.message)}finally{$("login").disabled=false}
 }
 async function reload(){
@@ -170,14 +170,15 @@ async function saveWhatsapp(){
  await putFile("config.js",changed,configSha,"INGEBAM: cambiar WhatsApp comercial");await reload();flash("WhatsApp actualizado.");
  }catch(e){flash(e.message,true)}finally{$("save-whatsapp").disabled=false}
 }
+function ensureEdit(){if(token)return true;flash("Para guardar, habilita la edición con un token de GitHub.",true);$("token").focus();window.scrollTo({top:0,behavior:"smooth"});return false}
 $("login").addEventListener("click",login);$("token").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
-$("logout").addEventListener("click",()=>{token="";models=[];$("token").value="";show("app-view",false);show("login-view",true);flash("Sesión cerrada.")});
+$("logout").addEventListener("click",()=>{token="";$("token").value="";$("admin-user").textContent="Vista pública";show("edit-access",true);show("logout",false);flash("Edición desactivada.")});
 $("refresh").addEventListener("click",()=>reload().then(()=>flash("Catálogo actualizado.")).catch(e=>flash(e.message,true)));
-$("new-model").addEventListener("click",()=>openEditor());
+$("new-model").addEventListener("click",()=>{if(ensureEdit())openEditor()});
 $("export-catalog").addEventListener("click",exportCatalog);
-$("save-whatsapp").addEventListener("click",saveWhatsapp);
+$("save-whatsapp").addEventListener("click",()=>{if(ensureEdit())saveWhatsapp()});
 ["search","category-filter","status-filter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",render));
-$("model-list").addEventListener("click",e=>{const b=e.target.closest("[data-action]");if(!b)return;const i=Number(b.dataset.index);if(catalogBusy||saving||!Number.isInteger(i)||!models[i])return;
+$("model-list").addEventListener("click",e=>{const b=e.target.closest("[data-action]");if(!b)return;const i=Number(b.dataset.index);if(catalogBusy||saving||!Number.isInteger(i)||!models[i])return;if(!ensureEdit())return;
  if(b.dataset.action==="edit")openEditor(i);if(b.dataset.action==="copy")openEditor(i,true);if(b.dataset.action==="toggle")togglePublish(i);if(b.dataset.action==="delete")del(i)});
 $("close-editor").addEventListener("click",()=>{if(!saving)$("editor").close()});
 $("cancel-editor").addEventListener("click",()=>{if(!saving)$("editor").close()});
@@ -191,4 +192,5 @@ $("gallery-preview").addEventListener("click",e=>{const b=e.target.closest("butt
 $("remove-main").addEventListener("click",()=>{cover="";coverFile=null;$("main-photo").value="";show("main-preview",false);show("remove-main",false);$("main-path").textContent="Sin portada"});
 $("remove-pano").addEventListener("click",()=>{pano="";panoFile=null;$("pano-photo").value="";show("pano-preview",false);show("remove-pano",false);$("pano-path").textContent="Sin panorámica"});
 window.addEventListener("pagehide",()=>{token=""});
+reload().catch(e=>flash("No se pudo cargar el catálogo público: "+e.message,true));
 })();
