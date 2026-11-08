@@ -2,5 +2,6 @@
 window.INGEBAM_CONFIG = Object.freeze({
   whatsappNumber: "",
   analyticsMeasurementId: "",
-  businessName: "INGEBAM"
+  businessName: "INGEBAM",
+  heroImage: "imagenes/villarrica.png"
 });
