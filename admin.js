@@ -3,7 +3,7 @@
 const OWNER="man-nuel-b",REPO="construccion",BRANCH="main",BASE="https://api.github.com/repos/man-nuel-b/construccion";
 const $=id=>document.getElementById(id);
 const CATS={tiny:"Tiny House",oficina:"Oficina modular",banos:"Batería de baños",comercial:"Local comercial"};
-let token="",models=[],dataSha="",configSha="",editing=-1,saving=false,catalogBusy=false,coverFile=null,panoFile=null,galleryFiles=[],cover="",pano="",gallery=[];
+let token="",models=[],dataSha="",configSha="",editing=-1,saving=false,catalogBusy=false,coverFile=null,panoFile=null,galleryFiles=[],cover="",pano="",gallery=[],heroFile=null,heroImage="";
 function show(id,yes){$(id).classList.toggle("hidden",!yes)}
 function msg(id,value){$(id).textContent=value||"";show(id,!!value)}
 function flash(value,err){const el=$("toast");el.textContent=value;el.classList.toggle("error",!!err);show("toast",true);clearTimeout(flash.t);flash.t=setTimeout(()=>show("toast",false),4500)}
@@ -37,6 +37,8 @@ async function reload(){
  msg("dashboard-error","");
  try{const [data,config]=await Promise.all([getFile("data/modelos.json"),getFile("config.js")]);models=JSON.parse(data.content);if(!Array.isArray(models))throw Error("Catálogo inválido.");
  dataSha=data.sha;configSha=config.sha;const m=config.content.match(/whatsappNumber\s*:\s*["']([0-9]*)["']/);
+ const match=config.content.match(/heroImage\s*:\s*["\x27]([^"\x27]*)["\x27]/);heroImage=match?match[1]:"imagenes/villarrica.png";
+ if(!heroFile){preview("hero-preview",heroImage,null);$("hero-current").textContent="Portada actual: "+heroImage}
  $("whatsapp").value=m?m[1]:"";$("whatsapp-status").textContent=m&&m[1]?"Número configurado. Verifica que recibas las consultas.":"Sin número configurado; el formulario público no enviará mensajes.";
  render()}catch(e){msg("dashboard-error",e.message);throw e}
 }
@@ -115,7 +117,7 @@ async function upload(file,name,label){
  return "/construccion/"+filePath;
 }
 async function saveModel(e){
- e.preventDefault();if(saving||catalogBusy)return;const name=$("name").value.trim(),description=$("description").value.trim();
+ e.preventDefault();if(!ensureEdit())return;if(saving||catalogBusy)return;const name=$("name").value.trim(),description=$("description").value.trim();
  if(!name||!description)return msg("save-error","Faltan nombre y descripción.");
  if(!cover&&!coverFile)return msg("save-error","Debes subir una fotografía principal.");
  if(gallery.length+galleryFiles.length>12)return msg("save-error","Máximo 12 imágenes de galería.");
@@ -174,12 +176,12 @@ function ensureEdit(){if(token)return true;flash("Para guardar, habilita la edic
 $("login").addEventListener("click",login);$("token").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
 $("logout").addEventListener("click",()=>{token="";$("token").value="";$("admin-user").textContent="Vista pública";show("edit-access",true);show("logout",false);flash("Edición desactivada.")});
 $("refresh").addEventListener("click",()=>reload().then(()=>flash("Catálogo actualizado.")).catch(e=>flash(e.message,true)));
-$("new-model").addEventListener("click",()=>{if(ensureEdit())openEditor()});
+$("new-model").addEventListener("click",()=>openEditor());
 $("export-catalog").addEventListener("click",exportCatalog);
 $("save-whatsapp").addEventListener("click",()=>{if(ensureEdit())saveWhatsapp()});
 ["search","category-filter","status-filter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",render));
-$("model-list").addEventListener("click",e=>{const b=e.target.closest("[data-action]");if(!b)return;const i=Number(b.dataset.index);if(catalogBusy||saving||!Number.isInteger(i)||!models[i])return;if(!ensureEdit())return;
- if(b.dataset.action==="edit")openEditor(i);if(b.dataset.action==="copy")openEditor(i,true);if(b.dataset.action==="toggle")togglePublish(i);if(b.dataset.action==="delete")del(i)});
+$("model-list").addEventListener("click",e=>{const b=e.target.closest("[data-action]");if(!b)return;const i=Number(b.dataset.index);if(catalogBusy||saving||!Number.isInteger(i)||!models[i])return;
+ if(b.dataset.action==="edit")openEditor(i);if(b.dataset.action==="copy")openEditor(i,true);if(b.dataset.action==="toggle"&&ensureEdit())togglePublish(i);if(b.dataset.action==="delete"&&ensureEdit())del(i)});
 $("close-editor").addEventListener("click",()=>{if(!saving)$("editor").close()});
 $("cancel-editor").addEventListener("click",()=>{if(!saving)$("editor").close()});
 $("editor").addEventListener("cancel",e=>{if(saving)e.preventDefault()});
@@ -191,6 +193,38 @@ $("gallery-photos").addEventListener("change",async e=>{const arr=[...(e.target.
 $("gallery-preview").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.removeGallery!==undefined)gallery.splice(Number(b.dataset.removeGallery),1);if(b.dataset.removeNewGallery!==undefined)galleryFiles.splice(Number(b.dataset.removeNewGallery),1);galleryView()});
 $("remove-main").addEventListener("click",()=>{cover="";coverFile=null;$("main-photo").value="";show("main-preview",false);show("remove-main",false);$("main-path").textContent="Sin portada"});
 $("remove-pano").addEventListener("click",()=>{pano="";panoFile=null;$("pano-photo").value="";show("pano-preview",false);show("remove-pano",false);$("pano-path").textContent="Sin panorámica"});
+
+async function saveHero(){
+ msg("hero-error","");
+ if(!heroFile)return msg("hero-error","Primero selecciona una imagen nueva.");
+ if(!ensureEdit())return msg("hero-error","Puedes previsualizarla, pero necesitas habilitar la edición para publicarla en GitHub.");
+ $("save-hero").disabled=true;
+ try{
+  const curr=await getFile("config.js");
+  if(curr.sha!==configSha)throw Error("La configuración cambió. Pulsa Actualizar.");
+  const ext=heroFile.type==="image/png"?"png":heroFile.type==="image/webp"?"webp":"jpg";
+  const imgPath="media/site/portada-"+Date.now().toString(36)+"."+ext;
+  await putFile(imgPath,bytesB64(new Uint8Array(await heroFile.arrayBuffer())),null,"INGEBAM: nueva imagen de portada",true);
+  const next="/construccion/"+imgPath;
+  const pattern=/heroImage\s*:\s*["'][^"']*["']/;
+  if(!pattern.test(curr.content))throw Error("No se encontró heroImage en config.js.");
+  await putFile("config.js",curr.content.replace(pattern,'heroImage: "'+next+'"'),curr.sha,"INGEBAM: actualizar imagen de portada");
+  heroFile=null;$("hero-photo").value="";
+  await reload();flash("Portada publicada. La web se actualizará al desplegar GitHub Pages.");
+ }catch(err){msg("hero-error",err.message);flash(err.message,true)}
+ finally{$("save-hero").disabled=false}
+}
+$("hero-photo").addEventListener("change",async e=>{
+ const file=e.target.files?.[0];
+ if(!file)return;
+ try{
+  await validateImage(file,false);heroFile=file;
+  preview("hero-preview","",file);
+  $("hero-current").textContent="Vista previa sin publicar: "+file.name;
+  msg("hero-error","");
+ }catch(err){heroFile=null;e.target.value="";msg("hero-error",err.message)}
+});
+$("save-hero").addEventListener("click",saveHero);
 window.addEventListener("pagehide",()=>{token=""});
 reload().catch(e=>flash("No se pudo cargar el catálogo público: "+e.message,true));
 })();
