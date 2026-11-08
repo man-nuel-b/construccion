@@ -3,7 +3,7 @@
 const OWNER="man-nuel-b",REPO="construccion",BRANCH="main",BASE="https://api.github.com/repos/man-nuel-b/construccion";
 const $=id=>document.getElementById(id);
 const CATS={tiny:"Tiny House",oficina:"Oficina modular",banos:"Batería de baños",comercial:"Local comercial"};
-let token="",models=[],dataSha="",configSha="",editing=-1,saving=false,coverFile=null,panoFile=null,galleryFiles=[],cover="",pano="",gallery=[];
+let token="",models=[],dataSha="",configSha="",editing=-1,saving=false,catalogBusy=false,coverFile=null,panoFile=null,galleryFiles=[],cover="",pano="",gallery=[];
 function show(id,yes){$(id).classList.toggle("hidden",!yes)}
 function msg(id,value){$(id).textContent=value||"";show(id,!!value)}
 function flash(value,err){const el=$("toast");el.textContent=value;el.classList.toggle("error",!!err);show("toast",true);clearTimeout(flash.t);flash.t=setTimeout(()=>show("toast",false),4500)}
@@ -67,7 +67,7 @@ function render(){
  const surface=document.createElement("div");surface.className="row-surface small muted";surface.textContent=m.superficie||"—";
  const actions=document.createElement("div");actions.className="row-actions";
  const tag=document.createElement("span");tag.className="pill "+(m.publicado===false?"off":"live");tag.textContent=m.publicado===false?"Borrador":"Publicado";actions.appendChild(tag);
- [["Editar","edit"],["Duplicar","copy"],["Eliminar","delete"]].forEach(x=>{const b=document.createElement("button");b.type="button";b.className="icon-btn"+(x[1]==="delete"?" danger":"");b.dataset.action=x[1];b.dataset.index=i;b.textContent=x[0];actions.appendChild(b)});
+ [["Editar","edit"],[m.publicado===false?"Publicar":"Ocultar","toggle"],["Duplicar","copy"],["Eliminar","delete"]].forEach(x=>{const b=document.createElement("button");b.type="button";b.className="icon-btn"+(x[1]==="delete"?" danger":"");b.dataset.action=x[1];b.dataset.index=i;b.textContent=x[0];actions.appendChild(b)});
  row.append(img,info,catEl,surface,actions);out.appendChild(row);
  });
  if(!count)out.innerHTML='<div class="empty">No se encontraron modelos.</div>';
@@ -100,7 +100,7 @@ function openEditor(i=-1,clone=false){
  $("editor-title").textContent=clone?"Duplicar modelo":row?"Editar modelo":"Nuevo modelo";
  $("name").value=(row?.nombre||"")+(clone?" (copia)":"");
  $("type").value=row?.tipo||"tiny";$("location").value=row?.ubicacion||"";$("surface").value=row?.superficie||"";$("description").value=row?.descripcion||"";
- $("published").checked=clone?false:row?.publicado!==false;
+ $("published").checked=clone?false:row?row.publicado!==false:false;
  $("main-path").textContent=cover?"Foto actual: "+cover:"Sin portada";$("pano-path").textContent=pano?"Panorama actual: "+pano:"Sin panorámica";
  preview("main-preview",cover,null);preview("pano-preview",pano,null);show("remove-main",!!cover);show("remove-pano",!!pano);
  galleryView();msg("save-error","");$("editor").showModal();
@@ -115,7 +115,7 @@ async function upload(file,name,label){
  return "/construccion/"+filePath;
 }
 async function saveModel(e){
- e.preventDefault();if(saving)return;const name=$("name").value.trim(),description=$("description").value.trim();
+ e.preventDefault();if(saving||catalogBusy)return;const name=$("name").value.trim(),description=$("description").value.trim();
  if(!name||!description)return msg("save-error","Faltan nombre y descripción.");
  if(!cover&&!coverFile)return msg("save-error","Debes subir una fotografía principal.");
  if(gallery.length+galleryFiles.length>12)return msg("save-error","Máximo 12 imágenes de galería.");
@@ -132,8 +132,28 @@ async function saveModel(e){
  }catch(err){msg("save-error",err.message);flash("Error: revisa el formulario.",true)}
  finally{saving=false;$("save-model").disabled=false;$("save-model").textContent="Guardar modelo"}
 }
+async function togglePublish(i){
+ const m=models[i];if(!m||catalogBusy||saving)return;
+ const next=m.publicado===false;
+ if(!confirm((next?"¿Publicar ":"¿Ocultar ")+m.nombre+" en el catálogo público?"))return;
+ catalogBusy=true;$("model-list").classList.add("busy");
+ try{
+  const latest=await getFile("data/modelos.json");if(latest.sha!==dataSha)throw Error("El catálogo fue modificado en otra sesión. Actualiza antes de continuar.");
+  const copy=models.map((x,j)=>j===i?{...x,publicado:next}:x);
+  await putFile("data/modelos.json",JSON.stringify(copy,null,2)+"\n",dataSha,"INGEBAM: "+(next?"publicar ":"ocultar ")+m.nombre);
+  await reload();flash(next?"Modelo publicado correctamente.":"Modelo oculto del catálogo público.");
+ }catch(e){flash(e.message,true)}finally{catalogBusy=false;$("model-list").classList.remove("busy")}
+}
+function exportCatalog(){
+ if(!dataSha)return flash("Primero carga el catálogo.",true);
+ const blob=new Blob([JSON.stringify(models,null,2)+"\n"],{type:"application/json;charset=utf-8"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="ingebam-modelos-respaldo-"+new Date().toISOString().slice(0,10)+".json";
+ document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
+ flash("Respaldo descargado.");
+}
 async function del(i){
- const m=models[i];if(!m||!confirm("¿Eliminar la ficha "+m.nombre+"? Las imágenes se conservarán en GitHub como respaldo."))return;
+ const m=models[i];if(!m||catalogBusy||saving||!confirm("¿Eliminar la ficha "+m.nombre+"? Las imágenes se conservarán en GitHub como respaldo."))return;
  try{const latest=await getFile("data/modelos.json");if(latest.sha!==dataSha)throw Error("Catálogo modificado en otra sesión; actualiza antes de borrar.");
  await putFile("data/modelos.json",JSON.stringify(models.filter((_,j)=>j!==i),null,2)+"\n",dataSha,"INGEBAM: quitar "+m.nombre);await reload();flash("Modelo eliminado del catálogo.")
  }catch(e){flash(e.message,true)}
@@ -154,10 +174,11 @@ $("login").addEventListener("click",login);$("token").addEventListener("keydown"
 $("logout").addEventListener("click",()=>{token="";models=[];$("token").value="";show("app-view",false);show("login-view",true);flash("Sesión cerrada.")});
 $("refresh").addEventListener("click",()=>reload().then(()=>flash("Catálogo actualizado.")).catch(e=>flash(e.message,true)));
 $("new-model").addEventListener("click",()=>openEditor());
+$("export-catalog").addEventListener("click",exportCatalog);
 $("save-whatsapp").addEventListener("click",saveWhatsapp);
 ["search","category-filter","status-filter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",render));
-$("model-list").addEventListener("click",e=>{const b=e.target.closest("[data-action]");if(!b)return;const i=Number(b.dataset.index);if(!Number.isInteger(i)||!models[i])return;
- if(b.dataset.action==="edit")openEditor(i);if(b.dataset.action==="copy")openEditor(i,true);if(b.dataset.action==="delete")del(i)});
+$("model-list").addEventListener("click",e=>{const b=e.target.closest("[data-action]");if(!b)return;const i=Number(b.dataset.index);if(catalogBusy||saving||!Number.isInteger(i)||!models[i])return;
+ if(b.dataset.action==="edit")openEditor(i);if(b.dataset.action==="copy")openEditor(i,true);if(b.dataset.action==="toggle")togglePublish(i);if(b.dataset.action==="delete")del(i)});
 $("close-editor").addEventListener("click",()=>{if(!saving)$("editor").close()});
 $("cancel-editor").addEventListener("click",()=>{if(!saving)$("editor").close()});
 $("editor").addEventListener("cancel",e=>{if(saving)e.preventDefault()});
