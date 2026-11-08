@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es-CL"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><meta name="theme-color" content="#f1f0ec">
+<title>INGEBAM · Visor 3D de Tiny House</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#19231f;background:#f2f1ed}
+*{box-sizing:border-box}body{margin:0}a{color:inherit}button,input{font:inherit}button{cursor:pointer}
+.page{max-width:1400px;margin:auto;padding:20px clamp(14px,3vw,36px) 35px}
+.header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.brand{font-weight:900;font-size:22px;letter-spacing:.07em}.brand b{color:#b58a50}.back{font-size:14px;text-decoration:none;border:1px solid #d1d3cc;padding:10px 14px;border-radius:12px;background:#fff}
+.headline{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}.headline h1{font-family:Georgia,serif;font-size:clamp(26px,4vw,44px);font-weight:500;line-height:1.1;margin:6px 0 9px}.headline p{margin:0;color:#65716a;max-width:850px}
+.tag{color:#84623f;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.viewer{position:relative;height:min(67vh,650px);min-height:370px;overflow:hidden;border-radius:19px;margin-top:22px;background:radial-gradient(ellipse at 50% 42%,#fff 0%,#e9eae5 65%,#dde1db 100%);border:1px solid #d4d8d2;touch-action:pan-y;user-select:none}
+#scene{width:100%;height:100%;display:block;touch-action:none;cursor:grab}#scene:active{cursor:grabbing}
+.hint{position:absolute;bottom:14px;left:16px;background:#ffffffdd;color:#354139;padding:8px 11px;border-radius:10px;font-size:12px;pointer-events:none}
+#fallback{position:absolute;inset:0;background:#f1f1ec;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;font-size:16px}
+.controls{display:grid;grid-template-columns:auto minmax(170px,1fr) auto auto;gap:16px;align-items:center;padding:18px 20px;margin-top:14px;background:#fff;border:1px solid #e0e2dd;border-radius:16px}
+.controls button{border:1px solid #d5d9d2;background:#fff;border-radius:11px;padding:11px 14px;font-weight:700}
+.controls button:hover{border-color:#b58a50}
+.speed{display:grid;gap:5px}.speed label{font-weight:750;font-size:13px}.speed input{width:100%;accent-color:#a87b42;cursor:pointer}
+.speedbar{display:flex;justify-content:space-between;color:#707971;font-size:12px}
+.note{font-size:13px;line-height:1.6;color:#66716a;max-width:1100px;margin-top:15px}
+@media(max-width:660px){.controls{grid-template-columns:1fr 1fr;gap:12px}.speed{grid-column:1/-1;grid-row:1}.viewer{height:55vh;min-height:330px}.hint{font-size:11px}.controls button{padding:11px 8px}}
+</style>
+</head><body><main class="page">
+<header class="header"><div class="brand">INGE<b>BAM</b></div><a class="back" href="./index.html#proyectos">← Volver al catálogo</a></header>
+<section class="headline"><div><div class="tag">Visor tridimensional interactivo</div><h1>Tiny House · cubierta curva</h1><p>Explora el volumen exterior con giro automático o arrastra el modelo para inspeccionarlo desde cualquier ángulo.</p></div></section>
+<div class="viewer"><canvas id="scene" aria-label="Modelo tridimensional de una construcción modular con cubierta curva; arrastra para girar"></canvas><div class="hint">Arrastra para girar · Rueda o gesto táctil para acercar</div><div id="fallback" role="alert">Este dispositivo no pudo iniciar el visor 3D. Prueba con otro navegador actualizado o activa la aceleración gráfica.</div></div>
+<section class="controls" aria-label="Controles del modelo">
+<button id="toggle" type="button" aria-pressed="true">⏸ Pausar giro</button>
+<div class="speed"><label for="speed">Velocidad de giro: <output id="speedValue" for="speed">1,0×</output></label><input type="range" id="speed" min="0" max="3" step="0.1" value="1" aria-label="Velocidad de rotación"><div class="speedbar"><span>0× · Detenido</span><span>3× · Rápido</span></div></div>
+<button id="reset" type="button">Restablecer vista</button><button id="zoom" type="button">Acercar +</button>
+</section>
+<p class="note"><strong>Representación conceptual, no documentación técnica:</strong> el diseño se ha reconstruido visualmente a partir de las fotografías proporcionadas. Las proporciones, los materiales de detalle, las aberturas y las instalaciones deben validarse con planos antes de cotizar o construir. Esta visualización no representa un interior diseñado.</p>
+</main>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js";
+const canvas=document.getElementById("scene");
+const wrap=canvas.parentElement;
+const fallback=document.getElementById("fallback");
+let renderer;
+try{renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:"high-performance"});}
+catch(error){fallback.style.display="flex";throw error}
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.15;
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(35,1,0.1,100);
+let radius=13.8,yaw=Math.PI/4,pitch=0.24;
+const focus=new THREE.Vector3(0,1.32,0);
+const model=new THREE.Group();scene.add(model);
+scene.add(new THREE.HemisphereLight(0xeef6ff,0x9a8068,2.65));
+const key=new THREE.DirectionalLight(0xffffff,3.3);key.position.set(4,9,7);scene.add(key);
+const fill=new THREE.DirectionalLight(0xffd5a6,1.25);fill.position.set(-6,3,-5);scene.add(fill);
+const mat=(color,roughness=0.75,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});
+const wood=mat(0x87603e),woodLight=mat(0xa47a50),woodDark=mat(0x503722),metal=mat(0x20282c,0.39,0.54),
+metalLine=mat(0x344046,0.48,0.65),glass=new THREE.MeshPhysicalMaterial({color:0x738e90,roughness:0.08,metalness:0.15,transmission:0.35,transparent:true,opacity:0.52,side:THREE.DoubleSide}),
+trim=mat(0x191e20,0.43,0.42),warm=mat(0xd0ad7f);
+function box(w,h,d,x,y,z,m,group=model){const a=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);a.position.set(x,y,z);group.add(a);return a}
+function cyl(radius,height,x,y,z,m,rotateZ=false){const a=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,height,10),m);a.position.set(x,y,z);if(rotateZ)a.rotation.z=Math.PI/2;model.add(a);return a}
+const W=1.35,L=3.05,wall=1.94,arch=0.64;
+function roofHeight(x){return wall+arch*Math.sqrt(Math.max(0,1-(x*x)/(W*W)))}
+// Structural walls: long sides, floor and curved front/rear shells
+box(W*2,0.15,L*2,0,0.12,0,woodDark);
+for(let side of [-1,1]){
+ const x=side*(W-0.04);box(0.11,wall,L*2,x,wall/2+0.16,0,metal);
+ for(let z=-L+0.10;z<L;z+=0.19)box(0.025,wall+0.02,0.025,side*(W+0.024),wall/2+0.16,z,metalLine);
+}
+// Curved front and rear end walls
+const profile=new THREE.Shape();
+profile.moveTo(-W,0.16);profile.lineTo(W,0.16);profile.lineTo(W,wall+0.16);
+for(let i=1;i<=40;i++){let x=W-2*W*(i/40);profile.lineTo(x,roofHeight(x)+0.16)}
+profile.lineTo(-W,0.16);
+const endGeo=new THREE.ShapeGeometry(profile,24);
+for(let z of [-L,L]){const wallFace=new THREE.Mesh(endGeo,woodDark);wallFace.position.z=z+(z>0?0.02:-0.02);wallFace.material.side=THREE.DoubleSide;model.add(wallFace)}
+// Layered wooden shingles on curved end elevations
+const tileMats=[mat(0x8e6d4b),mat(0x907454),mat(0x70563e),mat(0xa28861),mat(0x66513c)];
+for(let z of [-L,L]){
+  for(let row=0;row<13;row++){
+    const yy=0.34+row*0.18;
+    for(let col=0;col<14;col++){
+      const xx=-W+0.115+col*0.194+(row%2)*0.065;
+      if(Math.abs(xx)>W-0.07 || yy+0.14>roofHeight(xx)+0.1)continue;
+      if(z>0 && Math.abs(xx)<0.53 && yy<1.99)continue;
+      if(z<0 && Math.abs(xx)<0.54 && yy<1.86)continue;
+      let tile=box(0.187,0.175,0.035,xx,yy,z+(z>0?0.055:-0.055),tileMats[(row*3+col*7)%tileMats.length]);
+      // small alternating individual relief
+      tile.rotation.z=((row+col)%5-2)*0.012;
+    }
+  }
+}
+// Curved sheet metal roof created as a continuous mesh
+const verts=[],normals=[],uv=[],ids=[];
+const cross=48,long=14;
+for(let iz=0;iz<=long;iz++){
+ const z=-L-0.09+(2*L+0.18)*iz/long;
+ for(let ix=0;ix<=cross;ix++){
+ const x=-W-0.04+(2*W+0.08)*ix/cross;
+ verts.push(x,roofHeight(Math.max(-W,Math.min(W,x)))+0.20,z);
+ uv.push(ix/cross,iz/long);
+ }
+}
+for(let iz=0;iz<long;iz++)for(let ix=0;ix<cross;ix++){
+ const a=iz*(cross+1)+ix,b=a+1,c=a+(cross+1),d=c+1;
+ ids.push(a,c,b,b,c,d)
+}
+const roofGeo=new THREE.BufferGeometry();roofGeo.setAttribute("position",new THREE.Float32BufferAttribute(verts,3));roofGeo.setAttribute("uv",new THREE.Float32BufferAttribute(uv,2));roofGeo.setIndex(ids);roofGeo.computeVertexNormals();
+model.add(new THREE.Mesh(roofGeo,new THREE.MeshStandardMaterial({color:0x20272c,metalness:0.64,roughness:0.42,side:THREE.DoubleSide})));
+for(let z=-L;z<=L+0.01;z+=0.29){
+ const points=[];for(let j=0;j<=36;j++){let x=-W+2*W*j/36;points.push(new THREE.Vector3(x,roofHeight(x)+0.225,z))}
+ const geom=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),36,0.013,5,false);
+ model.add(new THREE.Mesh(geom,metalLine));
+}
+// Front doorway and trim. Plank door with hinges and dark handle.
+box(1.12,2.10,0.10,0,1.14,L+0.095,woodDark);
+box(0.92,1.91,0.11,0,1.12,L+0.17,wood);
+for(let x=-0.39;x<0.44;x+=0.155)box(0.012,1.83,0.02,x,1.12,L+0.236,woodLight);
+for(let y of [0.44,1.80])box(0.94,0.07,0.07,0,y,L+0.27,trim);
+for(let x of [-0.53,0.53])box(0.1,2.10,0.16,x,1.17,L+0.19,woodLight);
+box(1.15,0.12,0.15,0,2.19,L+0.19,woodLight);
+cyl(0.052,0.035,0.34,1.17,L+0.28,trim,true);
+box(0.06,0.34,0.065,0.35,1.03,L+0.30,trim);
+// Rear utility access with vent, no invented detailed engineering
+box(1.12,1.95,0.09,0,1.13,-L-0.1,woodDark);
+for(let j=0;j<10;j++)box(0.91,0.055,0.08,0,0.48+j*0.128,-L-0.20,trim);
+box(0.75,0.45,0.13,0,2.13,-L-0.13,woodLight);
+// Side panoramic window on the right: z axis horizontal
+box(0.05,0.98,2.75,W+0.032,1.39,-0.15,trim);
+box(0.035,0.78,2.55,W+0.065,1.39,-0.15,glass);
+for(const z of [-1.54,1.24])box(0.085,1.04,0.07,W+0.11,1.39,z,trim);
+for(const y of [0.89,1.89])box(0.085,0.075,2.83,W+0.11,y,-0.15,trim);
+box(0.09,0.85,0.045,W+0.11,1.39,0.25,trim);
+// Hint of interior, intentionally not a definitive fit-out
+box(0.035,1.6,2.8,W-0.27,1.10,-0.12,warm);
+box(0.58,0.08,1.15,W-0.48,0.89,-0.28,woodLight);
+box(0.60,0.56,0.9,W-0.62,0.50,-0.5,wood);
+// Lower shadows rendered as simple groundless floating 3D product
+const clock=new THREE.Clock();let active=!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let speed=1,drag=false,lastX=0,lastY=0,lastPinch=0;
+const speedEl=document.getElementById("speed"),out=document.getElementById("speedValue"),toggle=document.getElementById("toggle");
+function updateToggle(){toggle.textContent=active?"⏸ Pausar giro":"▶ Reanudar giro";toggle.setAttribute("aria-pressed",String(active))}
+updateToggle();
+speedEl.addEventListener("input",()=>{speed=Number(speedEl.value);out.textContent=speed.toFixed(1).replace(".",",")+"×"});
+toggle.addEventListener("click",()=>{active=!active;updateToggle()});
+document.getElementById("reset").addEventListener("click",()=>{yaw=Math.PI/4;pitch=0.24;radius=13.8});
+document.getElementById("zoom").addEventListener("click",()=>{radius=Math.max(8,radius-1.4)});
+canvas.addEventListener("pointerdown",e=>{drag=true;lastX=e.clientX;lastY=e.clientY;active=false;updateToggle();canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener("pointermove",e=>{if(!drag)return;yaw+=(e.clientX-lastX)*0.009;pitch=Math.max(-0.12,Math.min(0.8,pitch+(e.clientY-lastY)*0.005));lastX=e.clientX;lastY=e.clientY});
+canvas.addEventListener("pointerup",()=>drag=false);canvas.addEventListener("pointercancel",()=>drag=false);
+canvas.addEventListener("wheel",e=>{e.preventDefault();radius=Math.min(20,Math.max(7.5,radius+e.deltaY*0.008))},{passive:false});
+function resize(){const w=wrap.clientWidth,h=wrap.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+new ResizeObserver(resize).observe(wrap);resize();
+function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),0.05);if(active&&speed>0)yaw+=dt*0.22*speed;
+ camera.position.set(Math.sin(yaw)*Math.cos(pitch)*radius,focus.y+Math.sin(pitch)*radius,Math.cos(yaw)*Math.cos(pitch)*radius);
+ camera.lookAt(focus);renderer.render(scene,camera)}
+animate();
+</script></body></html>
