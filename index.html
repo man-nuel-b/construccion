@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-CL">
 
 <head>
 
@@ -12,7 +12,7 @@
 
 <meta
     name="description"
-    content="INGEBAM en La Araucanía: construcciones modulares, oficinas, baterías de baños y habilitación de locales comerciales existentes. Conoce nuestros servicios y solicita una propuesta."
+    content="Conoce INGEBAM, empresa dedicada a construcciones modulares y habilitación comercial en La Araucanía. Explora nuestras líneas de negocio y solicita una evaluación."
 >
 
 <meta
@@ -20,10 +20,10 @@
     content="#090909"
 >
 
-<title>INGEBAM | Construcciones modulares y habilitación comercial en La Araucanía</title>
+<title>INGEBAM | Ingeniería, construcción modular y habilitación comercial</title>
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_CL">
-<meta property="og:title" content="INGEBAM | Construcciones modulares y habilitación comercial">
+<meta property="og:title" content="INGEBAM | Soluciones de construcción y habilitación comercial">
 <meta property="og:description" content="Construcción modular y habilitación de locales comerciales existentes. Dos servicios diferentes, una misma atención personalizada.">
 <meta property="og:image" content="https://man-nuel-b.github.io/construccion/imagenes/villarrica.png">
 <meta property="og:url" content="https://man-nuel-b.github.io/construccion/">
@@ -2884,6 +2884,21 @@ html{scroll-padding-top:105px}
 @media(max-width:620px){.wizard-fitout-fields{grid-template-columns:1fr}}
 
 .fitout-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.fitout-actions .btn{white-space:nowrap}@media(max-width:620px){.fitout-actions{width:100%}.fitout-actions .btn{width:100%;white-space:normal}}
+
+/* Portada corporativa INGEBAM */
+.corporate-hero-title{font-size:clamp(3rem,6.8vw,6rem);max-width:1060px;margin-inline:auto}
+.corporate-hero-title em{display:block;font-style:normal;color:var(--gold);font-size:.62em;letter-spacing:-.025em;margin-top:.22em}
+.corporate-about{padding-top:80px;padding-bottom:85px;background:#101311}
+.corporate-about-layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);align-items:center;gap:clamp(30px,6vw,90px)}
+.corporate-about-main h2{font-size:clamp(2.1rem,4.5vw,3.8rem);line-height:1.1;margin:18px 0 22px}
+.corporate-about-main p{color:#c8c9c1;font-size:1rem;line-height:1.8;margin-bottom:15px;max-width:660px}
+.corporate-principles{display:grid;gap:12px}
+.corporate-principles>div{background:linear-gradient(130deg,#20251f,#181b19);border:1px solid var(--line);border-radius:14px;padding:19px 21px;display:grid;grid-template-columns:35px 1fr;column-gap:12px;row-gap:5px}
+.corporate-principles b{color:var(--gold);grid-row:span 2;font-size:.9rem}
+.corporate-principles strong{font-size:1.05rem;color:var(--text)}
+.corporate-principles span{font-size:.86rem;color:#bbbbb5;line-height:1.55}
+.business-lines .business-card{min-height:330px}
+@media(max-width:800px){.corporate-about-layout{grid-template-columns:1fr}.corporate-about{padding:58px 0}.corporate-hero-title em{font-size:.6em}.corporate-principles{gap:10px}}
 </style>
 
 <script src="config.js?v=20261108-reparado"></script>
@@ -2943,8 +2958,9 @@ html{scroll-padding-top:105px}
 
 
         <div class="nav-links" id="navLinks">
-<a href="./tiny-houses.html">Tiny Houses</a>
-<a href="./habilitacion-comercial.html">Locales comerciales</a>
+<a href="#empresa">La empresa</a>
+<a href="#lineas-negocio">Áreas de negocio</a>
+<a href="#cotizador">Contacto</a>
 </div>
 
 
@@ -2985,20 +3001,12 @@ html{scroll-padding-top:105px}
         </div>
 
 
-        <h1 class="title">
-
-            Construcciones modulares
-
-            <em>
-                y habilitación comercial.
-            </em>
-
-        </h1>
+        <h1 class="title corporate-hero-title">INGEBAM <em>Ingeniería y Construcción</em></h1>
 
 
         <p>
 
-            Conoce nuestras soluciones de construcción modular y habilitación de locales comerciales en La Araucanía.
+            Desarrollamos soluciones para crear espacios modulares y adaptar inmuebles comerciales existentes, con una atención cercana y un enfoque técnico adecuado a cada proyecto.
 
         </p>
 
@@ -3007,10 +3015,10 @@ html{scroll-padding-top:105px}
 
             <a
                 class="btn btn-primary"
-                href="#cotizador"
+                href="#empresa"
             >
 
-                Solicitar cotización
+                Conocer INGEBAM
 
             </a>
 
@@ -3020,7 +3028,7 @@ html{scroll-padding-top:105px}
                 href="#lineas-negocio"
             >
 
-                Elegir un servicio
+                Nuestras líneas de negocio
 
             </a>
 
@@ -3036,24 +3044,40 @@ html{scroll-padding-top:105px}
 
 
 
+<section class="section corporate-about" id="empresa" aria-labelledby="company-heading">
+ <div class="container corporate-about-layout">
+  <div class="corporate-about-main reveal">
+   <div class="kicker">Nuestra empresa</div>
+   <h2 class="title" id="company-heading">Espacios que responden a necesidades reales.</h2>
+   <p>INGEBAM trabaja en dos ámbitos complementarios: construcciones modulares nuevas y habilitación de locales comerciales existentes. Cada uno requiere su propio diagnóstico, planificación y definición de alcance.</p>
+   <p>Atendemos consultas de proyectos en la Región de La Araucanía, desde la idea inicial hasta la evaluación de una propuesta.</p>
+  </div>
+  <div class="corporate-principles reveal" aria-label="Nuestra forma de trabajar">
+   <div><b>01</b><strong>Escuchamos</strong><span>Comprendemos el objetivo, el uso y la ubicación del proyecto.</span></div>
+   <div><b>02</b><strong>Evaluamos</strong><span>Revisamos alternativas, condiciones y requerimientos técnicos.</span></div>
+   <div><b>03</b><strong>Proponemos</strong><span>Definimos el alcance y los próximos pasos de manera clara.</span></div>
+  </div>
+ </div>
+</section>
+
 <section class="section business-lines" id="lineas-negocio" aria-labelledby="business-title">
  <div class="container">
   <div class="section-head reveal">
    <div class="kicker">Dos líneas de negocio · INGEBAM</div>
-   <h2 class="title" id="business-title">¿Qué necesitas desarrollar?</h2>
-   <p>Selecciona el servicio que te interesa y conoce sus soluciones.</p>
+   <h2 class="title" id="business-title">Nuestras líneas de negocio.</h2>
+   <p>Conoce cada área en su página especializada.</p>
   </div>
   <div class="business-cards">
    <article class="card business-card">
     <span class="business-label">01 · Construcción modular</span>
     <h3>Tiny Houses y módulos</h3>
-    <p>Modelos modulares para vivienda, turismo, oficinas y otros usos.</p>
+    <p>Proyectos modulares de uso habitacional, turístico y profesional.</p>
     <div class="business-actions"><a class="btn btn-primary" href="./tiny-houses.html">Ver modelos modulares</a></div>
    </article>
    <article class="card business-card business-card-fitout">
     <span class="business-label">02 · Habilitación comercial</span>
     <h3>Remodelación de locales</h3>
-    <p>Adaptación de espacios comerciales existentes según las necesidades de cada negocio.</p>
+    <p>Adecuación y remodelación de espacios para la actividad de cada negocio.</p>
     <div class="business-actions"><a class="btn btn-primary" href="./habilitacion-comercial.html">Ver habilitación comercial</a></div>
    </article>
   </div>
