@@ -2899,6 +2899,22 @@ html{scroll-padding-top:105px}
 .corporate-principles span{font-size:.86rem;color:#bbbbb5;line-height:1.55}
 .business-lines .business-card{min-height:330px}
 @media(max-width:800px){.corporate-about-layout{grid-template-columns:1fr}.corporate-about{padding:58px 0}.corporate-hero-title em{font-size:.6em}.corporate-principles{gap:10px}}
+
+/* Identidad institucional INGEBAM */
+.corporate-about .corporate-about-layout{margin-bottom:38px}
+.corporate-purpose{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:26px 0 65px}
+.corporate-purpose-card{padding:28px 30px;border:1px solid #c8a06f44;border-radius:18px;background:linear-gradient(145deg,#1f211c,#141917)}
+.corporate-purpose-card h3{font-family:Georgia,serif;font-size:clamp(1.6rem,2.4vw,2.15rem);margin:11px 0}
+.corporate-purpose-card p{font-size:.95rem;color:#c9c8c0;line-height:1.75;max-width:590px;margin:0}
+.corporate-values .section-head{margin-bottom:23px}
+.corporate-values .section-head h2{font-size:clamp(1.8rem,3.5vw,2.8rem)}
+.corporate-values-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}
+.corporate-values-grid article{padding:25px 20px;border:1px solid #c8a06f44;border-radius:16px;background:#1c211d}
+.corporate-value-icon{display:inline-flex;align-items:center;justify-content:center;border:1px solid #c8a06f6e;width:43px;height:43px;border-radius:12px;color:#e5c08d;font-size:.82rem;font-weight:800;margin-bottom:18px}
+.corporate-values-grid h3{font-size:1.17rem;color:#f5f2ed;margin:0 0 9px}
+.corporate-values-grid p{font-size:.86rem;line-height:1.65;color:#c5c4bc;margin:0}
+@media(max-width:900px){.corporate-values-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.corporate-purpose,.corporate-values-grid{grid-template-columns:1fr}.corporate-purpose{gap:12px;margin-bottom:46px}.corporate-purpose-card{padding:23px}.corporate-values-grid{gap:12px}}
 </style>
 
 <script src="config.js?v=20261108-reparado"></script>
@@ -2958,7 +2974,8 @@ html{scroll-padding-top:105px}
 
 
         <div class="nav-links" id="navLinks">
-<a href="#empresa">La empresa</a>
+<a href="#empresa">Quiénes somos</a>
+<a href="#valores">Valores</a>
 <a href="#lineas-negocio">Áreas de negocio</a>
 <a href="#cotizador">Contacto</a>
 </div>
@@ -3045,17 +3062,40 @@ html{scroll-padding-top:105px}
 
 
 <section class="section corporate-about" id="empresa" aria-labelledby="company-heading">
- <div class="container corporate-about-layout">
-  <div class="corporate-about-main reveal">
-   <div class="kicker">Nuestra empresa</div>
-   <h2 class="title" id="company-heading">Espacios que responden a necesidades reales.</h2>
-   <p>INGEBAM trabaja en dos ámbitos complementarios: construcciones modulares nuevas y habilitación de locales comerciales existentes. Cada uno requiere su propio diagnóstico, planificación y definición de alcance.</p>
-   <p>Atendemos consultas de proyectos en la Región de La Araucanía, desde la idea inicial hasta la evaluación de una propuesta.</p>
+ <div class="container">
+  <div class="corporate-about-layout">
+   <div class="corporate-about-main reveal">
+    <div class="kicker">Nuestra empresa · INGEBAM</div>
+    <h2 class="title" id="company-heading">Quiénes somos</h2>
+    <p>INGEBAM es una iniciativa enfocada en desarrollar soluciones de construcción modular y habilitación de espacios comerciales en la Región de La Araucanía.</p>
+    <p>Buscamos acompañar a cada cliente desde la definición de su necesidad, considerando el uso del espacio, sus condiciones técnicas y las alternativas de ejecución de cada proyecto.</p>
+   </div>
+   <div class="corporate-principles reveal" aria-label="Cómo trabajamos">
+    <div><b>01</b><strong>Escuchamos</strong><span>Conocemos tus objetivos, necesidades y requerimientos.</span></div>
+    <div><b>02</b><strong>Evaluamos</strong><span>Analizamos las condiciones y alternativas de solución.</span></div>
+    <div><b>03</b><strong>Proponemos</strong><span>Planteamos un alcance técnico acorde a cada proyecto.</span></div>
+   </div>
   </div>
-  <div class="corporate-principles reveal" aria-label="Nuestra forma de trabajar">
-   <div><b>01</b><strong>Escuchamos</strong><span>Comprendemos el objetivo, el uso y la ubicación del proyecto.</span></div>
-   <div><b>02</b><strong>Evaluamos</strong><span>Revisamos alternativas, condiciones y requerimientos técnicos.</span></div>
-   <div><b>03</b><strong>Proponemos</strong><span>Definimos el alcance y los próximos pasos de manera clara.</span></div>
+  <div class="corporate-purpose reveal">
+   <article class="corporate-purpose-card">
+    <div class="kicker">Nuestro propósito</div>
+    <h3>Misión</h3>
+    <p>Desarrollar soluciones modulares y de habilitación comercial mediante una atención personalizada, planificación responsable y propuestas ajustadas a las necesidades de cada cliente.</p>
+   </article>
+   <article class="corporate-purpose-card">
+    <div class="kicker">Hacia dónde avanzamos</div>
+    <h3>Visión</h3>
+    <p>Consolidar a INGEBAM como una alternativa reconocida en La Araucanía por su enfoque práctico, su calidad de servicio y su capacidad de adaptación a diferentes proyectos.</p>
+   </article>
+  </div>
+  <div class="corporate-values reveal" id="valores" aria-labelledby="values-heading">
+   <div class="section-head"><div class="kicker">Nuestra identidad</div><h2 class="title" id="values-heading">Los valores que nos orientan.</h2></div>
+   <div class="corporate-values-grid">
+    <article><span class="corporate-value-icon" aria-hidden="true">01</span><h3>Compromiso</h3><p>Atención responsable y seguimiento de cada etapa acordada.</p></article>
+    <article><span class="corporate-value-icon" aria-hidden="true">02</span><h3>Calidad</h3><p>Cuidado de los detalles y consideración de los requerimientos técnicos.</p></article>
+    <article><span class="corporate-value-icon" aria-hidden="true">03</span><h3>Transparencia</h3><p>Comunicación clara sobre alcances, alternativas y condiciones.</p></article>
+    <article><span class="corporate-value-icon" aria-hidden="true">04</span><h3>Innovación</h3><p>Búsqueda de soluciones funcionales y formas de trabajo eficientes.</p></article>
+   </div>
   </div>
  </div>
 </section>
