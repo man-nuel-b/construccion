@@ -30,7 +30,7 @@
   }
   function mount(){
     const active=document.querySelector("#proyectos .filter.active")?.dataset.filter||"todos";
-    root.innerHTML=data.map(card).join("");
+    if(root.dataset.catalogHub!=="true") root.innerHTML=data.map(card).join("");
     document.querySelectorAll("#proyectos .project").forEach(p=>{p.style.display=(active==="todos"||p.dataset.category===active)?"":"none"});
     if(filters){
       const present=new Set(data.map(x=>x.tipo));
