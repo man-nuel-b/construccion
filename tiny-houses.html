@@ -54,7 +54,7 @@
   <div class="eyebrow">Portafolio · Fotografías de referencia</div>
   <h2>Conoce nuestros modelos.</h2>
   <p class="desc">Mantuvimos los diseños y fotografías que ya estaban en el catálogo INGEBAM. Las distribuciones y superficies definitivas se confirman antes de presupuestar.</p>
-  <div class="model-grid">
+  <div class="model-grid" id="modelos-dinamicos">
    <article class="model">
     <img src="imagenes/villarrica.png" alt="Modelo modular Villarrica Panorama de INGEBAM" loading="lazy">
     <div class="model-body"><span class="model-meta">Tiny House · Modelo piloto</span><h3>Villarrica Panorama</h3><p>Diseño contemporáneo con ventanales amplios y conexión visual con el entorno. Configuración por definir según el proyecto.</p><div class="model-actions"><a class="btn secondary" href="./visor-3d.html">Explorar visor 3D conceptual</a><a class="btn primary" href="./index.html?servicio=modular#cotizador">Consultar modelo</a></div></div>
@@ -90,5 +90,38 @@
 </section>
 </main>
 <footer><div class="wrap foot"><span>INGEBAM · Construcciones modulares y habilitación comercial</span><a href="./index.html">Volver al sitio principal</a></div></footer>
+<script>
+/* Mantiene este catálogo sincronizado con data/modelos.json, editado desde el panel. */
+(function(){
+ const grid=document.getElementById('modelos-dinamicos');
+ const names={tiny:'Tiny House',oficina:'Oficina modular',banos:'Baños modulares',comercial:'Módulo comercial nuevo'};
+ const safePath=value=>{
+  const s=String(value||'').trim();
+  if(!s||s.startsWith('/')||s.includes('..')||/^(?:[a-z]+:|\\)/i.test(s)||/[<>"']/.test(s))return '';
+  return './'+s.replace(/^\.\//,'');
+ };
+ fetch('./data/modelos.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('No disponible');return r.json();}).then(items=>{
+  if(!Array.isArray(items))return;
+  const models=items.filter(m=>m&&m.publicado!==false&&['tiny','oficina','banos'].includes(m.tipo)&&m.nombre);
+  if(!models.length)return;
+  grid.replaceChildren();
+  models.forEach(m=>{
+   const card=document.createElement('article');card.className='model';
+   const pic=safePath(m.imagen);
+   if(pic){const img=document.createElement('img');img.src=pic;img.alt='Modelo '+m.nombre+' de INGEBAM';img.loading='lazy';card.append(img);}
+   const body=document.createElement('div');body.className='model-body';
+   const meta=document.createElement('span');meta.className='model-meta';meta.textContent=(names[m.tipo]||'Módulo')+(m.ubicacion?' · '+m.ubicacion:'');
+   const title=document.createElement('h3');title.textContent=m.nombre;
+   const desc=document.createElement('p');desc.textContent=m.descripcion||'Modelo de construcción modular con equipamiento y distribución por definir.';
+   const actions=document.createElement('div');actions.className='model-actions';
+   const panorama=safePath(m.panorama);
+   if(panorama){const tour=document.createElement('a');tour.className='btn secondary';tour.textContent='Vista 360° conceptual';tour.href='./tour-360.html?imagen='+encodeURIComponent(panorama)+'&modelo='+encodeURIComponent(m.nombre);actions.append(tour);}
+   else{const viewer=document.createElement('a');viewer.className='btn secondary';viewer.textContent='Visor 3D conceptual';viewer.href='./visor-3d.html';actions.append(viewer);}
+   const quote=document.createElement('a');quote.className='btn primary';quote.href='./index.html?servicio=modular#cotizador';quote.textContent='Consultar modelo';actions.append(quote);
+   body.append(meta,title,desc,actions);card.append(body);grid.append(card);
+  });
+ }).catch(()=>{/* Se mantienen las fichas originales si la carga falla. */});
+})();
+</script>
 </body>
 </html>
