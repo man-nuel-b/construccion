@@ -23,12 +23,12 @@
 .hero{background:radial-gradient(ellipse at 78% 20%,#77603f22,transparent 58%),linear-gradient(140deg,#1c2520,#101511)}
 .model-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:23px;margin-top:30px}
 .model{background:#202722;border:1px solid #ffffff29;border-radius:19px;overflow:hidden}
-.model img{display:block;width:100%;height:300px;object-fit:cover;background:#28342c}
-.model-body{padding:25px}.model-body h3{font-size:1.45rem;margin-bottom:7px}.model-body p{color:#c7c9c0}
+.model img{display:block;width:100%;height:320px;object-fit:cover;background:#28342c;transition:transform .35s ease}
+.model{transition:transform .2s,border-color .2s;box-shadow:0 20px 50px #0002}.model:hover{transform:translateY(-4px);border-color:#d9b57d80}.model:hover img{transform:scale(1.025)}.model-body{padding:29px}.model-body h3{font-size:1.45rem;margin-bottom:7px}.model-body p{color:#c7c9c0}
 .model-meta{display:inline-block;font-size:.76rem;text-transform:uppercase;letter-spacing:.12em;color:#dfbc88;margin-bottom:12px;font-weight:800}
 .model-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
 .measure{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:26px}
-.measure article{padding:23px;border:1px solid #ffffff2d;border-radius:16px;background:#202722}
+.measure article{padding:32px;border:1px solid #d9b57d55;border-radius:21px;background:linear-gradient(135deg,#273329,#19211b)}
 .measure strong{font-size:2rem;color:#e2bd84}.measure p{margin-bottom:0}
 .note{font-size:.87rem;color:#bfc8be;margin-top:17px}
 .section.alt{background:#1b221d}
@@ -48,12 +48,19 @@
 </header>
 <main>
 <section class="hero">
- <div class="wrap">
-  <div class="eyebrow">INGEBAM · Línea 01</div>
-  <h1>Construcciones modulares<br><em>Tiny Houses y módulos en contenedor marítimo.</em></h1>
-  <p class="lead">Explora nuestros diseños de referencia para vivienda, turismo y espacios de trabajo. Conversamos contigo sobre distribución, terminaciones, accesos y condiciones de instalación.</p>
-  <div class="actions"><a class="btn primary" href="#modelos">Explorar modelos</a><a class="btn secondary" href="./index.html?servicio=modular#cotizador">Cotizar un módulo</a></div>
-  <p class="micro">¿Tienes un local comercial construido y quieres remodelarlo? <a href="./habilitacion-comercial.html">Conoce habilitación comercial.</a></p>
+ <div class="wrap hero-layout">
+  <div class="hero-copy">
+   <div class="eyebrow">INGEBAM · Construcción modular</div>
+   <h1>Construcciones modulares<br><em>Tiny Houses y módulos en contenedor marítimo.</em></h1>
+   <p class="lead">Espacios diseñados para vivir, emprender o trabajar. Explora los modelos de referencia y conversemos sobre la distribución, las terminaciones y las condiciones de instalación de tu proyecto.</p>
+   <div class="actions"><a class="btn primary" href="#modelos">Explorar modelos</a><a class="btn secondary" href="./index.html?servicio=modular#cotizador">Solicitar cotización</a></div>
+   <div class="service-jump"><a href="#medidas">Formatos de 6 y 12 metros</a><a href="#usos">Aplicaciones</a><a href="#preguntas-frecuentes">Preguntas frecuentes</a></div>
+   <p class="micro">¿Quieres remodelar un inmueble existente? <a href="./habilitacion-comercial.html">Conoce habilitación comercial.</a></p>
+  </div>
+  <div class="hero-visual">
+   <figure class="hero-photo"><img src="imagenes/villarrica.png" alt="Diseño de referencia de construcción modular Villarrica Panorama" fetchpriority="high"><figcaption class="visual-label"><span>Modelo de referencia</span><strong>Villarrica Panorama</strong><small>Diseño sujeto a evaluación técnica</small></figcaption></figure>
+   <div class="visual-side-note">Diseños a tu medida</div>
+  </div>
  </div>
 </section>
 <section class="section" id="modelos">
