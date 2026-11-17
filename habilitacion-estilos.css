@@ -81,3 +81,5 @@ body{background:#101612}
 @media(max-width:900px){.hero-layout{grid-template-columns:1fr}.hero-visual{max-width:650px;width:100%;margin:auto}.hero-photo,.commercial-scene{aspect-ratio:16/10;min-height:350px}.hero{padding:68px 0}.hero h1{max-width:880px}.visual-side-note{right:12px}.commercial-scene{padding-bottom:65px}.floorplan{height:210px;max-width:300px}}
 @media(max-width:600px){.wrap{width:min(100% - 32px,1200px)}.hero{padding:52px 0 57px}.hero h1{font-size:clamp(2.45rem,10vw,3.6rem)}.hero h1 em{font-size:.67em}.hero-photo,.commercial-scene{aspect-ratio:4/3;min-height:0}.floorplan{height:170px;max-width:235px;border-width:5px}.floorplan:before{border-left-width:3px}.floorplan:after{border-top-width:3px}.commercial-scene{padding:22px 18px 65px}.visual-label{left:18px;bottom:17px}.visual-side-note{top:12px;font-size:.7rem;padding:8px 11px}.section{padding:60px 0}.card{padding:25px}.gallery-comparison{grid-template-columns:1fr}.faq details{padding:17px}.section h2{font-size:clamp(2rem,8vw,2.85rem)}}
 @media(prefers-reduced-motion:reduce){.btn,.card,.seo-info-grid article{transition:none}}
+
+.hero-photo{margin:0}
