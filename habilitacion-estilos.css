@@ -16,3 +16,68 @@
 .seo-info-grid p{font-size:.94rem;line-height:1.7;color:var(--muted);margin:0}
 .seo-local-note{font-size:.9rem;line-height:1.7;color:#d4c6ad;border-left:3px solid var(--gold);padding:8px 0 8px 17px;max-width:850px}
 @media(max-width:700px){.seo-info-grid{grid-template-columns:1fr}.seo-info-grid article{padding:20px}}
+
+/* INGEBAM | Renovación visual 2026: páginas de servicios */
+:root{--gold:#d9b57d;--white:#f5f2eb;--card:#1b231e}
+body{background:#101612}
+.wrap{width:min(1200px,calc(100% - 48px))}
+.top{box-shadow:0 12px 35px #00000018}
+.top nav a:not(.btn){transition:color .2s}
+.top nav a:not(.btn):hover{color:var(--gold)}
+.btn{border-radius:999px;transition:background .2s,color .2s,border-color .2s,transform .2s;line-height:1.25;text-align:center}
+.btn:hover{transform:translateY(-2px)}
+.btn.primary:hover,.btn.small:hover{background:#f0ce98;border-color:#f0ce98}
+.btn.secondary:hover{border-color:#f0ce98;color:#f0ce98;background:#ffffff0a}
+.hero{padding:76px 0 82px;position:relative;overflow:hidden;isolation:isolate}
+.hero:after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,#121a15af,transparent 85%),repeating-linear-gradient(90deg,transparent 0 82px,#ffffff05 83px 84px)}
+.hero-layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:clamp(26px,5vw,76px);align-items:center}
+.hero-copy{min-width:0}
+.hero h1{font-size:clamp(2.85rem,5vw,5.5rem);line-height:1.055;max-width:800px;overflow-wrap:normal}
+.hero h1 em{display:block;margin-top:16px;font-size:.68em;line-height:1.14}
+.hero .lead{max-width:650px;font-size:1.06rem;line-height:1.8}
+.hero .micro{max-width:650px;line-height:1.65;margin-top:14px}
+.hero-visual{position:relative;min-width:0}
+.hero-photo{position:relative;overflow:hidden;border-radius:25px;aspect-ratio:4/4.35;border:1px solid #d9b57d55;box-shadow:0 30px 100px #0008;background:#222b25}
+.hero-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-photo:after{content:"";position:absolute;inset:40% 0 0;background:linear-gradient(transparent,#07100dcd);pointer-events:none}
+.visual-label{position:absolute;bottom:22px;left:24px;right:24px;z-index:1;display:grid;gap:3px}
+.visual-label span,.visual-label small{color:#f1ddba;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:750}
+.visual-label strong{font:400 clamp(1.5rem,3vw,2.3rem)/1.15 Georgia,serif;color:#fff}
+.visual-side-note{position:absolute;right:-15px;top:8%;z-index:2;background:#d9b57d;color:#171d17;padding:12px 17px;border-radius:11px;font-weight:800;box-shadow:0 14px 35px #0004;font-size:.79rem}
+.service-jump{display:flex;gap:10px;flex-wrap:wrap;margin-top:23px}
+.service-jump a{color:#e5d5b9;text-decoration:none;font-size:.85rem;padding-bottom:5px;border-bottom:1px solid #e0bb8180}
+.service-jump a:hover{color:white;border-color:white}
+.section{padding:90px 0}
+.section h2{font-size:clamp(2.15rem,3.6vw,3.45rem);max-width:900px}
+.section .desc{line-height:1.8}
+.section-heading{max-width:850px;margin-bottom:28px}
+.cards{gap:20px}
+.card{position:relative;padding:30px;border-color:#d9b57d30;background:linear-gradient(152deg,#232c25,#18201b);transition:transform .2s,border-color .2s}
+.card:hover,.seo-info-grid article:hover{transform:translateY(-3px);border-color:#d9b57d85}
+.card h3{font:400 1.48rem/1.25 Georgia,serif}
+.number{font-size:1.2rem;letter-spacing:.08em}
+.seo-info-grid article{transition:transform .2s,border-color .2s}
+.callout{border-radius:25px;padding:clamp(28px,5vw,58px);background:radial-gradient(circle at right,#d9b57d22,transparent 57%),linear-gradient(120deg,#282d23,#172019)}
+.faq details{background:#ffffff04;padding:20px 25px;margin-top:10px;border:1px solid #ffffff17;border-radius:13px}
+.faq summary{list-style-position:inside}
+.eyebrow{letter-spacing:.19em}
+.process-note{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:28px;color:#c6cabc;font-size:.89rem}
+.process-note strong{color:var(--gold)}
+/* Gráfico conceptual de un local: no representa una obra ejecutada */
+.commercial-scene{min-height:480px;aspect-ratio:4/4.35;position:relative;overflow:hidden;border-radius:25px;border:1px solid #d9b57d50;background:radial-gradient(circle at 70% 15%,#dcc18a32,transparent 48%),linear-gradient(135deg,#28332b,#131c17);box-shadow:0 30px 100px #0008;display:grid;place-items:center;padding:38px 24px 85px}
+.commercial-scene:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 43px,#ffffff06 44px 45px),repeating-linear-gradient(90deg,transparent 0 43px,#ffffff06 44px 45px);opacity:.6}
+.floorplan{width:min(100%,360px);height:275px;position:relative;transform:rotate(-7deg);border:8px solid #ddc49a;background:#a9ac9350;box-shadow:16px 20px 0 #0d130e80,0 0 50px #f1d6a320}
+.floorplan:before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:5px solid #e9d1a8}
+.floorplan:after{content:"";position:absolute;left:0;right:0;top:55%;border-top:5px solid #e9d1a8}
+.floorplan .zone{position:absolute;color:#f8edd8;font-size:.8rem;font-weight:800;letter-spacing:.04em;text-shadow:0 2px 4px #000a}
+.zone.z1{left:10%;top:22%}.zone.z2{right:8%;top:22%}.zone.z3{left:12%;bottom:13%}
+.floorplan .desk{position:absolute;right:10%;bottom:12%;width:27%;height:18%;border:3px solid #e6be81;border-radius:3px;background:#28372a}
+.concept-mark{position:absolute;bottom:23px;left:27px;right:27px;color:#f8f0de;z-index:1}
+.concept-mark strong{display:block;font:400 1.35rem Georgia,serif}
+.concept-mark small{font-size:.75rem;color:#e3cda7;letter-spacing:.09em;text-transform:uppercase}
+.gallery-comparison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.gallery-comparison .evaluation-pair{display:contents}
+.gallery-comparison .evaluation-pair article{min-height:230px}
+@media(max-width:900px){.hero-layout{grid-template-columns:1fr}.hero-visual{max-width:650px;width:100%;margin:auto}.hero-photo,.commercial-scene{aspect-ratio:16/10;min-height:350px}.hero{padding:68px 0}.hero h1{max-width:880px}.visual-side-note{right:12px}.commercial-scene{padding-bottom:65px}.floorplan{height:210px;max-width:300px}}
+@media(max-width:600px){.wrap{width:min(100% - 32px,1200px)}.hero{padding:52px 0 57px}.hero h1{font-size:clamp(2.45rem,10vw,3.6rem)}.hero h1 em{font-size:.67em}.hero-photo,.commercial-scene{aspect-ratio:4/3;min-height:0}.floorplan{height:170px;max-width:235px;border-width:5px}.floorplan:before{border-left-width:3px}.floorplan:after{border-top-width:3px}.commercial-scene{padding:22px 18px 65px}.visual-label{left:18px;bottom:17px}.visual-side-note{top:12px;font-size:.7rem;padding:8px 11px}.section{padding:60px 0}.card{padding:25px}.gallery-comparison{grid-template-columns:1fr}.faq details{padding:17px}.section h2{font-size:clamp(2rem,8vw,2.85rem)}}
+@media(prefers-reduced-motion:reduce){.btn,.card,.seo-info-grid article{transition:none}}
