@@ -73,6 +73,23 @@
 <section class="section commercial-gallery" id="evaluacion-visual"><div class="wrap">
 <div class="eyebrow">Evaluación comercial</div><h2>Del estado actual a una propuesta de habilitación.</h2>
 <p class="desc">No es necesario tener renders ni planos terminados para comenzar. El análisis puede partir con fotografías del espacio y necesidades de operación; las alternativas de diseño y presupuesto se estudian posteriormente.</p>
+<div class="concept-demo" id="demo-comercial">
+ <div class="concept-demo-head">
+  <div><span class="eyebrow">Ejemplo interactivo · Ilustrativo</span><h3>Imagina el potencial de tu espacio</h3><p>Compara dos esquemas de un mismo local hipotético. No representan una obra ejecutada ni una propuesta técnica definitiva.</p></div>
+  <div class="concept-switch" role="group" aria-label="Seleccionar esquema de distribución">
+   <button type="button" class="concept-option is-active" data-scene="before" aria-pressed="true">Estado inicial</button>
+   <button type="button" class="concept-option" data-scene="after" aria-pressed="false">Idea de habilitación</button>
+  </div>
+ </div>
+ <div class="concept-stage" data-view="before">
+  <div class="concept-room" aria-hidden="true">
+   <div class="room-back"></div><div class="room-side"></div><div class="room-floor"></div>
+   <div class="room-window"></div><div class="room-door"></div>
+   <div class="room-display"></div><div class="room-counter"></div><div class="room-light light-one"></div><div class="room-light light-two"></div>
+  </div>
+  <div class="concept-caption"><span id="concept-stage-label">Estado inicial · Espacio sin zonificación</span><p id="concept-stage-description">Punto de partida ilustrativo para revisar distribución, iluminación y circulación.</p></div>
+ </div>
+</div>
 <div class="gallery-comparison"><div class="evaluation-pair">
 <article><span class="evaluation-tag">01 · Estado actual</span><h3>Conocemos tu local</h3><p>Revisamos dimensiones aproximadas, circulación, instalaciones existentes y condiciones relevantes para el negocio.</p></article>
 <article><span class="evaluation-tag">02 · Propuesta</span><h3>Definimos posibilidades</h3><p>Identificamos intervenciones a evaluar, prioridades, terminaciones y eventuales requerimientos de especialidades.</p></article>
@@ -109,5 +126,27 @@
  </section>
 </main>
 <footer><div class="wrap foot"><span>INGEBAM · Construcciones modulares y habilitación comercial</span><a href="./index.html">Volver al sitio principal</a></div></footer>
+<script>
+(() => {
+ const root=document.getElementById('demo-comercial');
+ if(!root)return;
+ const stage=root.querySelector('.concept-stage');
+ const label=root.querySelector('#concept-stage-label');
+ const desc=root.querySelector('#concept-stage-description');
+ root.querySelectorAll('[data-scene]').forEach(button=>{
+  button.addEventListener('click',()=>{
+   const after=button.dataset.scene==='after';
+   stage.dataset.view=after?'after':'before';
+   label.textContent=after?'Idea de habilitación · Espacio organizado':'Estado inicial · Espacio sin zonificación';
+   desc.textContent=after?'Una posible organización de zonas de exhibición, atención e iluminación. Su factibilidad se estudia caso a caso.':'Punto de partida ilustrativo para revisar distribución, iluminación y circulación.';
+   root.querySelectorAll('[data-scene]').forEach(item=>{
+    const active=item===button;
+    item.classList.toggle('is-active',active);
+    item.setAttribute('aria-pressed',String(active));
+   });
+  });
+ });
+})();
+</script>
 </body>
 </html>
