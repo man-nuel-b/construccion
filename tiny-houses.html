@@ -58,7 +58,7 @@
    <p class="micro">¿Quieres remodelar un inmueble existente? <a href="./habilitacion-comercial.html">Conoce habilitación comercial.</a></p>
   </div>
   <div class="hero-visual">
-   <figure class="hero-photo"><img src="imagenes/villarrica.png" alt="Diseño de referencia de construcción modular Villarrica Panorama" fetchpriority="high"><figcaption class="visual-label"><span>Modelo de referencia</span><strong>Villarrica Panorama</strong><small>Diseño sujeto a evaluación técnica</small></figcaption></figure>
+   <figure class="hero-photo"><div class="model-image"><img src="imagenes/villarrica.png" alt="Diseño de referencia de construcción modular Villarrica Panorama" fetchpriority="high"><span class="model-image-tag">Diseño de referencia</span></div><figcaption class="visual-label"><span>Modelo de referencia</span><strong>Villarrica Panorama</strong><small>Diseño sujeto a evaluación técnica</small></figcaption></figure>
    <div class="visual-side-note">Diseños a tu medida</div>
   </div>
  </div>
@@ -68,13 +68,14 @@
   <div class="eyebrow">Portafolio · Fotografías de referencia</div>
   <h2>Modelos de Tiny Houses y construcciones modulares.</h2>
   <p class="desc">Explora modelos de referencia para proyectos habitacionales y turísticos en La Araucanía. El diseño definitivo, la superficie útil y las terminaciones se definen antes de presupuestar.</p>
+  <div class="portfolio-intro"><div><strong>Galería de modelos de referencia</strong><span>Visualiza diseños y solicita una evaluación personalizada.</span></div><a href="./index.html?servicio=modular#cotizador" class="btn secondary">Cuéntanos tu proyecto</a></div>
   <div class="model-grid" id="modelos-dinamicos">
-   <article class="model">
-    <img src="imagenes/villarrica.png" alt="Modelo modular Villarrica Panorama de INGEBAM" loading="lazy">
+   <article class="model" data-kind="tiny">
+    <div class="model-image"><img src="imagenes/villarrica.png" alt="Modelo modular Villarrica Panorama de INGEBAM" loading="lazy"><span class="model-image-tag">Diseño de referencia</span></div>
     <div class="model-body"><span class="model-meta">Tiny House · Modelo piloto</span><h3>Villarrica Panorama</h3><p>Diseño contemporáneo con ventanales amplios y conexión visual con el entorno. Configuración por definir según el proyecto.</p><div class="model-actions"><a class="btn secondary" href="./visor-3d.html">Explorar visor 3D conceptual</a><a class="btn primary" href="./index.html?servicio=modular#cotizador">Consultar modelo</a></div></div>
    </article>
-   <article class="model">
-    <img src="imagenes/tiny-house-2.jpg" alt="Modelo modular Refugio Llaima de INGEBAM" loading="lazy">
+   <article class="model" data-kind="tiny">
+    <div class="model-image"><img src="imagenes/tiny-house-2.jpg" alt="Modelo modular Refugio Llaima de INGEBAM" loading="lazy"><span class="model-image-tag">Diseño de referencia</span></div>
     <div class="model-body"><span class="model-meta">Tiny House · Modelo piloto</span><h3>Refugio Llaima</h3><p>Refugio de expresión modular pensado para entornos naturales. El equipamiento y las dimensiones se ajustan en la etapa de diseño.</p><div class="model-actions"><a class="btn secondary" href="./visor-3d.html">Explorar visor 3D conceptual</a><a class="btn primary" href="./index.html?servicio=modular#cotizador">Consultar modelo</a></div></div>
    </article>
   </div>
@@ -141,9 +142,9 @@
   if(!models.length)return;
   grid.replaceChildren();
   models.forEach(m=>{
-   const card=document.createElement('article');card.className='model';
+   const card=document.createElement('article');card.className='model';card.dataset.kind=m.tipo;
    const pic=safePath(m.imagen);
-   if(pic){const img=document.createElement('img');img.src=pic;img.alt='Modelo '+m.nombre+' de INGEBAM';img.loading='lazy';card.append(img);}
+   if(pic){const media=document.createElement('div');media.className='model-image';const img=document.createElement('img');img.src=pic;img.alt='Modelo '+m.nombre+' de INGEBAM';img.loading='lazy';media.append(img);const tag=document.createElement('span');tag.className='model-image-tag';tag.textContent='Diseño de referencia';media.append(tag);card.append(media);}
    const body=document.createElement('div');body.className='model-body';
    const meta=document.createElement('span');meta.className='model-meta';meta.textContent=(names[m.tipo]||'Módulo')+(m.ubicacion?' · '+m.ubicacion:'');
    const title=document.createElement('h3');title.textContent=m.nombre;
