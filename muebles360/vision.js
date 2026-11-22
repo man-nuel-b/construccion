@@ -1,4 +1,4 @@
-/* INGEBAM Muebles360 V3.4 — Lectura geométrica local de píxeles, sin envío de imágenes.
+/* INGEBAM Muebles360 V3.5 — Lectura geométrica local de píxeles, sin envío de imágenes.
    Detecta bordes candidatos; no es un clasificador semántico entrenado ni garantiza
    medidas, número de módulos, tipo de frente ni detalles ocultos. Revisión obligatoria. */
 (function(root){'use strict';
@@ -119,8 +119,9 @@ async function suggestFromImage(file,options={}){
  ctx.drawImage(bmp,0,0,w,h);bmp.close?.();
  const original=ctx.getImageData(0,0,w,h);
  const rectified=options.corners?.length===4?rectifyRaster(original,options.corners):original;
- const result=analyzeRaster(rectified,{roi:options.roi});
- if(options.corners?.length===4){const out=document.createElement('canvas');out.width=rectified.width;out.height=rectified.height;out.getContext('2d').putImageData(new ImageData(rectified.data,rectified.width,rectified.height),0,0);result.previewURL=out.toDataURL('image/png');result.rectified=true}
+ const isRectified=options.corners?.length===4;
+ const result=analyzeRaster(rectified,{roi:isRectified?{x0:0,y0:0,x1:1,y1:1}:options.roi});
+ if(isRectified){result.roi={x0:0,y0:0,x1:1,y1:1};const out=document.createElement('canvas');out.width=rectified.width;out.height=rectified.height;out.getContext('2d').putImageData(new ImageData(rectified.data,rectified.width,rectified.height),0,0);result.previewURL=out.toDataURL('image/png');result.rectified=true}
  return result;
 }
 function normalizeAI(data,existing={}){
