@@ -30,13 +30,14 @@ function normalize(raw={}){
  const thickness=n(raw.thickness,18)===15?15:18;
  const maxModules=Math.max(1,Math.min(6,Math.floor((width-thickness)/(MIN_CLEAR+thickness))));
  const modules=int(clamp(n(raw.modules,preset.modules),1,maxModules),preset.modules);
- const moduleTypes=Array.from({length:modules},(_,i)=>['puerta','cajones','abierto'].includes(raw.moduleTypes?.[i])?raw.moduleTypes[i]:(preset.moduleTypes[i]||'puerta'));
+ const moduleTypes=Array.from({length:modules},(_,i)=>['puerta','cajones','abierto','mixto'].includes(raw.moduleTypes?.[i])?raw.moduleTypes[i]:(preset.moduleTypes[i]||'puerta'));
  const moduleWidths=allocateWidths(width-2*thickness-(modules-1)*thickness,Array.from({length:modules},(_,i)=>n(raw.moduleWidths?.[i],1)));
  const shelves=int(clamp(n(raw.shelves,preset.shelves),0,5),preset.shelves),drawers=int(clamp(n(raw.drawers,preset.drawers),1,5),preset.drawers);
  const moduleShelves=Array.from({length:modules},(_,i)=>int(clamp(n(raw.moduleShelves?.[i],shelves),0,5),shelves));
  const moduleDrawers=Array.from({length:modules},(_,i)=>int(clamp(n(raw.moduleDrawers?.[i],drawers),1,5),drawers));
+ const moduleMixPct=Array.from({length:modules},(_,i)=>int(clamp(n(raw.moduleMixPct?.[i],45),25,75),45));
  const baseType=['zocalo','patas','suspendido'].includes(raw.baseType)?raw.baseType:preset.baseType;
- return {category,width,height,depth,thickness,modules,moduleTypes,moduleWidths,moduleShelves,moduleDrawers,baseType,shelves,drawers,finish:Object.hasOwn(FINISHES,raw.finish)?raw.finish:'roble'};
+ return {category,width,height,depth,thickness,modules,moduleTypes,moduleWidths,moduleShelves,moduleDrawers,moduleMixPct,baseType,shelves,drawers,finish:Object.hasOwn(FINISHES,raw.finish)?raw.finish:'roble'};
 }
 function resizeModule(raw,index,newWidth){
  const p=normalize(raw);if(!Number.isInteger(index)||index<0||index>=p.modules)return p;
@@ -85,16 +86,22 @@ function generate(raw){
  const frontZ=D/2-T/2;
  for(let i=0;i<p.modules;i++){
   const x=moduleCenters[i],cw=p.moduleWidths[i],type=p.moduleTypes[i];
+  const lowerH=type==='mixto'?Math.round(carcassH*p.moduleMixPct[i]/100):carcassH;
+  if(type==='mixto'){
+   const separatorY=baseY+lowerH;
+   add('Entrepaño separador mixto','interior',cw-4,T,Math.max(80,depthInside-35),x,separatorY,-T/2-12,1,{moduleIndex:i});
+  }
   if(type!=='cajones')for(let j=1;j<=p.moduleShelves[i];j++){
-    const y=baseY+T+j*innerHeight/(p.moduleShelves[i]+1);
+    const usable=type==='mixto'?Math.max(80,innerHeight-lowerH):innerHeight;
+    const y=(type==='mixto'?baseY+lowerH+T:baseY+T)+j*usable/(p.moduleShelves[i]+1);
     add('Repisa interior','interior',cw-4,T,Math.max(80,depthInside-35),x,y,-T/2-12,1,{moduleIndex:i});
   }
   if(type==='puerta'){
    const doorW=cw+T-doorGap,doorH=carcassH-2*doorGap;
    const part=add('Puerta abatible','front',doorW,doorH,T,x,baseY+carcassH/2,frontZ,4,{moduleIndex:i,motion:'door',hingeSide:i%2===0?'left':'right'});
    if(part){hardware.hinges+=doorH>1900?4:doorH>950?3:2;hardware.handles++;}
-  }else if(type==='cajones'){
-   const count=p.moduleDrawers[i],frH=(carcassH-(count+1)*doorGap)/count;
+  }else if(type==='cajones'||type==='mixto'){
+   const count=p.moduleDrawers[i],frontH=type==='mixto'?lowerH:carcassH,frH=(frontH-(count+1)*doorGap)/count;
    for(let j=0;j<count;j++){
     const y=baseY+doorGap+frH/2+j*(frH+doorGap);
     add('Frente de cajón','front',cw+T-doorGap,frH,T,x,y,frontZ,4,{moduleIndex:i,motion:'drawer'});
@@ -115,7 +122,7 @@ function generate(raw){
   if(part.length>BOARD_W||part.width>BOARD_H)alerts.push(`La pieza «${part.name}» (${part.length} × ${part.width} mm) supera el tablero estándar si no se reorienta o divide.`);
  }
  if(p.moduleWidths.some(w=>w<280))alerts.push('Hay módulos estrechos: validar funcionamiento de puertas, cajones y herrajes.');
- for(let i=0;i<p.modules;i++){if(p.moduleTypes[i]==='puerta'&&p.moduleWidths[i]>650)alerts.push(`Módulo ${i+1}: puerta de ancho útil ${p.moduleWidths[i]} mm. Revisar peso, cantidad de bisagras y posible división del frente.`);if(p.moduleTypes[i]==='cajones'&&p.moduleWidths[i]>1000)alerts.push(`Módulo ${i+1}: cajonera ancha; validar correderas, cargas admisibles y refuerzos.`)}
+ for(let i=0;i<p.modules;i++){if(p.moduleTypes[i]==='puerta'&&p.moduleWidths[i]>650)alerts.push(`Módulo ${i+1}: puerta de ancho útil ${p.moduleWidths[i]} mm. Revisar peso, cantidad de bisagras y posible división del frente.`);if(['cajones','mixto'].includes(p.moduleTypes[i])&&p.moduleWidths[i]>1000)alerts.push(`Módulo ${i+1}: cajonera ancha; validar correderas, cargas admisibles y refuerzos.`)}
  if(p.baseType==='suspendido')alerts.push('Montaje suspendido: verificar anclajes, soporte y carga real del muro.');
  if(hasTop)alerts.push('Cubierta: no se modelan perforaciones, cantos especiales ni unión a muros.');
  alerts.push('El despiece es preliminar: revisar veta, tolerancias, uniones, anclajes, cajones y medida en terreno antes de cortar.');
