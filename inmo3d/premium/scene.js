@@ -4,10 +4,11 @@ import { enhancePremiumScene } from './premium-details-v111.js';
 import { addArchitecturalFinish } from './premium-finish-v112.js';
 import { createExteriorRealism } from './exterior-realism-v113.js';
 import { createCinematicPipeline } from './cinematic-pipeline-v114.js';
+import { createPhotoStudio } from './photo-studio-v115.js';
 
 const status = document.querySelector('#status');
 try {
-const renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:'high-performance', alpha:false });
+const renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:'high-performance', alpha:false, preserveDrawingBuffer:true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
 renderer.setSize(innerWidth,innerHeight);
 renderer.shadowMap.enabled=true;
@@ -142,6 +143,8 @@ console.info('INGEBAM Inmo3D Finishes',finishingReport);
 const exteriorRealism=createExteriorRealism({THREE,scene,renderer,camera,sun});
 console.info('INGEBAM Exterior Realism',exteriorRealism.stats);
 const cinematic=createCinematicPipeline({THREE,renderer,scene,camera});
+const photoStudio=createPhotoStudio({camera,renderer,controls,cinematic,THREE});
+window.Inmo3DPremiumPhoto=photoStudio;
 // Camera tours retain real-time OrbitControls.
 const views={
  front:{p:[17,10.3,19],t:[0,2,0]},
