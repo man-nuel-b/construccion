@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { enhancePremiumScene } from './premium-details-v111.js';
+import { addArchitecturalFinish } from './premium-finish-v112.js';
 
 const status = document.querySelector('#status');
 try {
@@ -134,6 +135,8 @@ sun.shadow.bias=-.00008;sun.shadow.normalBias=.024;sun.shadow.radius=3;
 scene.add(sun);sun.target.position.set(0,0,0);scene.add(sun.target);
 const premiumReport = enhancePremiumScene({THREE,scene,renderer,materials:mat});
 console.info('INGEBAM Inmo3D Premium',premiumReport);
+const finishingReport=addArchitecturalFinish({THREE,scene,renderer,materials:mat});
+console.info('INGEBAM Inmo3D Finishes',finishingReport);
 // Camera tours retain real-time OrbitControls.
 const views={
  front:{p:[17,10.3,19],t:[0,2,0]},
