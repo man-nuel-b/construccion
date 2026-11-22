@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es-CL"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>INGEBAM Muebles360 V3.3 — Diseñador paramétrico, despiece y optimización</title>
+<title>INGEBAM Muebles360 V3.4 — Diseñador paramétrico, despiece y optimización</title>
 <meta name="description" content="Prototipo INGEBAM de diseño de muebles a medida, referencia fotográfica, despiece preliminar y presupuestos."/>
 <meta name="robots" content="noindex,nofollow"/>
 <style>
@@ -73,7 +73,7 @@ dialog.photo-compare::backdrop{background:#000b;backdrop-filter:blur(3px)}
   <div class="corner-actions"><button id="undoCorner" type="button">Quitar última esquina</button><button id="resetCorners" type="button">Limpiar selección</button></div>
   <p class="hint">Se recortará solo el mueble delimitado y se corregirá su perspectiva aproximada antes del análisis local. No mide dimensiones reales.</p>
  </div>
- <button id="analyze" class="action-full">Reconocer divisiones y frentes (experimental)</button><button id="comparePhoto" class="action-full quiet" disabled>Comparar foto y diseño</button><button id="analyzeAI" class="action-full quiet" disabled title="Configura un endpoint en Muebles360Config.aiEndpoint para habilitar">Analizar con IA real (no configurado)</button><div id="status" class="status" role="status" aria-live="polite"></div>
+ <button id="analyze" class="action-full">Reconocer divisiones y frentes (experimental)</button><button id="comparePhoto" class="action-full quiet" disabled>Comparar foto y diseño</button><button id="analyzeAI" class="action-full quiet" disabled title="Requiere servidor privado con clave de IA; las fotos no se suben hasta pulsar el botón.">Analizar zona con IA real (requiere servidor)</button><div id="status" class="status" role="status" aria-live="polite"></div>
  <details class="vision-roi"><summary>Ajustar región de análisis</summary><div class="two" style="padding-top:10px">
  <label class="input-label">Izquierda (%)<input id="roiLeft" type="number" min="0" max="60" value="2"></label>
  <label class="input-label">Derecha (%)<input id="roiRight" type="number" min="40" max="100" value="98"></label>
@@ -122,7 +122,7 @@ dialog.photo-compare::backdrop{background:#000b;backdrop-filter:blur(3px)}
 </details><div class="two"><div class="input-row"><label class="input-label" for="kerf">Espesor de corte (mm)</label><input id="kerf" type="number" min="0" max="10" step="1" value="4"></div><div class="input-row"><label class="input-label" for="trim">Saneado de bordes (mm)</label><input id="trim" type="number" min="0" max="30" step="1" value="8"></div></div><div class="input-row"><label style="display:flex;align-items:center;gap:8px;font-size:.75rem"><input type="checkbox" id="allowRotation"> Permitir giro de piezas en plancha (revisar veta)</label></div><div class="input-row"><label style="display:flex;align-items:center;gap:8px;font-size:.75rem"><input type="checkbox" id="vat"> Incluir IVA 19% en cotización simulada</label></div><div class="line"><span>Planchas melamina (estimadas)</span><strong id="boards">—</strong></div><div class="line"><span>Planchas MDF traseras (estimadas)</span><strong id="backs">—</strong></div><div class="line"><span>Tapacanto</span><strong id="edge">—</strong></div><div class="line"><span>Bisagras / pares de correderas</span><strong id="hardware">—</strong></div><details class="price-details"><summary>Ver desglose de costos directos</summary><div class="line"><span>Tableros</span><strong id="costBoards">—</strong></div><div class="line"><span>Tapacantos</span><strong id="costEdge">—</strong></div><div class="line"><span>Herrajes y patas</span><strong id="costHardware">—</strong></div><div class="line"><span>Cubierta</span><strong id="costTop">—</strong></div><div class="line"><span>Mano de obra</span><strong id="costLabor">—</strong></div><div class="line"><span>Instalación</span><strong id="costInstallation">—</strong></div><div class="line"><span>Despacho</span><strong id="costDelivery">—</strong></div></details><div class="line"><span>Rendimiento de planchas</span><strong id="yieldPct">—</strong></div><div class="line"><span>Costo directo estimado</span><strong id="directCost">—</strong></div><div class="line"><span>Gastos indirectos</span><strong id="overhead">—</strong></div><div class="line"><span>Contingencia</span><strong id="contingency">—</strong></div><div class="line"><span>Subtotal venta</span><strong id="subtotal">—</strong></div><div class="line" id="vatRow" hidden><span>IVA</span><strong id="vatValue">—</strong></div><div class="totalbox"><small>Precio estimado de venta</small><strong id="total">—</strong></div><div class="status-line" id="quoteStatus" aria-live="polite">Evaluando geometría y costos…</div><p class="hint">Precios de muestra, editables. No incluye traslados, instalaciones especiales, lavaplatos ni integración con proveedores.</p></section>
  <section class="panel"><div class="section-head"><h2>Distribución de cortes</h2><span class="section-num">06</span></div><p class="muted">Acomodo orientativo de piezas por plancha con pérdida de corte y saneado. No sustituye nesting industrial.</p><div class="sheet-meta" id="sheetSummary">Calculando…</div><div class="sheet-previews" id="sheetPreviews"></div><div class="small-actions" style="margin-top:10px"><button id="exportCutSVG">Descargar plano de planchas SVG</button></div></section>
  <section class="panel"><div class="section-head"><h2>Despiece preliminar</h2><span class="section-num">07</span></div><div class="tablewrap"><table><thead><tr><th>Pieza</th><th>Cant.</th><th>L × A × E (mm)</th></tr></thead><tbody id="cutlist"></tbody></table></div><div class="line"><span>Componentes físicos modelados</span><strong id="partsCount">—</strong></div><div class="exports"><button id="exportCSV">Exportar CSV</button><button id="exportSVG">Croquis SVG</button><button id="print">Imprimir vista</button><button id="exportJSON">Exportar JSON</button></div><div class="alert" id="alerts"></div></section>
- <p class="foot-note">El modo 3D avanzado carga Three.js desde CDN y requiere internet; el visor local funciona sin internet. Los archivos de proyectos se guardan en tu dispositivo. INGEBAM Muebles360 V3.3 · Prototipo comercial independiente. No es un producto oficial de Muebles Lasch. Validar dimensiones, cálculos, vetas, herrajes y anclajes con un mueblista antes de fabricar.</p>
+ <p class="foot-note">La IA multimodal requiere un servidor privado y una clave configurada allí. El navegador envía solo el área seleccionada al pulsar el botón de IA, nunca durante la carga de fotos. El modo 3D avanzado carga Three.js desde CDN y requiere internet; el visor local funciona sin internet. Los archivos de proyectos se guardan en tu dispositivo. INGEBAM Muebles360 V3.4 · Prototipo comercial independiente. No es un producto oficial de Muebles Lasch. Validar dimensiones, cálculos, vetas, herrajes y anclajes con un mueblista antes de fabricar.</p>
 </aside></div>
 <dialog class="photo-compare" id="photoCompareModal" aria-labelledby="compareHeading">
  <div class="compare-header"><h2 id="compareHeading">Comprobación: referencia versus diseño paramétrico</h2><button id="closeCompare" type="button">Cerrar ✕</button></div>
@@ -155,14 +155,10 @@ window.Muebles360Config = Object.freeze({
   const loadInput = document.getElementById("loadProject");
 
   if (aiBtn) {
-    if (cfg.aiEndpoint) {
-      aiBtn.disabled = false;
-      aiBtn.textContent = "Analizar con IA real";
-      aiBtn.title = "Enviar referencia al endpoint configurado";
-    } else {
-      aiBtn.disabled = true;
-      aiBtn.textContent = "Analizar con IA real (no configurado)";
-    }
+    aiBtn.disabled=true;
+    aiBtn.dataset.ready='false';
+    aiBtn.textContent=cfg.aiEndpoint?'Comprobando servidor de IA…':'IA real: disponible solo con servidor privado';
+    aiBtn.title='Las imágenes no se envían al seleccionar un archivo ni al utilizar análisis local.';
   }
 
   document.querySelectorAll('input[type="number"]').forEach((input) => {
