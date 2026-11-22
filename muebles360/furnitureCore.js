@@ -8,7 +8,7 @@ const PRESETS={
  vanitorio:{label:'Vanitorio',width:1200,height:750,depth:500,modules:2,shelves:0,drawers:2,baseType:'suspendido',moduleTypes:['puerta','cajones']}
 };
 const FINISHES={roble:{label:'Roble natural',color:'#b99264'},nogal:{label:'Nogal oscuro',color:'#60432d'},blanco:{label:'Blanco mate',color:'#e9e9e6'},grafito:{label:'Grafito',color:'#424b58'}};
-const DEFAULT_PRICES={sheet18:52000,sheet15:46000,back3:17000,edgeMeter:1500,hinge:3200,runnerPair:14500,handle:2800,leg:3800,countertopMeter:75000,laborHour:9500,overheadPct:12,marginPct:25,includeVat:false,kerfMm:4,trimMm:8,allowRotation:false};
+const DEFAULT_PRICES={sheet18:52000,sheet15:46000,back3:17000,edgeMeter:1500,hinge:3200,runnerPair:14500,handle:2800,leg:3800,countertopMeter:75000,laborHour:9500,installationHours:0,deliveryFee:0,contingencyPct:0,overheadPct:12,marginPct:25,includeVat:false,kerfMm:4,trimMm:8,allowRotation:false};
 const BOARD_W=2440,BOARD_H=1830,MIN_CLEAR=260;
 const n=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
@@ -32,9 +32,9 @@ function normalize(raw={}){
  const modules=int(clamp(n(raw.modules,preset.modules),1,maxModules),preset.modules);
  const moduleTypes=Array.from({length:modules},(_,i)=>['puerta','cajones','abierto'].includes(raw.moduleTypes?.[i])?raw.moduleTypes[i]:(preset.moduleTypes[i]||'puerta'));
  const moduleWidths=allocateWidths(width-2*thickness-(modules-1)*thickness,Array.from({length:modules},(_,i)=>n(raw.moduleWidths?.[i],1)));
- const shelves=int(clamp(n(raw.shelves,preset.shelves),0,5),preset.shelves),drawers=int(clamp(n(raw.drawers,preset.drawers),2,5),preset.drawers);
+ const shelves=int(clamp(n(raw.shelves,preset.shelves),0,5),preset.shelves),drawers=int(clamp(n(raw.drawers,preset.drawers),1,5),preset.drawers);
  const moduleShelves=Array.from({length:modules},(_,i)=>int(clamp(n(raw.moduleShelves?.[i],shelves),0,5),shelves));
- const moduleDrawers=Array.from({length:modules},(_,i)=>int(clamp(n(raw.moduleDrawers?.[i],drawers),2,5),drawers));
+ const moduleDrawers=Array.from({length:modules},(_,i)=>int(clamp(n(raw.moduleDrawers?.[i],drawers),1,5),drawers));
  const baseType=['zocalo','patas','suspendido'].includes(raw.baseType)?raw.baseType:preset.baseType;
  return {category,width,height,depth,thickness,modules,moduleTypes,moduleWidths,moduleShelves,moduleDrawers,baseType,shelves,drawers,finish:Object.hasOwn(FINISHES,raw.finish)?raw.finish:'roble'};
 }
@@ -115,6 +115,7 @@ function generate(raw){
   if(part.length>BOARD_W||part.width>BOARD_H)alerts.push(`La pieza «${part.name}» (${part.length} × ${part.width} mm) supera el tablero estándar si no se reorienta o divide.`);
  }
  if(p.moduleWidths.some(w=>w<280))alerts.push('Hay módulos estrechos: validar funcionamiento de puertas, cajones y herrajes.');
+ for(let i=0;i<p.modules;i++){if(p.moduleTypes[i]==='puerta'&&p.moduleWidths[i]>650)alerts.push(`Módulo ${i+1}: puerta de ancho útil ${p.moduleWidths[i]} mm. Revisar peso, cantidad de bisagras y posible división del frente.`);if(p.moduleTypes[i]==='cajones'&&p.moduleWidths[i]>1000)alerts.push(`Módulo ${i+1}: cajonera ancha; validar correderas, cargas admisibles y refuerzos.`)}
  if(p.baseType==='suspendido')alerts.push('Montaje suspendido: verificar anclajes, soporte y carga real del muro.');
  if(hasTop)alerts.push('Cubierta: no se modelan perforaciones, cantos especiales ni unión a muros.');
  alerts.push('El despiece es preliminar: revisar veta, tolerancias, uniones, anclajes, cajones y medida en terreno antes de cortar.');
@@ -173,12 +174,14 @@ function estimate(raw,rawPrices={}){
   edgeband:edgeMm/1000*pr.edgeMeter,
   hardware:model.hardware.hinges*pr.hinge+model.hardware.runners*pr.runnerPair+model.hardware.handles*pr.handle+model.hardware.legs*pr.leg,
   countertop:model.params.category==='closet'?0:model.params.width/1000*pr.countertopMeter,
-  labor:(4+2.5*model.params.modules+1.2*model.hardware.runners)*pr.laborHour
+  labor:(4+2.5*model.params.modules+1.2*model.hardware.runners)*pr.laborHour,
+  installation:clamp(n(pr.installationHours,0),0,500)*pr.laborHour,
+  delivery:clamp(n(pr.deliveryFee,0),0,10000000)
  };
- const directCost=Object.values(costs).reduce((a,b)=>a+b,0),overhead=directCost*clamp(n(pr.overheadPct),0,100)/100,margin=clamp(n(pr.marginPct),0,75)/100;
- const subtotal=(directCost+overhead)/(1-margin),vat=pr.includeVat?subtotal*.19:0;
+ const directCost=Object.values(costs).reduce((a,b)=>a+b,0),overhead=directCost*clamp(n(pr.overheadPct),0,100)/100,contingency=directCost*clamp(n(pr.contingencyPct),0,100)/100,margin=clamp(n(pr.marginPct),0,75)/100;
+ const subtotal=(directCost+overhead+contingency)/(1-margin),vat=pr.includeVat?subtotal*.19:0;
  if(nesting.unplaced.length)model.alerts.unshift(`Atención: ${nesting.unplaced.length} pieza(s) no caben en la plancha configurada. El costo puede estar SUBESTIMADO.`);
- return {model,prices:pr,boards,nesting,edgeMeters:edgeMm/1000,costs,directCost,overhead,subtotal,vat,total:subtotal+vat,margin,validForQuote:nesting.unplaced.length===0};
+ return {model,prices:pr,boards,nesting,edgeMeters:edgeMm/1000,costs,directCost,overhead,contingency,subtotal,vat,total:subtotal+vat,margin,validForQuote:nesting.unplaced.length===0};
 }
 root.MueblesCore={PRESETS,FINISHES,DEFAULT_PRICES,BOARD_W,BOARD_H,normalize,resizeModule,generate,consolidate,layoutCutSheets,estimate};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.MueblesCore;
