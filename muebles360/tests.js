@@ -49,3 +49,13 @@ test('Reporta piezas fuera de plancha sin ocultar la falta de costeo',()=>{
  const est=C.estimate({category:'closet',height:2600});assert.equal(est.validForQuote,false);
 });
 console.log('Pruebas V2 completadas.');
+
+// Pruebas V3: nuevas reglas, presupuesto comercial y controles.
+const Q=require('./quoteEngine.js');
+test('Permite exactamente un cajón por cuerpo',()=>{const m=C.generate({category:'cocina',moduleTypes:['puerta','puerta','cajones'],moduleDrawers:[1,1,1]});assert.equal(m.hardware.runners,1)});
+test('Instalación y despacho se contabilizan de forma independiente',()=>{const a=C.estimate({},{installationHours:0,deliveryFee:0}),b=C.estimate({},{installationHours:5,deliveryFee:35000});assert.equal(b.costs.installation,5*b.prices.laborHour);assert.equal(b.costs.delivery,35000);assert.ok(b.directCost>a.directCost)});
+test('Contingencia se añade antes del margen de venta',()=>{const a=C.estimate({},{contingencyPct:0}),b=C.estimate({},{contingencyPct:10});assert.ok(Math.abs(b.contingency-b.directCost*.10)<.01);assert.ok(b.subtotal>a.subtotal)});
+test('Advertencia de puerta demasiado ancha',()=>{const m=C.generate({category:'cocina',modules:1,width:1500,moduleTypes:['puerta']});assert.ok(m.alerts.some(v=>v.includes('puerta de ancho útil')))});
+test('Presupuesto HTML escapa contenido del cliente y evita inyección',()=>{const html=Q.makeQuoteHTML(C.estimate({}),{client:'<script>alert(1)</script>',notes:'A & B'});assert.ok(!html.includes('<script>alert(1)</script>'));assert.ok(html.includes('&lt;script&gt;'));assert.ok(html.includes('A &amp; B'))});
+test('Presupuesto indica explícitamente piezas fuera de tablero',()=>{const html=Q.makeQuoteHTML(C.estimate({category:'closet',height:2600}),{});assert.ok(html.includes('NO debe entregarse'))});
+console.log('Pruebas V3 completadas.');
