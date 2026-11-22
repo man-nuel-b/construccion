@@ -38,7 +38,8 @@ async function createThreeViewer(host,onSelect){
   const backMat=new THREE.MeshStandardMaterial({color:0xb9b9b4,roughness:.87});
   const stoneMat=new THREE.MeshStandardMaterial({color:0x515d69,roughness:.27,metalness:.02});
   const metalMat=new THREE.MeshStandardMaterial({color:0xc5b99c,roughness:.26,metalness:.65});
-  modelMaterials.push(woodMat,interiorMat,backMat,stoneMat,metalMat);
+  const panelMat=new THREE.MeshStandardMaterial({color:0xeee9df,map:finishTexture(finish.color),roughness:.66,metalness:0});
+  modelMaterials.push(woodMat,interiorMat,backMat,stoneMat,metalMat,panelMat);
   for(const part of newModel.parts){const mat=part.kind==='front'||part.kind==='body'?woodMat:part.kind==='countertop'?stoneMat:part.kind==='back'?backMat:interiorMat;
    const geo=new THREE.BoxGeometry(part.dx/1000,part.dy/1000,part.dz/1000);
    const mesh=new THREE.Mesh(geo,mat);mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData.part=part;mesh.position.set(part.x/1000,part.y/1000,part.z/1000);
@@ -49,6 +50,12 @@ async function createThreeViewer(host,onSelect){
     animationObjects.push({type:'door',obj:pivot,side:hinge});
    }else {modelGroup.add(mesh);if(part.motion==='drawer')animationObjects.push({type:'drawer',obj:mesh,baseZ:part.z/1000})}
    if(part.kind==='front'){
+    if(model.params.frontStyle==='marco'&&part.motion==='door'){
+     const panelWidth=Math.max(.04,part.dx/1000-.12),panelHeight=Math.max(.04,part.dy/1000-.14);
+     const decorativePanel=new THREE.Mesh(new THREE.BoxGeometry(panelWidth,panelHeight,.005),panelMat);
+     decorativePanel.position.set(0,0,part.dz/2000+.003);decorativePanel.castShadow=true;
+     mesh.add(decorativePanel);
+    }
     const isDrawer=part.motion==='drawer';const handle=new THREE.Mesh(new THREE.BoxGeometry(isDrawer?Math.min(.145,part.dx/3000):.014,isDrawer?.015:.138,.018),metalMat);
     handle.position.set(isDrawer?0:(part.hingeSide==='left'?.35:-.35)*part.dx/1000,isDrawer?0:-Math.min(.16,part.dy/5000),part.dz/2000+.017);
     handle.castShadow=true;mesh.add(handle);
