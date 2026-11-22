@@ -1,8 +1,8 @@
-/* INGEBAM Muebles360 V3 — App y exportadores. Ninguna foto se sube sin activar IA. */
+/* INGEBAM Muebles360 V3.2 — App, cotizador y revisión fotográfica. Ninguna foto se sube sin activar IA. */
 (()=>{'use strict';
  const C=window.MueblesCore,Money=new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0});
  const id=x=>document.getElementById(x),money=x=>Money.format(x),ehtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- let state=C.normalize({category:'cocina'}),current=null,selectedModule=0,selectedPhoto=null,photoURL=null,advanced=null;
+ let state=C.normalize({category:'cocina'}),current=null,selectedModule=0,selectedPhoto=null,photoURL=null,advanced=null,pendingVision=null;
  const metaIds=['clientName','clientContact','quoteRef','projectStage','projectNotes'];
  const history={past:[],future:[],last:null,restoring:false};
  function snapshot(){return JSON.stringify({params:state,prices:getPrices(),projectName:id('projectName').value,meta:getMeta()})}
@@ -28,7 +28,9 @@
   id('moduleWidth').disabled=state.modules===1;
   id('moduleDrawers').value=state.moduleDrawers[selectedModule]??state.drawers;
   id('moduleShelves').value=state.moduleShelves[selectedModule]??state.shelves;
-  id('moduleDrawers').disabled=state.moduleTypes[selectedModule]!=='cajones';
+  id('moduleMixPct').value=state.moduleMixPct[selectedModule]??45;
+  id('moduleMixPct').disabled=state.moduleTypes[selectedModule]!=='mixto';
+  id('moduleDrawers').disabled=!['cajones','mixto'].includes(state.moduleTypes[selectedModule]);
   id('moduleShelves').disabled=state.moduleTypes[selectedModule]==='cajones';
   id('moduleMoveLeft').disabled=selectedModule===0;id('moduleMoveRight').disabled=selectedModule===state.modules-1;
   id('hud').textContent=`${C.PRESETS[state.category].label} · ${state.width} × ${state.height} × ${state.depth} mm · ${state.modules} módulos`;
@@ -89,15 +91,16 @@
  }
  for(const k of controls)id(k).addEventListener('change',e=>{
   if(k==='category'){state=C.normalize({category:e.target.value,finish:state.finish,thickness:state.thickness});selectedModule=0;viewer.reset()}
-  else if(k==='modules'){const len=Math.round(Number(e.target.value));state={...state,modules:len,moduleTypes:Array.from({length:Math.max(1,len)},(_,i)=>state.moduleTypes[i]||'puerta'),moduleWidths:undefined,moduleShelves:undefined,moduleDrawers:undefined}}
+  else if(k==='modules'){const len=Math.round(Number(e.target.value));state={...state,modules:len,moduleTypes:Array.from({length:Math.max(1,len)},(_,i)=>state.moduleTypes[i]||'puerta'),moduleWidths:undefined,moduleShelves:undefined,moduleDrawers:undefined,moduleMixPct:undefined}}
   else if(['width','height','depth','thickness','shelves','drawers'].includes(k)){state={...state,[k]:Number(e.target.value)};
    if(k==='shelves')state.moduleShelves=Array(state.modules).fill(Number(e.target.value));
    if(k==='drawers')state.moduleDrawers=Array(state.modules).fill(Number(e.target.value));
   }else state={...state,[k]:e.target.value};update();
  });
  id('moduleType').addEventListener('change',e=>{const moduleTypes=[...state.moduleTypes];moduleTypes[selectedModule]=e.target.value;state={...state,moduleTypes};update()});
+ id('moduleMixPct').addEventListener('change',e=>{const arr=[...state.moduleMixPct];arr[selectedModule]=Math.max(25,Math.min(75,Math.round(Number(e.target.value)||45)));state={...state,moduleMixPct:arr};update()});
  id('moduleWidth').addEventListener('change',e=>{state=C.resizeModule(state,selectedModule,Number(e.target.value));update()});
- for(const [control,step] of [['moduleMoveLeft',-1],['moduleMoveRight',1]])id(control).addEventListener('click',()=>{const j=selectedModule+step;if(j<0||j>=state.modules)return;const next={...state};for(const key of ['moduleTypes','moduleWidths','moduleShelves','moduleDrawers']){const list=[...state[key]];[list[selectedModule],list[j]]=[list[j],list[selectedModule]];next[key]=list}state=next;selectedModule=j;update()});
+ for(const [control,step] of [['moduleMoveLeft',-1],['moduleMoveRight',1]])id(control).addEventListener('click',()=>{const j=selectedModule+step;if(j<0||j>=state.modules)return;const next={...state};for(const key of ['moduleTypes','moduleWidths','moduleShelves','moduleDrawers','moduleMixPct']){const list=[...state[key]];[list[selectedModule],list[j]]=[list[j],list[selectedModule]];next[key]=list}state=next;selectedModule=j;update()});
  for(const key of ['moduleDrawers','moduleShelves'])id(key).addEventListener('change',e=>{const p=key==='moduleDrawers'?'moduleDrawers':'moduleShelves';const arr=[...state[p]];arr[selectedModule]=Number(e.target.value);state={...state,[p]:arr};update()});
  for(const k of ['sheetPrice','margin','vat','kerf','trim','allowRotation',...unitPriceIds])id(k).addEventListener('change',update);
  id('projectName').addEventListener('change',update);for(const k of metaIds)id(k).addEventListener('change',update);
@@ -112,32 +115,99 @@
   try{advanced=await window.INGEBAMThree.createThreeViewer(id('viewport'),onSelectPart);viewer=advanced;id('viewport').dataset.mode='3d';viewer.setModel(current.model);viewer.selectModule(selectedModule);btn.textContent='Visor local';id('status').textContent='Visor WebGL avanzado activo. Usa el mouse para girar y seleccionar piezas.'}
   catch(e){btn.textContent='3D avanzado ↗';id('status').textContent='No fue posible activar WebGL: '+String(e?.message||e).slice(0,160)}finally{btn.disabled=false}
  });
- function clearPhoto(){id('comparePhoto').disabled=true;if(photoURL)URL.revokeObjectURL(photoURL);photoURL=null;selectedPhoto=null;id('photo').value='';id('preview').removeAttribute('src');id('drop').classList.remove('loaded');id('filename').textContent='Seleccionar foto o croquis'}
+ function clearVision(){pendingVision=null;id('visionReviewPanel').hidden=true;id('visionResults').replaceChildren()}
+ function field(parent,label,tag,settings={}){
+  const wrap=document.createElement('label');wrap.textContent=label;
+  const element=document.createElement(tag);Object.entries(settings).forEach(([k,v])=>{if(k==='options')for(const [value,text] of v){const option=document.createElement('option');option.value=value;option.textContent=text;element.append(option)}else element[k]=v});wrap.append(element);parent.append(wrap);return element;
+ }
+ async function paintVisionOverlay(){
+  const cv=id('visionOverlay'),context=cv.getContext('2d');if(!context||!photoURL||!pendingVision)return;
+  const img=new Image();img.src=photoURL;try{await img.decode()}catch{return}
+  if(!pendingVision)return;const W=640,H=Math.max(230,Math.round(640*img.height/img.width));cv.width=W;cv.height=H;
+  context.drawImage(img,0,0,W,H);context.fillStyle='rgba(16,27,38,.18)';context.fillRect(0,0,W,H);
+  const roi=pendingVision.roi||{x0:0,y0:0,x1:1,y1:1};
+  context.lineWidth=2;context.strokeStyle='#fbdf9c';context.strokeRect(roi.x0*W,roi.y0*H,(roi.x1-roi.x0)*W,(roi.y1-roi.y0)*H);
+  for(const r of pendingVision.regions){
+   const x=(roi.x0+(roi.x1-roi.x0)*r.x0)*W, w=(roi.x1-roi.x0)*(r.x1-r.x0)*W;
+   context.strokeStyle='rgba(67,230,184,.92)';context.strokeRect(x,roi.y0*H,w,(roi.y1-roi.y0)*H);
+   context.fillStyle='rgba(7,19,30,.85)';context.fillRect(x,roi.y0*H,Math.min(w,150),23);
+   context.fillStyle='#fff';context.font='bold 14px sans-serif';context.fillText(`${r.index+1} · ${r.type}`,x+5,roi.y0*H+16);
+   context.strokeStyle='rgba(255,214,115,.82)';context.setLineDash([6,6]);
+   for(const y of r.lines||[]){context.beginPath();const yy=(roi.y0+(roi.y1-roi.y0)*y)*H;context.moveTo(x,yy);context.lineTo(x+w,yy);context.stroke()}
+   context.setLineDash([]);
+  }
+ }
+ function reviewVision(suggestion){
+  const regions=(suggestion.regions||[]).slice(0,6).map((r,i)=>({index:i,x0:r.x0??i/suggestion.modules,x1:r.x1??(i+1)/suggestion.modules,type:r.type||'puerta',drawers:r.drawers||3,shelves:r.shelves??1,mixPct:r.mixPct||45,confidence:r.confidence||.3,lines:r.lines||[],detail:r.detail||''}));
+  if(!regions.length)throw Error('No se encontraron elementos editables.');
+  pendingVision={...suggestion,regions};id('visionReviewPanel').hidden=false;id('visionDescription').textContent=suggestion.detail||'Revisa las propuestas antes de aplicarlas.';
+  id('visionCategory').value=suggestion.category||state.category;const host=id('visionResults');host.replaceChildren();
+  for(const r of regions){
+   const block=document.createElement('div');block.className='vision-result';
+   const heading=document.createElement('strong');heading.textContent=`Cuerpo ${r.index+1}`;const detail=document.createElement('small');detail.textContent=` · Confianza orientativa ${Math.round(r.confidence*100)}% — ${r.detail}`;block.append(heading,detail);
+   const grid=document.createElement('div');grid.className='two';
+   const type=field(grid,'Frente','select',{options:[['puerta','Puerta'],['cajones','Cajones'],['abierto','Repisas'],['mixto','Mixto']]});type.value=r.type;type.addEventListener('change',()=>{r.type=type.value;paintVisionOverlay()});
+   const drawers=field(grid,'Cajones','input',{type:'number',min:1,max:5,step:1,value:r.drawers});drawers.addEventListener('change',()=>{r.drawers=Math.max(1,Math.min(5,Number(drawers.value)||3))});
+   const shelves=field(grid,'Repisas','input',{type:'number',min:0,max:5,step:1,value:r.shelves});shelves.addEventListener('change',()=>{r.shelves=Math.max(0,Math.min(5,Number(shelves.value)||0))});
+   const mix=field(grid,'Cajones abajo (%)','input',{type:'number',min:25,max:75,step:1,value:r.mixPct});mix.addEventListener('change',()=>{r.mixPct=Math.max(25,Math.min(75,Number(mix.value)||45))});
+   block.append(grid);host.append(block);
+  }
+  paintVisionOverlay();
+  id('status').textContent='Se generaron sugerencias. Revisa la clasificación; nada se aplicará sin tu aprobación.';
+ }
+ id('discardVision').addEventListener('click',()=>{clearVision();id('status').textContent='Sugerencias descartadas; diseño anterior intacto.'});
+ id('applyVision').addEventListener('click',()=>{
+  if(!pendingVision)return;
+  const r=pendingVision.regions;
+  const suggested={...state,category:id('visionCategory').value,modules:r.length,
+   moduleTypes:r.map(x=>x.type),moduleDrawers:r.map(x=>x.drawers),moduleShelves:r.map(x=>x.shelves),moduleMixPct:r.map(x=>x.mixPct),
+   moduleWidths:r.map(x=>Math.max(1,Math.round((x.x1-x.x0)*10000)))};
+  const approved=C.normalize(suggested);
+  // Si un mueble estrecho no puede admitir todas las divisiones, el motor reduce módulos.
+  if(approved.modules!==r.length)id('status').textContent=`Solo caben ${approved.modules} cuerpos con el ancho actual. Ajusta ancho y revisa.`;
+  else id('status').textContent='Diseño aplicado para revisión: mide el mueble real antes de presupuestar o fabricar.';
+  state=approved;selectedModule=0;update();clearVision();
+ });
+ function visionROI(){const l=Number(id('roiLeft').value)/100,r=Number(id('roiRight').value)/100,t=Number(id('roiTop').value)/100,b=Number(id('roiBottom').value)/100;
+  if(!(r-l>=.25&&b-t>=.25))throw Error('La región de fotografía debe ocupar al menos 25% del ancho y alto.');
+  return{x0:l,y0:t,x1:r,y1:b};
+ }
+ function clearPhoto(){clearVision();id('comparePhoto').disabled=true;if(photoURL)URL.revokeObjectURL(photoURL);photoURL=null;selectedPhoto=null;id('photo').value='';id('preview').removeAttribute('src');id('drop').classList.remove('loaded');id('filename').textContent='Seleccionar foto o croquis'}
  id('newProject').addEventListener('click',()=>{state=C.normalize({category:'cocina'});selectedModule=0;viewer.isOpen=false;setPriceFields(C.DEFAULT_PRICES);id('projectName').value='Nuevo proyecto';setMeta({});clearPhoto();id('status').textContent='Nuevo proyecto iniciado.';update()});
- function setPhoto(file){if(!file)return;const valid=['image/png','image/jpeg','image/webp'].includes(file.type);if(!valid||file.size>12*1024*1024){id('status').textContent='Selecciona JPG, PNG o WebP de hasta 12 MB.';return}selectedPhoto=file;if(photoURL)URL.revokeObjectURL(photoURL);photoURL=URL.createObjectURL(file);id('preview').src=photoURL;id('drop').classList.add('loaded');id('filename').textContent=file.name;id('comparePhoto').disabled=false;id('status').textContent='Imagen cargada. Confirma medidas y pulsa Comparar foto y diseño.'}
+ function setPhoto(file){if(!file)return;const valid=['image/png','image/jpeg','image/webp'].includes(file.type);if(!valid||file.size>12*1024*1024){id('status').textContent='Selecciona JPG, PNG o WebP de hasta 12 MB.';return}clearVision();selectedPhoto=file;if(photoURL)URL.revokeObjectURL(photoURL);photoURL=URL.createObjectURL(file);id('preview').src=photoURL;id('drop').classList.add('loaded');id('filename').textContent=file.name;id('comparePhoto').disabled=false;id('status').textContent='Imagen cargada. Confirma medidas y pulsa Comparar foto y diseño.'}
  id('photo').addEventListener('change',e=>setPhoto(e.target.files[0]));
  id('comparePhoto').addEventListener('click',()=>{if(!selectedPhoto||!photoURL)return;id('compareOriginal').src=photoURL;id('compareGenerated').innerHTML=svgFront();id('photoCompareModal').showModal()});
  id('closeCompare').addEventListener('click',()=>id('photoCompareModal').close());
- id('analyze').addEventListener('click',async()=>{if(!selectedPhoto){id('status').textContent='Primero sube una imagen.';return}const btn=id('analyze');btn.disabled=true;id('status').textContent='Buscando contrastes verticales (sin IA)…';try{const r=await window.MueblesVision.suggestFromImage(selectedPhoto);state={...state,modules:r.modules,moduleTypes:Array.from({length:r.modules},(_,i)=>state.moduleTypes[i]||'puerta'),moduleWidths:undefined,moduleShelves:undefined,moduleDrawers:undefined};update();id('status').textContent=r.detail+' No se deducen medidas reales.'}catch(e){id('status').textContent=e.message}finally{btn.disabled=false}});
- id('analyzeAI').addEventListener('click',async()=>{if(!selectedPhoto){id('status').textContent='Primero sube una fotografía.';return}const btn=id('analyzeAI');btn.disabled=true;id('status').textContent='Consultando análisis semántico en el servicio configurado…';
-  try{const data=await new Promise((resolve,reject)=>{const rd=new FileReader();rd.onload=()=>resolve(String(rd.result).split(',')[1]);rd.onerror=()=>reject(new Error('No se pudo leer la imagen'));rd.readAsDataURL(selectedPhoto)});
-   const endpoint=window.Muebles360Config?.aiEndpoint;
-   if(!endpoint)throw new Error('No hay servicio de IA configurado.');
-   const resp=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data,mimeType:selectedPhoto.type})});let answer=await resp.json();if(!resp.ok)throw new Error(answer.error||`Error ${resp.status}`);
-   state={...state,category:answer.category||state.category,modules:answer.modules||state.modules,moduleTypes:answer.moduleTypes||state.moduleTypes,finish:answer.finish||state.finish,moduleWidths:undefined,moduleDrawers:undefined,moduleShelves:undefined};update();id('status').textContent=(answer.notes||'Análisis completado.')+' Corrige medidas y módulos manualmente.';
-  }catch(e){id('status').textContent=e instanceof TypeError?'No fue posible conectar con el servicio de IA configurado.':String(e.message||e)}finally{btn.disabled=false}
+ id('analyze').addEventListener('click',async()=>{
+  if(!selectedPhoto){id('status').textContent='Primero sube una imagen.';return}
+  const btn=id('analyze');btn.disabled=true;id('status').textContent='Analizando bordes verticales y horizontales en el dispositivo…';
+  try{const result=await window.MueblesVision.suggestFromImage(selectedPhoto,{roi:visionROI()});result.category=state.category;reviewVision(result)}
+  catch(e){id('status').textContent='Análisis no disponible: '+e.message}finally{btn.disabled=false}
+ });
+ id('analyzeAI').addEventListener('click',async()=>{
+  if(!selectedPhoto){id('status').textContent='Primero sube una fotografía.';return}
+  const endpoint=window.Muebles360Config?.aiEndpoint;if(!endpoint){id('status').textContent='Falta configurar el servidor de IA privado.';return}
+  const btn=id('analyzeAI');btn.disabled=true;id('status').textContent='Analizando fotografía mediante IA de servidor privado…';
+  try{const data=await new Promise((resolve,reject)=>{const rd=new FileReader();rd.onload=()=>resolve(String(rd.result).split(',')[1]);rd.onerror=()=>reject(Error('No se pudo leer la imagen'));rd.readAsDataURL(selectedPhoto)});
+   const resp=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data,mimeType:selectedPhoto.type})});
+   const answer=await resp.json();if(!resp.ok)throw Error(answer.error||`Error ${resp.status}`);
+   const suggested=window.MueblesVision.normalizeAI(answer,state);reviewVision(suggested);
+   id('status').textContent='La IA devolvió una propuesta. Confirma cada frente y las medidas antes de aplicarla.';
+  }catch(e){id('status').textContent=e instanceof TypeError?'No se pudo conectar con el servicio de IA.':String(e.message||e)}finally{btn.disabled=false}
  });
  function download(filename,content,mime){const blob=new Blob([content],{type:mime}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
  function svgFront(){
   const m=current.model,p=m.params,scale=Math.min(900/p.width,650/p.height),pad=95,w=p.width*scale+2*pad,h=p.height*scale+2*pad,x=pad,y=pad;
-  const f=v=>Number(v.toFixed(1));let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${f(w)}" height="${f(h)}" viewBox="0 0 ${f(w)} ${f(h)}"><rect width="100%" height="100%" fill="white"/><text x="30" y="28" font-family="Arial,sans-serif" font-size="15">INGEBAM Muebles360 V3 · Alzado frontal preliminar</text><rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(p.height*scale)}" fill="none" stroke="#1e293b" stroke-width="3"/>`;
+  const f=v=>Number(v.toFixed(1));let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${f(w)}" height="${f(h)}" viewBox="0 0 ${f(w)} ${f(h)}"><rect width="100%" height="100%" fill="white"/><text x="30" y="28" font-family="Arial,sans-serif" font-size="15">INGEBAM Muebles360 V3.2 · Alzado frontal preliminar</text><rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(p.height*scale)}" fill="none" stroke="#1e293b" stroke-width="3"/>`;
   const bodyH=m.dimensions.carcassH*scale,baseH=(p.baseType==='zocalo'?100:p.baseType==='patas'?120:0)*scale,topH=(p.category==='closet'?0:30)*scale;
   if(baseH)out+=`<rect x="${x}" y="${f(y+p.height*scale-baseH)}" width="${f(p.width*scale)}" height="${f(baseH)}" fill="#ece5db" stroke="#1e293b"/>`;
   if(topH)out+=`<rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(topH)}" fill="#d4dce5" stroke="#1e293b"/>`;
   let consumed=p.thickness;const bodyY=y+topH;
   p.moduleTypes.forEach((t,i)=>{const xx=x+consumed*scale,cw=p.moduleWidths[i]*scale;out+=`<rect x="${f(xx)}" y="${f(bodyY)}" width="${f(cw)}" height="${f(bodyH)}" fill="#f4efe6" stroke="#334155"/>`;
-   if(t==='cajones')for(let j=1;j<p.moduleDrawers[i];j++){const yy=bodyY+j*bodyH/p.moduleDrawers[i];out+=`<line x1="${f(xx)}" y1="${f(yy)}" x2="${f(xx+cw)}" y2="${f(yy)}" stroke="#334155"/>`}
-   else if(t==='abierto')for(let j=1;j<=p.moduleShelves[i];j++){const yy=bodyY+j*bodyH/(p.moduleShelves[i]+1);out+=`<line x1="${f(xx)}" y1="${f(yy)}" x2="${f(xx+cw)}" y2="${f(yy)}" stroke="#334155"/>`}
+   const dividerY=t==='mixto'?bodyY+bodyH*(1-p.moduleMixPct[i]/100):bodyY;
+   if(t==='mixto')out+=`<line x1="${f(xx)}" y1="${f(dividerY)}" x2="${f(xx+cw)}" y2="${f(dividerY)}" stroke="#334155" stroke-width="2"/>`;
+   if(t==='cajones'||t==='mixto')for(let j=1;j<p.moduleDrawers[i];j++){const yy=t==='mixto'?dividerY+j*(bodyY+bodyH-dividerY)/p.moduleDrawers[i]:bodyY+j*bodyH/p.moduleDrawers[i];out+=`<line x1="${f(xx)}" y1="${f(yy)}" x2="${f(xx+cw)}" y2="${f(yy)}" stroke="#334155"/>`}
+   if(t==='abierto'||t==='mixto')for(let j=1;j<=p.moduleShelves[i];j++){const yy=t==='mixto'?bodyY+j*(dividerY-bodyY)/(p.moduleShelves[i]+1):bodyY+j*bodyH/(p.moduleShelves[i]+1);out+=`<line x1="${f(xx)}" y1="${f(yy)}" x2="${f(xx+cw)}" y2="${f(yy)}" stroke="#334155"/>`} 
    out+=`<text x="${f(xx+cw/2)}" y="${f(y+p.height*scale+17)}" text-anchor="middle" font-size="10" font-family="Arial">${p.moduleWidths[i]} mm</text>`;consumed+=p.moduleWidths[i]+p.thickness;
   });
   out+=`<text x="${f(x+p.width*scale/2)}" y="${f(y+p.height*scale+39)}" text-anchor="middle" font-size="14" font-family="Arial">ANCHO TOTAL ${p.width} mm</text><text x="${x-28}" y="${f(y+p.height*scale/2)}" font-size="14" text-anchor="middle" transform="rotate(-90 ${x-28} ${f(y+p.height*scale/2)})" font-family="Arial">${p.height} mm</text><text x="${x}" y="${f(h-11)}" font-size="11" font-family="Arial" fill="#ab5331">CROQUIS NO APTO PARA CORTE SIN VALIDACIÓN TÉCNICA</text></svg>`;
