@@ -39,6 +39,13 @@ class FurnitureViewer{
   }
   faces.sort((a,b)=>a.depth-b.depth);
   for(const f of faces){ctx.beginPath();f.points.forEach((v,i)=>i?ctx.lineTo(v.x,v.y):ctx.moveTo(v.x,v.y));ctx.closePath();let color=f.part.kind==='interior'?'#c4c5c5':f.part.kind==='countertop'?'#404956':f.part.kind==='front'||f.part.kind==='body'?(root.MueblesCore.FINISHES[p.finish]?.color||'#b99264'):'#bdbdbd';if(f.part.kind==='back')color='#d0d0d0';const sh={front:1.05,back:.55,left:.69,right:.82,top:1.17,bottom:.57}[f.face]||1;ctx.fillStyle=shade(color,sh);ctx.fill();ctx.strokeStyle='#11151fa8';ctx.lineWidth=.8;ctx.stroke();
+   // Decorative raised-panel effect on hinged doors, visual only, no BOM.
+   if(p.frontStyle==='marco'&&f.part.kind==='front'&&f.part.motion==='door'&&f.face==='front'){
+    const center=f.points.reduce((acc,q)=>({x:acc.x+q.x/4,y:acc.y+q.y/4}),{x:0,y:0});
+    const inner=f.points.map(q=>({x:q.x+(center.x-q.x)*.18,y:q.y+(center.y-q.y)*.18}));
+    ctx.beginPath();inner.forEach((v,i)=>i?ctx.lineTo(v.x,v.y):ctx.moveTo(v.x,v.y));ctx.closePath();
+    ctx.fillStyle=shade(color,.95);ctx.fill();ctx.strokeStyle=shade(color,.65);ctx.lineWidth=1.6;ctx.stroke();
+   }
    if(f.part.moduleIndex===this.activeModule){ctx.strokeStyle='#d9b77a66';ctx.lineWidth=1.6;ctx.stroke()}if(f.part.id===this.selectedId){ctx.strokeStyle='#f8bc66';ctx.lineWidth=2.6;ctx.stroke();}this.polys.push(f);
   }
   ctx.textAlign='left';ctx.fillStyle='#8d9cac';ctx.font='11px system-ui';
