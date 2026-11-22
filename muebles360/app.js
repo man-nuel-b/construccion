@@ -1,8 +1,9 @@
-/* INGEBAM Muebles360 V3.4 — App, cotizador y revisión fotográfica. Ninguna foto se sube sin activar IA. */
+/* INGEBAM Muebles360 V3.5 — App, cotizador y revisión fotográfica. Ninguna foto se sube sin activar IA. */
 (()=>{'use strict';
  const C=window.MueblesCore,Money=new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0});
  const id=x=>document.getElementById(x),money=x=>Money.format(x),ehtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- let state=C.normalize({category:'cocina'}),current=null,selectedModule=0,selectedPhoto=null,photoURL=null,advanced=null,pendingVision=null,photoCorners=[],cornerPickerOpen=false;
+ let state=C.normalize({category:'cocina'}),current=null,selectedModule=0,selectedPhoto=null,photoURL=null,advanced=null,pendingVision=null,photoCorners=[],cornerPickerOpen=false,dragGuideIndex=-1;
+ let reviewWeightInputs=[];
  const metaIds=['clientName','clientContact','quoteRef','projectStage','projectNotes'];
  const history={past:[],future:[],last:null,restoring:false};
  function snapshot(){return JSON.stringify({params:state,prices:getPrices(),projectName:id('projectName').value,meta:getMeta()})}
@@ -11,7 +12,7 @@
  function setMeta(meta={}){id('clientName').value=meta.client||'';id('clientContact').value=meta.contact||'';id('quoteRef').value=meta.quoteRef||'ING-0001';id('projectStage').value=['Borrador','Enviado','Aprobado','Fabricación','Instalado'].includes(meta.stage)?meta.stage:'Borrador';id('projectNotes').value=meta.notes||''}
  function restoreHistory(value){history.restoring=true;try{const v=JSON.parse(value);state=C.normalize(v.params);selectedModule=Math.min(selectedModule,state.modules-1);setPriceFields(v.prices||{});id('projectName').value=v.projectName||'';setMeta(v.meta||{});update()}finally{history.restoring=false;history.last=snapshot();id('undoChange').disabled=!history.past.length;id('redoChange').disabled=!history.future.length}}
  const localViewer=new window.FurnitureViewer(id('viewer'),onSelectPart);let viewer=localViewer;
- const controls=['category','width','height','depth','thickness','modules','baseType','shelves','drawers'];
+ const controls=['category','width','height','depth','thickness','modules','baseType','shelves','drawers','frontStyle'];
  function onSelectPart(part){
   const box=id('selected');if(!part){box.hidden=true;return;}
   box.hidden=false;box.replaceChildren();const strong=document.createElement('strong');strong.textContent=part.name;box.append(strong);
@@ -115,7 +116,7 @@
   try{advanced=await window.INGEBAMThree.createThreeViewer(id('viewport'),onSelectPart);viewer=advanced;id('viewport').dataset.mode='3d';viewer.setModel(current.model);viewer.selectModule(selectedModule);btn.textContent='Visor local';id('status').textContent='Visor WebGL avanzado activo. Usa el mouse para girar y seleccionar piezas.'}
   catch(e){btn.textContent='3D avanzado ↗';id('status').textContent='No fue posible activar WebGL: '+String(e?.message||e).slice(0,160)}finally{btn.disabled=false}
  });
- function clearVision(){pendingVision=null;id('visionReviewPanel').hidden=true;id('visionResults').replaceChildren()}
+ function clearVision(){pendingVision=null;dragGuideIndex=-1;reviewWeightInputs=[];id('visionReviewPanel').hidden=true;id('visionResults').replaceChildren()}
  function field(parent,label,tag,settings={}){
   const wrap=document.createElement('label');wrap.textContent=label;
   const element=document.createElement(tag);Object.entries(settings).forEach(([k,v])=>{if(k==='options')for(const [value,text] of v){const option=document.createElement('option');option.value=value;option.textContent=text;element.append(option)}else element[k]=v});wrap.append(element);parent.append(wrap);return element;
@@ -136,17 +137,64 @@
    for(const y of r.lines||[]){context.beginPath();const yy=(roi.y0+(roi.y1-roi.y0)*y)*H;context.moveTo(x,yy);context.lineTo(x+w,yy);context.stroke()}
    context.setLineDash([]);
   }
+  // Guides: draggable front divisions. These represent proportions, not real measurements.
+  const yGuide=roi.y0*H+(roi.y1-roi.y0)*H*.82;
+  for(let j=0;j<pendingVision.regions.length-1;j++){
+   const guideX=(roi.x0+(roi.x1-roi.x0)*pendingVision.regions[j].x1)*W;
+   context.beginPath();context.moveTo(guideX,roi.y0*H);context.lineTo(guideX,(roi.y1)*H);
+   context.strokeStyle='#ffcf70';context.lineWidth=j===dragGuideIndex?5:3;context.stroke();
+   context.beginPath();context.arc(guideX,yGuide,9,0,Math.PI*2);context.fillStyle='#ffe2a6';context.fill();
+   context.fillStyle='#122132';context.font='bold 12px sans-serif';context.textAlign='center';context.fillText('↔',guideX,yGuide+4);
+   context.textAlign='left';
+  }
  }
  function normalizeRegionWeights(){
   if(!pendingVision)return;
   const rs=pendingVision.regions,values=rs.map(r=>Math.max(1,Number(r.weight)||1)),total=values.reduce((a,b)=>a+b,0);
   let pos=0;for(let i=0;i<rs.length;i++){rs[i].x0=pos;pos+=values[i]/total;rs[i].x1=i===rs.length-1?1:pos}
  }
+ // Constrain adjacent boundaries to ensure neither candidate region disappears.
+ function adjustReviewDivider(index,relativeX){
+  if(!pendingVision||index<0||index>=pendingVision.regions.length-1)return;
+  normalizeRegionWeights();
+  const left=pendingVision.regions[index],right=pendingVision.regions[index+1];
+  const lo=left.x0,hi=right.x1,minimum=.055;
+  if(hi-lo<minimum*2)return;
+  const next=Math.max(lo+minimum,Math.min(hi-minimum,relativeX));
+  const weightSum=left.weight+right.weight;
+  left.weight=Math.max(1,weightSum*(next-lo)/(hi-lo));
+  right.weight=Math.max(1,weightSum-left.weight);
+  normalizeRegionWeights();
+  reviewWeightInputs.forEach((input,j)=>{if(input)input.value=String(Math.round(pendingVision.regions[j].weight));});
+  paintVisionOverlay();
+ }
+ function reviewPointerFraction(event){
+  const cv=id('visionOverlay'),rect=cv.getBoundingClientRect();
+  const roi=pendingVision?.roi||{x0:0,x1:1};
+  return (Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width))-roi.x0)/(roi.x1-roi.x0);
+ }
+ const guideCanvas=id('visionOverlay');
+ guideCanvas.addEventListener('pointerdown',event=>{
+  if(!pendingVision||pendingVision.regions.length<2)return;
+  normalizeRegionWeights();const at=reviewPointerFraction(event);
+  let best=-1,dist=.055;
+  pendingVision.regions.slice(0,-1).forEach((r,i)=>{const d=Math.abs(r.x1-at);if(d<dist){dist=d;best=i;}});
+  if(best<0)return;
+  dragGuideIndex=best;guideCanvas.setPointerCapture(event.pointerId);event.preventDefault();
+  adjustReviewDivider(best,at);
+ });
+ guideCanvas.addEventListener('pointermove',event=>{
+  if(dragGuideIndex<0)return;
+  adjustReviewDivider(dragGuideIndex,reviewPointerFraction(event));
+ });
+ const endGuideDrag=()=>{dragGuideIndex=-1;if(pendingVision)paintVisionOverlay()};
+ guideCanvas.addEventListener('pointerup',endGuideDrag);
+ guideCanvas.addEventListener('pointercancel',endGuideDrag);
  function reviewVision(suggestion){
   const regions=(suggestion.regions||[]).slice(0,6).map((r,i)=>({index:i,x0:r.x0??i/suggestion.modules,x1:r.x1??(i+1)/suggestion.modules,type:r.type||'puerta',drawers:r.drawers||3,shelves:r.shelves??1,mixPct:r.mixPct||45,confidence:r.confidence||.3,lines:r.lines||[],detail:r.detail||'',weight:Math.max(1,Math.round(100*(r.x1-r.x0||1/suggestion.modules)))}));
   if(!regions.length)throw Error('No se encontraron elementos editables.');
   pendingVision={...suggestion,regions};id('visionReviewPanel').hidden=false;id('visionDescription').textContent=suggestion.detail||'Revisa las propuestas antes de aplicarlas.';
-  id('visionCategory').value=suggestion.category||state.category;const host=id('visionResults');host.replaceChildren();
+  id('visionCategory').value=suggestion.category||state.category;const host=id('visionResults');host.replaceChildren();reviewWeightInputs=[];normalizeRegionWeights();
   for(const r of regions){
    const block=document.createElement('div');block.className='vision-result';
    const heading=document.createElement('strong');heading.textContent=`Cuerpo ${r.index+1}`;const detail=document.createElement('small');detail.textContent=` · Confianza orientativa ${Math.round(r.confidence*100)}% — ${r.detail}`;block.append(heading,detail);
@@ -155,7 +203,7 @@
    const drawers=field(grid,'Cajones','input',{type:'number',min:1,max:5,step:1,value:r.drawers});drawers.addEventListener('change',()=>{r.drawers=Math.max(1,Math.min(5,Number(drawers.value)||3))});
    const shelves=field(grid,'Repisas','input',{type:'number',min:0,max:5,step:1,value:r.shelves});shelves.addEventListener('change',()=>{r.shelves=Math.max(0,Math.min(5,Number(shelves.value)||0))});
    const mix=field(grid,'Cajones abajo (%)','input',{type:'number',min:25,max:75,step:1,value:r.mixPct});mix.addEventListener('change',()=>{r.mixPct=Math.max(25,Math.min(75,Number(mix.value)||45))});
-   const ratio=field(block,'Ancho relativo visual (peso, no mm)','input',{type:'number',min:1,max:100,step:1,value:r.weight});ratio.className='ratio';
+   const ratio=field(block,'Ancho relativo visual (peso, no mm)','input',{type:'number',min:1,max:100,step:1,value:Math.round(r.weight)});ratio.className='ratio';reviewWeightInputs[r.index]=ratio;
    ratio.addEventListener('change',()=>{r.weight=Math.max(1,Math.min(100,Math.round(Number(ratio.value)||r.weight)));normalizeRegionWeights();paintVisionOverlay()});
    block.append(grid);host.append(block);
   }
@@ -229,7 +277,7 @@
  function download(filename,content,mime){const blob=new Blob([content],{type:mime}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
  function svgFront(){
   const m=current.model,p=m.params,scale=Math.min(900/p.width,650/p.height),pad=95,w=p.width*scale+2*pad,h=p.height*scale+2*pad,x=pad,y=pad;
-  const f=v=>Number(v.toFixed(1));let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${f(w)}" height="${f(h)}" viewBox="0 0 ${f(w)} ${f(h)}"><rect width="100%" height="100%" fill="white"/><text x="30" y="28" font-family="Arial,sans-serif" font-size="15">INGEBAM Muebles360 V3.4 · Alzado frontal preliminar</text><rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(p.height*scale)}" fill="none" stroke="#1e293b" stroke-width="3"/>`;
+  const f=v=>Number(v.toFixed(1));let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${f(w)}" height="${f(h)}" viewBox="0 0 ${f(w)} ${f(h)}"><rect width="100%" height="100%" fill="white"/><text x="30" y="28" font-family="Arial,sans-serif" font-size="15">INGEBAM Muebles360 V3.5 · Alzado frontal preliminar</text><rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(p.height*scale)}" fill="none" stroke="#1e293b" stroke-width="3"/>`;
   const bodyH=m.dimensions.carcassH*scale,baseH=(p.baseType==='zocalo'?100:p.baseType==='patas'?120:0)*scale,topH=(p.category==='closet'?0:30)*scale;
   if(baseH)out+=`<rect x="${x}" y="${f(y+p.height*scale-baseH)}" width="${f(p.width*scale)}" height="${f(baseH)}" fill="#ece5db" stroke="#1e293b"/>`;
   if(topH)out+=`<rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(topH)}" fill="#d4dce5" stroke="#1e293b"/>`;
@@ -261,7 +309,8 @@
  async function detectAICapability(){
   const endpoint=window.Muebles360Config?.aiEndpoint;if(!endpoint)return;
   const btn=id('analyzeAI');btn.disabled=true;btn.dataset.ready='false';
-  try{const resp=await fetch('/api/capabilities',{cache:'no-store',signal:AbortSignal.timeout(2500)});
+  try{const capabilitiesURL=new URL('/api/capabilities',new URL(endpoint,location.href).origin);
+   const resp=await fetch(capabilitiesURL,{cache:'no-store',signal:AbortSignal.timeout(2500)});
    if(!resp.ok)return;const config=await resp.json();if(config.aiAvailable===true){btn.disabled=false;btn.dataset.ready='true';btn.textContent='Analizar zona seleccionada con IA real';btn.title='Envía solo la zona elegida al servicio de IA al hacer clic.';}
    else{btn.textContent='IA real: configurar clave en servidor local';btn.title='Para activar, define GEMINI_API_KEY en un servidor privado.';}
   }catch{btn.textContent='IA real: servidor no disponible';}
