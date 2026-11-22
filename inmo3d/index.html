@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>INGEBAM Inmo3D V10.4 — Visor web</title>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>INGEBAM Inmo3D V10.5 — Visor web</title>
 <style>html,body{margin:0;min-height:100%;font-family:system-ui,Segoe UI,sans-serif;background:#101318;color:#f2f0ea}main{max-width:620px;margin:15vh auto;padding:30px 24px;text-align:center}h1{font-size:27px;margin:0 0 12px}.muted{color:#b6bac3;line-height:1.55}.gold{color:#f3c678}.spin{width:40px;height:40px;border-radius:50%;border:3px solid #464039;border-top-color:#f3c678;margin:24px auto;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}button{padding:12px 18px;border-radius:9px;background:#ebc477;color:#141414;border:0;cursor:pointer}</style>
 </head><body><main><h1>INGEBAM <span class="gold">Inmo3D</span></h1><div class="spin"></div><p id="msg">Preparando el recorrido 3D y sus materiales…</p><p class="muted">Versión demostrativa. La gestión comercial utiliza almacenamiento local del navegador; no ingreses datos personales reales de clientes.</p></main>
 <script>
@@ -13,7 +13,7 @@
   }));
   const html=payload.join('');
   if(html.length!==9472895 || !html.includes('</body></html>')) throw new Error('Los recursos descargados están incompletos.');
-  const upgraded=html.replace(/<head([^>]*)>/i, '<head$1><script src="./render-quality-v104.js"><\/script>');
+  const upgraded=html.replace(/<head([^>]*)>/i, '<head$1><script src="./render-quality-v104.js"><\/script><script src="./visual-finish-v105.js"><\/script>');
   document.open();document.write(upgraded);document.close();
  }catch(e){const t=String(e?.message||e);m.textContent='Error de carga: '+t;document.querySelector('.spin').remove();const b=document.createElement('button');b.textContent='Reintentar';b.onclick=()=>location.reload();m.after(b);console.error(e);}
 })();
