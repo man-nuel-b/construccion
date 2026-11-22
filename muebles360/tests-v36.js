@@ -1,0 +1,13 @@
+const a=require('node:assert/strict'); const S=require('./photoStudio.js');let n=0;
+const test=(name,fn)=>{fn();n++;console.log('OK',name)};
+test('Guías inválidas filtradas y ordenadas',()=>a.deepEqual(S.normalizeLines([.8,.2,.24,NaN,1,-.2,.5]),[.2,.5,.8]));
+test('Mover línea respeta separación mínima',()=>a.ok(S.moveLine([.2,.5,.8],1,.94)[1]<=.74501));
+test('Agregar guía por porcentaje',()=>a.deepEqual(S.addLine([.25],.65),[.25,.65]));
+test('Repisas derivadas de guías horizontales',()=>a.equal(S.deriveCounts('abierto',[.25,.5,.75]).shelves,3));
+test('Cajones derivados de frentes horizontales',()=>a.equal(S.deriveCounts('cajones',[.2,.4,.6]).drawers,4));
+test('Mixto separa repisas superiores de cajones inferiores',()=>a.deepEqual(S.deriveCounts('mixto',[.17,.3,.72,.86],45),{shelves:2,drawers:3}));
+test('Cuatro esquinas admitidas',()=>a.equal(S.validateZone({corners:[{x:0,y:0},{x:1,y:0},{x:1,y:1},{x:0,y:1}]}).corners.length,4));
+test('ROI validada',()=>a.equal(S.validateZone({roi:{x0:.1,y0:.2,x1:.9,y1:.9}}).roi.x0,.1));
+test('Zona demasiado pequeña rechazada',()=>a.throws(()=>S.validateZone({roi:{x0:.7,y0:.3,x1:.8,y1:.8}})));
+test('Presupuestos de muebles calculados separadamente',()=>a.deepEqual(S.layoutSummary([{params:{},estimatedTotal:500},{params:{},estimatedTotal:800},{}]),{count:2,estimate:1300,requiresSeparateCutPlan:true}));
+console.log(`${n} tests V3.6`);
