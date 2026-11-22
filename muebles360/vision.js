@@ -1,4 +1,4 @@
-/* INGEBAM Muebles360 V3.2 — Lectura geométrica local de píxeles, sin envío de imágenes.
+/* INGEBAM Muebles360 V3.4 — Lectura geométrica local de píxeles, sin envío de imágenes.
    Detecta bordes candidatos; no es un clasificador semántico entrenado ni garantiza
    medidas, número de módulos, tipo de frente ni detalles ocultos. Revisión obligatoria. */
 (function(root){'use strict';
@@ -124,16 +124,53 @@ async function suggestFromImage(file,options={}){
  return result;
 }
 function normalizeAI(data,existing={}){
- if(!data||typeof data!=='object')throw Error('La IA no devolvió un objeto válido.');
+ if(!data||typeof data!=='object'||Array.isArray(data))throw Error('La IA no devolvió un objeto válido.');
  const types=['puerta','cajones','abierto','mixto'];const ct=Number(data.modules);
- const modules=clamp(Number.isFinite(ct)?Math.round(ct):Array.isArray(data.moduleTypes)?data.moduleTypes.length:existing.modules||3,1,6);
- const regions=Array.from({length:modules},(_,i)=>{
-  const item=Array.isArray(data.regions)?data.regions[i]||{}:{};
-  const type=types.includes(item.type)?item.type:types.includes(data.moduleTypes?.[i])?data.moduleTypes[i]:'puerta';
-  return {index:i,type,drawers:clamp(Math.round(Number(item.drawers||data.moduleDrawers?.[i]||3)),1,5),shelves:clamp(Math.round(Number(item.shelves??data.moduleShelves?.[i]??1)),0,5),mixPct:clamp(Math.round(Number(item.mixPct)||45),25,75),confidence:clamp(Number(item.confidence)||.35,.05,.95),detail:String(item.detail||'Sugerencia de IA; verificar.').slice(0,150),x0:i/modules,x1:(i+1)/modules,lines:[]};
+ const modules=clamp(Number.isFinite(ct)?Math.round(ct):Array.isArray(data.regions)?data.regions.length:existing.modules||3,1,6);
+ const fromAI=Array.isArray(data.regions)?data.regions:[];
+ // Conservar la proporción de anchos propuesta por IA, pero NO interpretarla como mm.
+ // La respuesta externa no es fiable: recomponer siempre límites contiguos y válidos.
+ const widths=Array.from({length:modules},(_,i)=>{
+  const r=fromAI[i]||{},x0=Number(r.x0),x1=Number(r.x1);
+  return Number.isFinite(x0)&&Number.isFinite(x1)&&x1>x0&&x0>=0&&x1<=1?clamp(x1-x0,.04,1):1/modules;
  });
- return {source:'ia-remota',category:['cocina','closet','vanitorio'].includes(data.category)?data.category:existing.category||'closet',modules,regions,confidence:clamp(Number(data.confidence)||.4,.05,.95),edges:regions.slice(0,-1).map(r=>r.x1),detail:String(data.notes||'Elementos propuestos mediante IA. No se conocen dimensiones reales.').slice(0,400)};
+ const total=widths.reduce((a,b)=>a+b,0);let cursor=0;
+ const regions=Array.from({length:modules},(_,i)=>{
+  const item=fromAI[i]||{},type=types.includes(item.type)?item.type:types.includes(data.moduleTypes?.[i])?data.moduleTypes[i]:'puerta';
+  const x0=cursor;cursor+=widths[i]/total;const x1=i===modules-1?1:cursor;
+  const num=(v,backup)=>Number.isFinite(Number(v))?Number(v):backup;
+  return {index:i,type,drawers:clamp(Math.round(num(item.drawers,3)),1,5),shelves:clamp(Math.round(num(item.shelves,1)),0,5),
+   mixPct:clamp(Math.round(num(item.mixPct,45)),25,75),confidence:clamp(num(item.confidence,.35),.05,.95),
+   detail:String(item.detail||'Hipótesis de IA; verificar visualmente.').slice(0,150),x0,x1,lines:[]};
+ });
+ return {source:'ia-multimodal',category:['cocina','closet','vanitorio'].includes(data.category)?data.category:existing.category||'closet',modules,regions,
+  confidence:clamp(Number(data.confidence)||.4,.05,.95),edges:regions.slice(0,-1).map(r=>r.x1),
+  detail:String(data.notes||'Propuesta aproximada: solo elementos visibles, sin medidas reales.').slice(0,400),
+  warnings:Array.isArray(data.warnings)?data.warnings.slice(0,5).map(x=>String(x).slice(0,130)):[]};
 }
-root.MueblesVision={suggestFromImage,analyzeRaster,normalizeAI,rectifyRaster};
+// Prepara únicamente la zona señalada, ya sea el ROI rectangular o las 4 esquinas.
+// La fotografía NO sale del navegador hasta que el usuario pulse expresamente IA real.
+async function prepareImageForAI(file,options={}){
+ if(!file||!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>12*1024*1024)throw Error('Imagen JPG/PNG/WebP inválida o superior a 12 MB.');
+ const bmp=await createImageBitmap(file);const s=Math.min(1,1250/Math.max(bmp.width,bmp.height));
+ const c=document.createElement('canvas');c.width=Math.max(80,Math.round(bmp.width*s));c.height=Math.max(60,Math.round(bmp.height*s));
+ const ctx=c.getContext('2d',{willReadFrequently:true});if(!ctx){bmp.close?.();throw Error('Canvas no disponible');}
+ ctx.drawImage(bmp,0,0,c.width,c.height);bmp.close?.();
+ let output=c;
+ if(Array.isArray(options.corners)&&options.corners.length===4){
+  const rect=rectifyRaster(ctx.getImageData(0,0,c.width,c.height),options.corners,1050);
+  output=document.createElement('canvas');output.width=rect.width;output.height=rect.height;
+  output.getContext('2d').putImageData(new ImageData(rect.data,rect.width,rect.height),0,0);
+ }else if(options.roi){
+  const r=options.roi,x0=clamp(Number(r.x0)||0,0,1),y0=clamp(Number(r.y0)||0,0,1),x1=clamp(Number(r.x1)||1,0,1),y1=clamp(Number(r.y1)||1,0,1);
+  if(x1-x0<.25||y1-y0<.25)throw Error('La selección debe abarcar al menos 25% de la imagen.');
+  const sx=Math.round(x0*c.width),sy=Math.round(y0*c.height),sw=Math.max(50,Math.round((x1-x0)*c.width)),sh=Math.max(50,Math.round((y1-y0)*c.height));
+  output=document.createElement('canvas');output.width=sw;output.height=sh;output.getContext('2d').drawImage(c,sx,sy,sw,sh,0,0,sw,sh);
+ }
+ const previewURL=output.toDataURL('image/jpeg',.85);
+ return {data:previewURL.slice(previewURL.indexOf(',')+1),mimeType:'image/jpeg',previewURL,width:output.width,height:output.height};
+}
+
+root.MueblesVision={suggestFromImage,analyzeRaster,normalizeAI,rectifyRaster,prepareImageForAI};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.MueblesVision;
 })(typeof window!=='undefined'?window:globalThis);
