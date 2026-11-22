@@ -4,7 +4,7 @@
 const http=require('node:http');const fs=require('node:fs/promises');const path=require('node:path');
 const port=Number(process.env.PORT)||8765;
 const geminiModel=process.env.GEMINI_MODEL||'gemini-2.5-flash';
-const allowed=new Set(['/','/index.html','/furnitureCore.js','/viewer.js','/renderer3d.js','/vision.js','/app.js','/quoteEngine.js']);
+const allowed=new Set(['/','/index.html','/furnitureCore.js','/viewer.js','/renderer3d.js','/vision.js','/photoStudio.js','/app.js','/quoteEngine.js','/v36.html']);
 const mime={'.html':'text/html;charset=utf-8','.js':'application/javascript;charset=utf-8'};
 const send=(res,code,data,type='application/json;charset=utf-8')=>{res.writeHead(code,{'Content-Type':type,'X-Content-Type-Options':'nosniff','Cache-Control':'no-store'});res.end(typeof data==='string'||Buffer.isBuffer(data)?data:JSON.stringify(data))};
 const Vision=require('./vision.js');
