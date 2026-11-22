@@ -37,7 +37,8 @@ function normalize(raw={}){
  const moduleDrawers=Array.from({length:modules},(_,i)=>int(clamp(n(raw.moduleDrawers?.[i],drawers),1,5),drawers));
  const moduleMixPct=Array.from({length:modules},(_,i)=>int(clamp(n(raw.moduleMixPct?.[i],45),25,75),45));
  const baseType=['zocalo','patas','suspendido'].includes(raw.baseType)?raw.baseType:preset.baseType;
- return {category,width,height,depth,thickness,modules,moduleTypes,moduleWidths,moduleShelves,moduleDrawers,moduleMixPct,baseType,shelves,drawers,finish:Object.hasOwn(FINISHES,raw.finish)?raw.finish:'roble'};
+ const frontStyle=raw.frontStyle==='marco'?'marco':'liso';
+ return {category,width,height,depth,thickness,modules,moduleTypes,moduleWidths,moduleShelves,moduleDrawers,moduleMixPct,baseType,shelves,drawers,frontStyle,finish:Object.hasOwn(FINISHES,raw.finish)?raw.finish:'roble'};
 }
 function resizeModule(raw,index,newWidth){
  const p=normalize(raw);if(!Number.isInteger(index)||index<0||index>=p.modules)return p;
@@ -125,6 +126,7 @@ function generate(raw){
  for(let i=0;i<p.modules;i++){if(p.moduleTypes[i]==='puerta'&&p.moduleWidths[i]>650)alerts.push(`Módulo ${i+1}: puerta de ancho útil ${p.moduleWidths[i]} mm. Revisar peso, cantidad de bisagras y posible división del frente.`);if(['cajones','mixto'].includes(p.moduleTypes[i])&&p.moduleWidths[i]>1000)alerts.push(`Módulo ${i+1}: cajonera ancha; validar correderas, cargas admisibles y refuerzos.`)}
  if(p.baseType==='suspendido')alerts.push('Montaje suspendido: verificar anclajes, soporte y carga real del muro.');
  if(hasTop)alerts.push('Cubierta: no se modelan perforaciones, cantos especiales ni unión a muros.');
+ if(p.frontStyle==='marco')alerts.push('El frente moldurado es SOLO una representación visual: NO se incluyen molduras, mecanizados ni horas adicionales en el despiece o precio.');
  alerts.push('El despiece es preliminar: revisar veta, tolerancias, uniones, anclajes, cajones y medida en terreno antes de cortar.');
  return{params:p,parts,hardware,alerts:[...new Set(alerts)],dimensions:{carcassH,moduleWidths:p.moduleWidths,moduleCenters,innerHeight}};
 }
