@@ -1,9 +1,11 @@
-/* INGEBAM Muebles360 V3.5 — App, cotizador y revisión fotográfica. Ninguna foto se sube sin activar IA. */
+/* INGEBAM Muebles360 V3.6 — App, cotizador y revisión fotográfica. Ninguna foto se sube sin activar IA. */
 (()=>{'use strict';
  const C=window.MueblesCore,Money=new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0});
  const id=x=>document.getElementById(x),money=x=>Money.format(x),ehtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let state=C.normalize({category:'cocina'}),current=null,selectedModule=0,selectedPhoto=null,photoURL=null,advanced=null,pendingVision=null,photoCorners=[],cornerPickerOpen=false,dragGuideIndex=-1;
- let reviewWeightInputs=[];
+ let dragHorizontalRegion=-1,dragHorizontalLine=-1,photoZones=[],activePhotoZone=-1;
+ const S=window.MueblesPhotoStudio;
+ let reviewWeightInputs=[],reviewDrawersInputs=[],reviewShelvesInputs=[];
  const metaIds=['clientName','clientContact','quoteRef','projectStage','projectNotes'];
  const history={past:[],future:[],last:null,restoring:false};
  function snapshot(){return JSON.stringify({params:state,prices:getPrices(),projectName:id('projectName').value,meta:getMeta()})}
@@ -116,7 +118,7 @@
   try{advanced=await window.INGEBAMThree.createThreeViewer(id('viewport'),onSelectPart);viewer=advanced;id('viewport').dataset.mode='3d';viewer.setModel(current.model);viewer.selectModule(selectedModule);btn.textContent='Visor local';id('status').textContent='Visor WebGL avanzado activo. Usa el mouse para girar y seleccionar piezas.'}
   catch(e){btn.textContent='3D avanzado ↗';id('status').textContent='No fue posible activar WebGL: '+String(e?.message||e).slice(0,160)}finally{btn.disabled=false}
  });
- function clearVision(){pendingVision=null;dragGuideIndex=-1;reviewWeightInputs=[];id('visionReviewPanel').hidden=true;id('visionResults').replaceChildren()}
+ function clearVision(){pendingVision=null;dragGuideIndex=-1;dragHorizontalRegion=-1;dragHorizontalLine=-1;reviewWeightInputs=[];reviewDrawersInputs=[];reviewShelvesInputs=[];id('visionReviewPanel').hidden=true;id('visionResults').replaceChildren()}
  function field(parent,label,tag,settings={}){
   const wrap=document.createElement('label');wrap.textContent=label;
   const element=document.createElement(tag);Object.entries(settings).forEach(([k,v])=>{if(k==='options')for(const [value,text] of v){const option=document.createElement('option');option.value=value;option.textContent=text;element.append(option)}else element[k]=v});wrap.append(element);parent.append(wrap);return element;
@@ -134,7 +136,11 @@
    context.fillStyle='rgba(7,19,30,.85)';context.fillRect(x,roi.y0*H,Math.min(w,150),23);
    context.fillStyle='#fff';context.font='bold 14px sans-serif';context.fillText(`${r.index+1} · ${r.type}`,x+5,roi.y0*H+16);
    context.strokeStyle='rgba(255,214,115,.82)';context.setLineDash([6,6]);
-   for(const y of r.lines||[]){context.beginPath();const yy=(roi.y0+(roi.y1-roi.y0)*y)*H;context.moveTo(x,yy);context.lineTo(x+w,yy);context.stroke()}
+   for(let k=0;k<(r.lines||[]).length;k++){
+    const y=r.lines[k],yy=(roi.y0+(roi.y1-roi.y0)*y)*H;
+    context.beginPath();context.moveTo(x,yy);context.lineTo(x+w,yy);context.stroke();
+    context.beginPath();context.arc(x+w*.55,yy,6.7,0,2*Math.PI);context.fillStyle='#79edff';context.fill();
+   }
    context.setLineDash([]);
   }
   // Guides: draggable front divisions. These represent proportions, not real measurements.
@@ -174,38 +180,65 @@
   return (Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width))-roi.x0)/(roi.x1-roi.x0);
  }
  const guideCanvas=id('visionOverlay');
+ function photoPointer(event){
+  const bounds=guideCanvas.getBoundingClientRect(),roi=pendingVision?.roi||{x0:0,x1:1,y0:0,y1:1};
+  const x=(event.clientX-bounds.left)/Math.max(1,bounds.width),y=(event.clientY-bounds.top)/Math.max(1,bounds.height);
+  return {x:(x-roi.x0)/Math.max(.01,roi.x1-roi.x0),y:(y-roi.y0)/Math.max(.01,roi.y1-roi.y0)};
+ }
+ function updateGuideCounts(region){
+  const counts=S.deriveCounts(region.type,region.lines,region.mixPct);
+  region.drawers=counts.drawers;region.shelves=counts.shelves;
+  if(reviewDrawersInputs[region.index])reviewDrawersInputs[region.index].value=region.drawers;
+  if(reviewShelvesInputs[region.index])reviewShelvesInputs[region.index].value=region.shelves;
+ }
  guideCanvas.addEventListener('pointerdown',event=>{
-  if(!pendingVision||pendingVision.regions.length<2)return;
-  normalizeRegionWeights();const at=reviewPointerFraction(event);
-  let best=-1,dist=.055;
-  pendingVision.regions.slice(0,-1).forEach((r,i)=>{const d=Math.abs(r.x1-at);if(d<dist){dist=d;best=i;}});
-  if(best<0)return;
-  dragGuideIndex=best;guideCanvas.setPointerCapture(event.pointerId);event.preventDefault();
-  adjustReviewDivider(best,at);
+  if(!pendingVision)return;
+  normalizeRegionWeights();const p=photoPointer(event);
+  // Prefer a nearby horizontal guide when the pointer is inside its module.
+  let bestY={region:-1,line:-1,d:.042};
+  pendingVision.regions.forEach((r,ri)=>{
+   if(p.x<r.x0+.012||p.x>r.x1-.012)return;
+   (r.lines||[]).forEach((y,li)=>{const d=Math.abs(y-p.y);if(d<bestY.d)bestY={region:ri,line:li,d}});
+  });
+  if(bestY.region>=0){dragHorizontalRegion=bestY.region;dragHorizontalLine=bestY.line;
+   guideCanvas.setPointerCapture(event.pointerId);event.preventDefault();return;}
+  let best=-1,dist=.05;pendingVision.regions.slice(0,-1).forEach((r,i)=>{const d=Math.abs(r.x1-p.x);if(d<dist){dist=d;best=i;}});
+  if(best<0)return;dragGuideIndex=best;guideCanvas.setPointerCapture(event.pointerId);event.preventDefault();adjustReviewDivider(best,p.x);
  });
  guideCanvas.addEventListener('pointermove',event=>{
-  if(dragGuideIndex<0)return;
-  adjustReviewDivider(dragGuideIndex,reviewPointerFraction(event));
+  if(!pendingVision)return;const p=photoPointer(event);
+  if(dragHorizontalRegion>=0){const region=pendingVision.regions[dragHorizontalRegion];
+   region.lines=S.moveLine(region.lines,dragHorizontalLine,p.y);updateGuideCounts(region);paintVisionOverlay();return;}
+  if(dragGuideIndex>=0)adjustReviewDivider(dragGuideIndex,p.x);
  });
- const endGuideDrag=()=>{dragGuideIndex=-1;if(pendingVision)paintVisionOverlay()};
+ const endGuideDrag=()=>{dragGuideIndex=-1;dragHorizontalRegion=-1;dragHorizontalLine=-1;if(pendingVision)paintVisionOverlay()};
  guideCanvas.addEventListener('pointerup',endGuideDrag);
  guideCanvas.addEventListener('pointercancel',endGuideDrag);
  function reviewVision(suggestion){
   const regions=(suggestion.regions||[]).slice(0,6).map((r,i)=>({index:i,x0:r.x0??i/suggestion.modules,x1:r.x1??(i+1)/suggestion.modules,type:r.type||'puerta',drawers:r.drawers||3,shelves:r.shelves??1,mixPct:r.mixPct||45,confidence:r.confidence||.3,lines:r.lines||[],detail:r.detail||'',weight:Math.max(1,Math.round(100*(r.x1-r.x0||1/suggestion.modules)))}));
   if(!regions.length)throw Error('No se encontraron elementos editables.');
   pendingVision={...suggestion,regions};id('visionReviewPanel').hidden=false;id('visionDescription').textContent=suggestion.detail||'Revisa las propuestas antes de aplicarlas.';
-  id('visionCategory').value=suggestion.category||state.category;const host=id('visionResults');host.replaceChildren();reviewWeightInputs=[];normalizeRegionWeights();
+  id('visionCategory').value=suggestion.category||state.category;const host=id('visionResults');host.replaceChildren();reviewWeightInputs=[];reviewDrawersInputs=[];reviewShelvesInputs=[];normalizeRegionWeights();
   for(const r of regions){
    const block=document.createElement('div');block.className='vision-result';
    const heading=document.createElement('strong');heading.textContent=`Cuerpo ${r.index+1}`;const detail=document.createElement('small');detail.textContent=` · Confianza orientativa ${Math.round(r.confidence*100)}% — ${r.detail}`;block.append(heading,detail);
    const grid=document.createElement('div');grid.className='two';
    const type=field(grid,'Frente','select',{options:[['puerta','Puerta'],['cajones','Cajones'],['abierto','Repisas'],['mixto','Mixto']]});type.value=r.type;type.addEventListener('change',()=>{r.type=type.value;paintVisionOverlay()});
-   const drawers=field(grid,'Cajones','input',{type:'number',min:1,max:5,step:1,value:r.drawers});drawers.addEventListener('change',()=>{r.drawers=Math.max(1,Math.min(5,Number(drawers.value)||3))});
-   const shelves=field(grid,'Repisas','input',{type:'number',min:0,max:5,step:1,value:r.shelves});shelves.addEventListener('change',()=>{r.shelves=Math.max(0,Math.min(5,Number(shelves.value)||0))});
+   r.lines=S.normalizeLines(r.lines);const drawers=field(grid,'Cajones','input',{type:'number',min:1,max:5,step:1,value:r.drawers});reviewDrawersInputs[r.index]=drawers;
+   drawers.addEventListener('change',()=>{r.drawers=Math.max(1,Math.min(5,Number(drawers.value)||3))});
+   const shelves=field(grid,'Repisas','input',{type:'number',min:0,max:5,step:1,value:r.shelves});reviewShelvesInputs[r.index]=shelves;
+   shelves.addEventListener('change',()=>{r.shelves=Math.max(0,Math.min(5,Number(shelves.value)||0))});
    const mix=field(grid,'Cajones abajo (%)','input',{type:'number',min:25,max:75,step:1,value:r.mixPct});mix.addEventListener('change',()=>{r.mixPct=Math.max(25,Math.min(75,Number(mix.value)||45))});
    const ratio=field(block,'Ancho relativo visual (peso, no mm)','input',{type:'number',min:1,max:100,step:1,value:Math.round(r.weight)});ratio.className='ratio';reviewWeightInputs[r.index]=ratio;
    ratio.addEventListener('change',()=>{r.weight=Math.max(1,Math.min(100,Math.round(Number(ratio.value)||r.weight)));normalizeRegionWeights();paintVisionOverlay()});
-   block.append(grid);host.append(block);
+   const horiz=document.createElement('div');horiz.className='horiz-actions';
+   const addLine=document.createElement('button');addLine.type='button';addLine.textContent='+ Línea horizontal';addLine.onclick=()=>{
+    const existing=S.normalizeLines(r.lines);if(existing.length>=5)return;
+    let y=.5;for(let i=1;i<=12;i++){const candidate=i/13;if(existing.every(v=>Math.abs(candidate-v)>.085)){y=candidate;break}}
+    r.lines=S.addLine(existing,y);updateGuideCounts(r);paintVisionOverlay();
+   };
+   const removeLine=document.createElement('button');removeLine.type='button';removeLine.textContent='− Última línea';removeLine.onclick=()=>{r.lines=S.normalizeLines(r.lines).slice(0,-1);updateGuideCounts(r);paintVisionOverlay()};
+   horiz.append(addLine,removeLine);block.append(grid,horiz);host.append(block);
   }
   paintVisionOverlay();
   id('status').textContent='Se generaron sugerencias. Revisa la clasificación; nada se aplicará sin tu aprobación.';
@@ -221,7 +254,7 @@
   // Si un mueble estrecho no puede admitir todas las divisiones, el motor reduce módulos.
   if(approved.modules!==r.length)id('status').textContent=`Solo caben ${approved.modules} cuerpos con el ancho actual. Ajusta ancho y revisa.`;
   else id('status').textContent='Diseño aplicado para revisión: mide el mueble real antes de presupuestar o fabricar.';
-  state=approved;selectedModule=0;update();clearVision();
+  state=approved;selectedModule=0;update();if(activePhotoZone>=0){photoZones[activePhotoZone].params=structuredClone(state);photoZones[activePhotoZone].estimatedTotal=current.total;renderPhotoZones()}clearVision();
  });
  const cornerLabels=['superior izquierda','superior derecha','inferior derecha','inferior izquierda'];
  async function paintCornerPicker(){
@@ -249,11 +282,73 @@
   if(!(r-l>=.25&&b-t>=.25))throw Error('La región de fotografía debe ocupar al menos 25% del ancho y alto.');
   return{x0:l,y0:t,x1:r,y1:b};
  }
- function clearPhoto(){photoCorners=[];cornerPickerOpen=false;id('cornerPicker').hidden=true;clearVision();id('comparePhoto').disabled=true;if(photoURL)URL.revokeObjectURL(photoURL);photoURL=null;selectedPhoto=null;id('photo').value='';id('preview').removeAttribute('src');id('drop').classList.remove('loaded');id('filename').textContent='Seleccionar foto o croquis'}
+ function renderPhotoZones(){
+  const host=id('photoZoneList');host.replaceChildren();
+  photoZones.forEach((z,i)=>{
+   const row=document.createElement('div');row.className='zone-entry'+(i===activePhotoZone?' active':'');
+   const select=document.createElement('button');select.type='button';select.textContent=`${i+1}. ${z.label} ${z.params?'✓ diseño':'· pendiente'}`;
+   select.onclick=()=>{activePhotoZone=i;photoCorners=z.corners.map(p=>({...p}));if(z.roi){for(const [key,v] of [['roiLeft',z.roi.x0],['roiRight',z.roi.x1],['roiTop',z.roi.y0],['roiBottom',z.roi.y1]])id(key).value=Math.round(v*100)}
+    else for(const [key,v] of [['roiLeft',0],['roiRight',1],['roiTop',0],['roiBottom',1]])id(key).value=Math.round(v*100);
+    clearVision();if(z.params){state=C.normalize(z.params);selectedModule=0;update()}if(z.corners.length){cornerPickerOpen=true;id('cornerPicker').hidden=false;paintCornerPicker()}
+    id('status').textContent=`Zona ${i+1} activada; puedes analizar y modificar su diseño.`;renderPhotoZones();};
+   const del=document.createElement('button');del.type='button';del.className='remove';del.textContent='✕';del.title='Quitar zona';del.onclick=()=>{photoZones.splice(i,1);activePhotoZone=activePhotoZone===i?-1:activePhotoZone>i?activePhotoZone-1:activePhotoZone;renderPhotoZones()};
+   row.append(select,del);host.append(row);
+  });
+  const summary=S.layoutSummary(photoZones);id('zoneSummary').textContent=summary.count?
+   `${summary.count} diseños guardados · suma de cotizaciones individuales ${money(summary.estimate)} (NO contempla optimización conjunta de planchas ni descuentos compartidos).`:
+   `${photoZones.length} zonas · aún no hay diseños guardados en ellas.`;
+ }
+ id('addPhotoZone').addEventListener('click',()=>{
+  if(!selectedPhoto){id('status').textContent='Primero sube una fotografía.';return}
+  if(photoZones.length>=5){id('status').textContent='Límite de cinco zonas independientes por foto.';return}
+  try{if(photoCorners.length&&photoCorners.length!==4)throw Error('Completa las cuatro esquinas para guardar la zona.');
+   const spec=S.validateZone({corners:photoCorners,roi:photoCorners.length?null:visionROI()});
+   const label=id('zoneLabel').value.trim().slice(0,45)||`Mueble ${photoZones.length+1}`;
+   photoZones.push({label,...spec,params:null,estimatedTotal:null});activePhotoZone=photoZones.length-1;
+   id('zoneLabel').value='';renderPhotoZones();id('status').textContent=`Zona «${label}» guardada; configura el siguiente mueble o analiza esta zona.`;
+  }catch(e){id('status').textContent=e.message}
+ });
+ id('saveZoneDesign').addEventListener('click',()=>{
+  if(activePhotoZone<0){id('status').textContent='Guarda y selecciona una zona antes de asociar el diseño.';return}
+  photoZones[activePhotoZone].params=structuredClone(state);photoZones[activePhotoZone].estimatedTotal=current.total;
+  renderPhotoZones();id('status').textContent='Diseño y cotización provisional guardados en la zona. No incluye la fotografía.';
+ });
+ id('exportZoneSet').addEventListener('click',()=>{
+  if(!photoZones.length){id('status').textContent='Todavía no hay zonas para exportar.';return}
+  const payload={product:'INGEBAM Muebles360',version:'3.6',type:'conjunto-referencial',notes:'Zonas relativas a una foto que NO se incluye. No representa un plano constructivo ni nesting conjunto.',zones:photoZones.map(z=>({label:z.label,corners:z.corners,roi:z.roi,params:z.params,estimatedTotal:z.estimatedTotal}))};
+  download('INGEBAM_Muebles360_Conjunto_V36.json',JSON.stringify(payload,null,2),'application/json');
+ });
+ function clearPhoto(){photoZones=[];activePhotoZone=-1;renderPhotoZones();photoCorners=[];cornerPickerOpen=false;id('cornerPicker').hidden=true;clearVision();id('comparePhoto').disabled=true;if(photoURL)URL.revokeObjectURL(photoURL);photoURL=null;selectedPhoto=null;id('photo').value='';id('preview').removeAttribute('src');id('drop').classList.remove('loaded');id('filename').textContent='Seleccionar foto o croquis'}
  id('newProject').addEventListener('click',()=>{state=C.normalize({category:'cocina'});selectedModule=0;viewer.isOpen=false;setPriceFields(C.DEFAULT_PRICES);id('projectName').value='Nuevo proyecto';setMeta({});clearPhoto();id('status').textContent='Nuevo proyecto iniciado.';update()});
- function setPhoto(file){if(!file)return;const valid=['image/png','image/jpeg','image/webp'].includes(file.type);if(!valid||file.size>12*1024*1024){id('status').textContent='Selecciona JPG, PNG o WebP de hasta 12 MB.';return}clearVision();photoCorners=[];cornerPickerOpen=false;id('cornerPicker').hidden=true;selectedPhoto=file;if(photoURL)URL.revokeObjectURL(photoURL);photoURL=URL.createObjectURL(file);id('preview').src=photoURL;id('drop').classList.add('loaded');id('filename').textContent=file.name;id('comparePhoto').disabled=false;id('status').textContent='Imagen cargada. Confirma medidas y pulsa Comparar foto y diseño.'}
+ function setPhoto(file){if(!file)return;photoZones=[];activePhotoZone=-1;renderPhotoZones();const valid=['image/png','image/jpeg','image/webp'].includes(file.type);if(!valid||file.size>12*1024*1024){id('status').textContent='Selecciona JPG, PNG o WebP de hasta 12 MB.';return}clearVision();photoCorners=[];cornerPickerOpen=false;id('cornerPicker').hidden=true;selectedPhoto=file;if(photoURL)URL.revokeObjectURL(photoURL);photoURL=URL.createObjectURL(file);id('preview').src=photoURL;id('drop').classList.add('loaded');id('filename').textContent=file.name;id('comparePhoto').disabled=false;id('status').textContent='Imagen cargada. Confirma medidas y pulsa Comparar foto y diseño.'}
  id('photo').addEventListener('change',e=>setPhoto(e.target.files[0]));
- id('comparePhoto').addEventListener('click',()=>{if(!selectedPhoto||!photoURL)return;id('compareOriginal').src=photoURL;id('compareGenerated').innerHTML=svgFront();id('photoCompareModal').showModal()});
+ function frontOverlaySVG(){
+  const p=state,th=p.thickness,inner=p.width-2*th,bodyH=state.category==='closet'?p.height-(p.baseType==='zocalo'?100:p.baseType==='patas'?120:0):p.height-(p.baseType==='zocalo'?100:p.baseType==='patas'?120:0)-30;
+  let out=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" preserveAspectRatio="none"><g stroke="#00efff" fill="none" stroke-width="3">`;
+  const ratio=v=>v/p.width*1000;let x=ratio(th),h=Math.max(100,bodyH/p.height*1000),y=p.category==='closet'?0:30/p.height*1000;
+  out+=`<rect x="0" y="0" width="1000" height="1000" stroke-width="6"/>`;
+  for(let i=0;i<p.modules;i++){
+   const w=ratio(p.moduleWidths[i]),type=p.moduleTypes[i];out+=`<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}"/>`;
+   if(type==='mixto'){
+    const split=y+h*(1-p.moduleMixPct[i]/100);out+=`<line x1="${x}" x2="${x+w}" y1="${split}" y2="${split}"/>`;
+   }
+   const split=type==='mixto'?y+h*(1-p.moduleMixPct[i]/100):y;
+   if(type==='cajones'||type==='mixto'){const parts=p.moduleDrawers[i];const a=type==='mixto'?split:y;for(let j=1;j<parts;j++){const yy=a+(y+h-a)*j/parts;out+=`<line x1="${x}" x2="${x+w}" y1="${yy}" y2="${yy}"/>`}}
+   if(type==='abierto'||type==='mixto')for(let j=1;j<=p.moduleShelves[i];j++){const bottom=type==='mixto'?split:y+h,yy=y+(bottom-y)*j/(p.moduleShelves[i]+1);out+=`<line x1="${x}" x2="${x+w}" y1="${yy}" y2="${yy}"/>`}
+   x+=w+ratio(th);
+  }
+  return out+'</g></svg>';
+ }
+ id('comparePhoto').addEventListener('click',async()=>{
+  if(!selectedPhoto||!photoURL)return;id('compareOriginal').src=photoURL;id('compareGenerated').innerHTML=svgFront();
+  id('compareOverlayDrawing').innerHTML=frontOverlaySVG();id('compareOverlayPhoto').src=photoURL;
+  try{if(photoCorners.length===4){const prep=await window.MueblesVision.prepareImageForAI(selectedPhoto,{corners:photoCorners});id('compareOverlayPhoto').src=prep.previewURL}
+   else{const prep=await window.MueblesVision.prepareImageForAI(selectedPhoto,{roi:visionROI()});id('compareOverlayPhoto').src=prep.previewURL}}
+  catch(e){id('status').textContent='Comparación con foto completa: '+e.message}
+  id('photoCompareModal').showModal();
+ });
+ id('compareOpacity').addEventListener('input',e=>{id('opacityValue').textContent=`${e.target.value}%`;id('compareOverlayDrawing').style.opacity=String(Number(e.target.value)/100)});
+ id('compareOverlayDrawing').style.opacity='.65';
  id('closeCompare').addEventListener('click',()=>id('photoCompareModal').close());
  id('analyze').addEventListener('click',async()=>{
   if(!selectedPhoto){id('status').textContent='Primero sube una imagen.';return}
@@ -277,7 +372,7 @@
  function download(filename,content,mime){const blob=new Blob([content],{type:mime}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
  function svgFront(){
   const m=current.model,p=m.params,scale=Math.min(900/p.width,650/p.height),pad=95,w=p.width*scale+2*pad,h=p.height*scale+2*pad,x=pad,y=pad;
-  const f=v=>Number(v.toFixed(1));let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${f(w)}" height="${f(h)}" viewBox="0 0 ${f(w)} ${f(h)}"><rect width="100%" height="100%" fill="white"/><text x="30" y="28" font-family="Arial,sans-serif" font-size="15">INGEBAM Muebles360 V3.5 · Alzado frontal preliminar</text><rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(p.height*scale)}" fill="none" stroke="#1e293b" stroke-width="3"/>`;
+  const f=v=>Number(v.toFixed(1));let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${f(w)}" height="${f(h)}" viewBox="0 0 ${f(w)} ${f(h)}"><rect width="100%" height="100%" fill="white"/><text x="30" y="28" font-family="Arial,sans-serif" font-size="15">INGEBAM Muebles360 V3.6 · Alzado frontal preliminar</text><rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(p.height*scale)}" fill="none" stroke="#1e293b" stroke-width="3"/>`;
   const bodyH=m.dimensions.carcassH*scale,baseH=(p.baseType==='zocalo'?100:p.baseType==='patas'?120:0)*scale,topH=(p.category==='closet'?0:30)*scale;
   if(baseH)out+=`<rect x="${x}" y="${f(y+p.height*scale-baseH)}" width="${f(p.width*scale)}" height="${f(baseH)}" fill="#ece5db" stroke="#1e293b"/>`;
   if(topH)out+=`<rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(topH)}" fill="#d4dce5" stroke="#1e293b"/>`;
@@ -317,6 +412,6 @@
  }
  detectAICapability();
  // Recuperación automática de trabajo local; sin enviar datos a terceros.
- try{const saved=JSON.parse(localStorage.getItem('ingebam-muebles360-v3')||localStorage.getItem('ingebam-muebles360-v2')||'null');if(saved?.params){state=C.normalize(saved.params);setPriceFields(saved.prices||{});id('projectName').value=String(saved.projectName||'Proyecto recuperado').slice(0,80);setMeta(saved.meta||{});id('status').textContent='Se recuperó tu último diseño local.'}}catch{}
+ renderPhotoZones();try{const saved=JSON.parse(localStorage.getItem('ingebam-muebles360-v3')||localStorage.getItem('ingebam-muebles360-v2')||'null');if(saved?.params){state=C.normalize(saved.params);setPriceFields(saved.prices||{});id('projectName').value=String(saved.projectName||'Proyecto recuperado').slice(0,80);setMeta(saved.meta||{});id('status').textContent='Se recuperó tu último diseño local.'}}catch{}
  update();
 })();
