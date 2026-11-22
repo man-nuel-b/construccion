@@ -68,6 +68,47 @@ function analyzeRaster({data,width,height},{roi={x0:0.025,y0:0.025,x1:0.975,y1:0
  return {source:'local-geometria',modules:regions.length,edges:vertical.map(p=>p.at/w),regions,
   confidence:Number(confidence.toFixed(2)),roi,detail:`Análisis geométrico preliminar: ${regions.length} zonas frontales y ${regions.reduce((a,r)=>a+r.lines.length,0)} líneas horizontales candidatas. Clasificaciones no verificadas.`};
 }
+// Rectificación proyectiva guiada: 4 puntos en orden SI, SD, ID, II.
+// Las esquinas son porcentajes del fotograma, nunca medidas métricas.
+function rectifyRaster(image,corners,maxSize=750){
+ const {data,width,height}=image;
+ if(!data||data.length<width*height*4||!Array.isArray(corners)||corners.length!==4)throw Error('Marca las cuatro esquinas del mueble antes de rectificar.');
+ const points=corners.map(p=>({x:Number(p.x)*width,y:Number(p.y)*height}));
+ if(points.some(p=>!Number.isFinite(p.x)||!Number.isFinite(p.y)||p.x<0||p.y<0||p.x>width||p.y>height))throw Error('Las esquinas deben estar dentro de la foto.');
+ let sign=0;
+ for(let i=0;i<4;i++){
+  const a=points[i],b=points[(i+1)%4],c=points[(i+2)%4];const cross=(b.x-a.x)*(c.y-b.y)-(b.y-a.y)*(c.x-b.x);
+  if(Math.abs(cross)<10)throw Error('Selecciona un contorno de cuatro esquinas bien separado.');
+  if(sign&&Math.sign(cross)!==sign)throw Error('Las esquinas se cruzan o tienen un orden incorrecto. Usa superior izquierda, superior derecha, inferior derecha, inferior izquierda.');
+  sign=Math.sign(cross);
+ }
+ const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),[p0,p1,p2,p3]=points;
+ let w=Math.round(Math.max(dist(p0,p1),dist(p3,p2))),h=Math.round(Math.max(dist(p0,p3),dist(p1,p2)));
+ if(w<50||h<50)throw Error('El mueble delimitado es demasiado pequeño. Selecciona una zona mayor.');
+ const factor=Math.min(1,maxSize/Math.max(w,h));w=Math.max(80,Math.round(w*factor));h=Math.max(60,Math.round(h*factor));
+ // Homografía inversa: rectángulo (u,v) → cuadrilátero en la fotografía.
+ const dx1=p1.x-p2.x,dx2=p3.x-p2.x,dx3=p0.x-p1.x+p2.x-p3.x;
+ const dy1=p1.y-p2.y,dy2=p3.y-p2.y,dy3=p0.y-p1.y+p2.y-p3.y;
+ const det=dx1*dy2-dx2*dy1;
+ let g=0,k=0;
+ if(Math.abs(dx3)+Math.abs(dy3)>1e-6){if(Math.abs(det)<1e-6)throw Error('Perspectiva demasiado deformada. Revisa las esquinas.');g=(dx3*dy2-dx2*dy3)/det;k=(dx1*dy3-dx3*dy1)/det}
+ const a=p1.x-p0.x+g*p1.x,b=p3.x-p0.x+k*p3.x,c=p0.x;
+ const d=p1.y-p0.y+g*p1.y,e=p3.y-p0.y+k*p3.y,f=p0.y;
+ const out=new Uint8ClampedArray(w*h*4);
+ for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){
+  const u=(xx+.5)/w,v=(yy+.5)/h,q=g*u+k*v+1;
+  if(Math.abs(q)<1e-9)continue;
+  const srcX=clamp((a*u+b*v+c)/q,0,width-1),srcY=clamp((d*u+e*v+f)/q,0,height-1);
+  const x0=Math.floor(srcX),y0=Math.floor(srcY),x1=Math.min(width-1,x0+1),y1=Math.min(height-1,y0+1),fx=srcX-x0,fy=srcY-y0;
+  const base=(yy*w+xx)*4;
+  for(let channel=0;channel<3;channel++){
+   const A=data[(y0*width+x0)*4+channel],B=data[(y0*width+x1)*4+channel],C=data[(y1*width+x0)*4+channel],D=data[(y1*width+x1)*4+channel];
+   out[base+channel]=(A*(1-fx)+B*fx)*(1-fy)+(C*(1-fx)+D*fx)*fy;
+  }
+  out[base+3]=255;
+ }
+ return {width:w,height:h,data:out};
+}
 async function suggestFromImage(file,options={}){
  if(!file||!['image/png','image/jpeg','image/webp'].includes(file.type))throw Error('Selecciona imagen JPG, PNG o WebP.');
  if(file.size>12*1024*1024)throw Error('Imagen superior a 12 MB.');
@@ -76,7 +117,11 @@ async function suggestFromImage(file,options={}){
  const cv=document.createElement('canvas');cv.width=w;cv.height=h;const ctx=cv.getContext('2d',{willReadFrequently:true});
  if(!ctx){bmp.close?.();throw Error('No fue posible analizar píxeles de la imagen.');}
  ctx.drawImage(bmp,0,0,w,h);bmp.close?.();
- return analyzeRaster(ctx.getImageData(0,0,w,h),options);
+ const original=ctx.getImageData(0,0,w,h);
+ const rectified=options.corners?.length===4?rectifyRaster(original,options.corners):original;
+ const result=analyzeRaster(rectified,{roi:options.roi});
+ if(options.corners?.length===4){const out=document.createElement('canvas');out.width=rectified.width;out.height=rectified.height;out.getContext('2d').putImageData(new ImageData(rectified.data,rectified.width,rectified.height),0,0);result.previewURL=out.toDataURL('image/png');result.rectified=true}
+ return result;
 }
 function normalizeAI(data,existing={}){
  if(!data||typeof data!=='object')throw Error('La IA no devolvió un objeto válido.');
@@ -89,6 +134,6 @@ function normalizeAI(data,existing={}){
  });
  return {source:'ia-remota',category:['cocina','closet','vanitorio'].includes(data.category)?data.category:existing.category||'closet',modules,regions,confidence:clamp(Number(data.confidence)||.4,.05,.95),edges:regions.slice(0,-1).map(r=>r.x1),detail:String(data.notes||'Elementos propuestos mediante IA. No se conocen dimensiones reales.').slice(0,400)};
 }
-root.MueblesVision={suggestFromImage,analyzeRaster,normalizeAI};
+root.MueblesVision={suggestFromImage,analyzeRaster,normalizeAI,rectifyRaster};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.MueblesVision;
 })(typeof window!=='undefined'?window:globalThis);
