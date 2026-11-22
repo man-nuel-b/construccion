@@ -37,4 +37,35 @@ test('Revisión de imagen requiere aceptación expresa, diseño sigue editable',
  const app=fs.readFileSync(__dirname+'/app.js','utf8');assert(app.includes("id('applyVision').addEventListener"));assert(app.includes('reviewVision(result)'));
  assert(!app.includes('state={...state,modules:r.modules,moduleTypes:Array.from'));
 });
-console.log(`${n} pruebas adicionales V3.2 superadas.`);
+
+test('Rectificación de cuadrilátero entero conserva la imagen y sus medidas',()=>{
+ const w=160,h=100,data=new Uint8ClampedArray(w*h*4);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;data[i]=x;data[i+1]=y;data[i+2]=40;data[i+3]=255}
+ const rect=V.rectifyRaster({width:w,height:h,data},[{x:0,y:0},{x:1,y:0},{x:1,y:1},{x:0,y:1}]);
+ assert.equal(rect.width,160);assert.equal(rect.height,100);
+ const center=(50*rect.width+80)*4;assert(Math.abs(rect.data[center]-80)<3);assert(Math.abs(rect.data[center+1]-50)<3);
+});
+test('Delimitación perspectiva aísla un mueble de dos objetos vecinos',()=>{
+ const w=360,h=210,data=new Uint8ClampedArray(w*h*4);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const isWardrobe=x>85+y*.15&&x<262-y*.1&&y>12&&y<195;
+  data[i]=isWardrobe?102:220;data[i+1]=isWardrobe?82:24;data[i+2]=isWardrobe?52:24;data[i+3]=255;
+ }
+ const rect=V.rectifyRaster({width:w,height:h,data},[{x:.245,y:.085},{x:.725,y:.085},{x:.675,y:.91},{x:.325,y:.91}]);
+ let inside=0;for(let y=15;y<rect.height-15;y++)for(let x=15;x<rect.width-15;x++){const i=(y*rect.width+x)*4;if(rect.data[i+1]>rect.data[i+2])inside++}
+ assert(inside>0);const middle=((rect.height>>1)*rect.width+(rect.width>>1))*4;assert(rect.data[middle+1]>60);
+});
+test('Rechaza rectángulos auto-cruzados o degenerados',()=>{
+ const data=new Uint8ClampedArray(100*100*4),im={width:100,height:100,data};
+ assert.throws(()=>V.rectifyRaster(im,[{x:0,y:0},{x:1,y:1},{x:1,y:0},{x:0,y:1}]),/cruzan|orden|esquinas/i);
+ assert.throws(()=>V.rectifyRaster(im,[{x:0,y:0},{x:.01,y:0},{x:.01,y:.01},{x:0,y:.01}]),/pequeño|separado/i);
+});
+test('El editor V3.3 incorpora revisión de cuatro esquinas, proporciones y privacidad',()=>{
+ const html=fs.readFileSync(__dirname+'/index.html','utf8'),app=fs.readFileSync(__dirname+'/app.js','utf8');
+ for(const id of ['chooseCorners','cornerCanvas','cornerPicker','cornerStatus','undoCorner','resetCorners','visionResults'])assert(html.includes(`id="${id}"`));
+ assert(app.includes("photoCorners.length===4?photoCorners:undefined"));
+ assert(app.includes('normalizeRegionWeights()'));
+ assert(app.includes('Ancho relativo visual'));
+ assert(html.includes('aiEndpoint: (location.hostname')); 
+});
+console.log(`${n} pruebas adicionales V3.3 superadas.`);
