@@ -1,0 +1,56 @@
+{
+  "title": "Ejemplo INGEBAM Muebles360",
+  "version": "2.0",
+  "projectName": "Cocina base — demostración",
+  "params": {
+    "category": "cocina",
+    "width": 1800,
+    "height": 900,
+    "depth": 600,
+    "thickness": 18,
+    "modules": 3,
+    "moduleTypes": [
+      "puerta",
+      "puerta",
+      "cajones"
+    ],
+    "moduleWidths": [
+      576,
+      576,
+      576
+    ],
+    "moduleDrawers": [
+      3,
+      3,
+      3
+    ],
+    "moduleShelves": [
+      1,
+      1,
+      1
+    ],
+    "baseType": "zocalo",
+    "shelves": 1,
+    "drawers": 3,
+    "finish": "roble"
+  },
+  "prices": {
+    "sheet18": 52000,
+    "sheet15": 46000,
+    "back3": 17000,
+    "edgeMeter": 1500,
+    "hinge": 3200,
+    "runnerPair": 14500,
+    "handle": 2800,
+    "leg": 3800,
+    "countertopMeter": 75000,
+    "laborHour": 9500,
+    "overheadPct": 12,
+    "marginPct": 25,
+    "includeVat": false,
+    "kerfMm": 4,
+    "trimMm": 8,
+    "allowRotation": false
+  },
+  "note": "Datos ficticios, no listo para taller."
+}
