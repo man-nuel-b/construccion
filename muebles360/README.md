@@ -1,4 +1,4 @@
-# INGEBAM Muebles360 V3 — Configurador paramétrico y gestión de cortes
+# INGEBAM Muebles360 V3.3 — Configurador paramétrico y gestión de cortes
 
 **Prototipo técnico comercial independiente.** No pertenece oficialmente a Muebles Lasch, no ha sido encargado ni validado por esa empresa y los precios son ficticios.
 
@@ -100,3 +100,15 @@ La cubicación y el despiece son preliminares y necesitan revisión de taller an
 
 ### Alcance de despliegue
 Solo se actualizan archivos de la carpeta `muebles360/`; el resto de los proyectos y la portada `index.html` de INGEBAM permanecen iguales. La fotografía de prueba no se envía a GitHub ni a servidores al ejecutar el reconocimiento local.
+
+
+## Actualización V3.3 — aislar un mueble y conservar sus proporciones
+
+1. Sube una fotografía y elige **Delimitar mueble · 4 esquinas** para separar el mueble de otros elementos de la escena. Marca las cuatro esquinas en orden: superior izquierda, superior derecha, inferior derecha e inferior izquierda. Se permite quitar la última esquina o limpiar la selección.
+2. Al pulsar **Reconocer divisiones y frentes**, el navegador genera una vista frontal aproximada mediante transformación proyectiva y analiza bordes dentro de esa zona. La foto original y las esquinas se mantienen en memoria del navegador; no se publican ni transfieren a GitHub.
+3. En la revisión se muestra la zona rectificada con posibles divisiones y puedes editar el **ancho relativo visual (peso)** de cada cuerpo, además del tipo de frente, cajones y repisas. El ancho físico total sigue siendo el valor que ingresaste manualmente; no se deducen milímetros de una imagen.
+4. Después de revisar, pulsa **Aplicar diseño revisado**. El motor reequilibra los anchos según sus mínimos constructivos (260 mm), por lo que puede modificar las proporciones cuando el espacio no alcanza. Comprueba todas las medidas y cantidades antes de fabricar o cotizar.
+5. Este procedimiento no es segmentación semántica por IA y no garantiza reconocer piezas ocultas. Si aparecen múltiples muebles o una perspectiva extrema, la selección manual ayuda, pero no reproduce automáticamente geometrías complejas.
+6. El botón de Gemini sigue siendo una integración opcional local: analiza la foto original si se activa con el servidor privado. La corrección de cuatro esquinas se aplica únicamente al detector geométrico local.
+
+Pruebas: `node tests.js` y `node tests-vision.js` (incluye rectificación, rechazo de cuadriláteros inválidos y opciones de revisión).
