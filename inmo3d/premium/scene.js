@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { enhancePremiumScene } from './premium-details-v111.js';
 import { addArchitecturalFinish } from './premium-finish-v112.js';
+import { createExteriorRealism } from './exterior-realism-v113.js';
 
 const status = document.querySelector('#status');
 try {
@@ -137,6 +138,8 @@ const premiumReport = enhancePremiumScene({THREE,scene,renderer,materials:mat});
 console.info('INGEBAM Inmo3D Premium',premiumReport);
 const finishingReport=addArchitecturalFinish({THREE,scene,renderer,materials:mat});
 console.info('INGEBAM Inmo3D Finishes',finishingReport);
+const exteriorRealism=createExteriorRealism({THREE,scene,renderer,camera,sun});
+console.info('INGEBAM Exterior Realism',exteriorRealism.stats);
 // Camera tours retain real-time OrbitControls.
 const views={
  front:{p:[17,10.3,19],t:[0,2,0]},
@@ -156,6 +159,7 @@ document.querySelector('#timeofday').addEventListener('click',e=>{
  sun.intensity=sunset?3.2:4.1;sun.color.set(sunset?'#ffbd88':'#fff0d7');
  hemi.intensity=sunset?1.2:2.1;
  renderer.toneMappingExposure=sunset?.84:1.05;
+ exteriorRealism.setTimeOfDay(sunset);
  scene.background.set(sunset?'#8d8198':'#bfd1df');
  scene.fog.color.set(sunset?'#95889d':'#c4d4db');
 });
