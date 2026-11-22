@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es-CL"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>INGEBAM Muebles360 V3 — Diseñador paramétrico, despiece y optimización</title>
+<title>INGEBAM Muebles360 V3.1 — Diseñador paramétrico, despiece y optimización</title>
 <meta name="description" content="Prototipo INGEBAM de diseño de muebles a medida, referencia fotográfica, despiece preliminar y presupuestos."/>
 <meta name="robots" content="noindex,nofollow"/>
 <style>
@@ -44,21 +44,21 @@ dialog.photo-compare::backdrop{background:#000b;backdrop-filter:blur(3px)}
 <header><div class="brand"><span class="brandmark">IB</span><div><div class="brand-name">INGEBAM <span style="color:#dcb47e">Muebles360</span></div><div class="brand-sub">Diseño · Despiece · Cotización</div></div></div><div class="header-actions"><span class="badge">Demostración no oficial</span><button id="undoChange" class="quiet" title="Deshacer edición" disabled>↶ Deshacer</button><button id="redoChange" class="quiet" title="Rehacer edición" disabled>↷ Rehacer</button><button id="newProject" class="quiet">Nuevo</button><label class="btn file-picker" for="loadProject">Abrir proyecto<input id="loadProject" type="file" accept="application/json,.json"></label><button id="saveProject" class="primary">Guardar proyecto</button></div></header>
 <div class="workspace">
 <aside class="side left">
- <section class="panel"><div class="section-head"><h2>Foto de referencia</h2><span class="section-num">01</span></div><label class="drop" id="drop"><input id="photo" type="file" accept="image/png,image/jpeg,image/webp"><div class="big">▧</div><div class="name" id="filename">Seleccionar foto o croquis</div><p class="muted">JPG, PNG o WebP, hasta 12 MB</p><img id="preview" alt="Fotografía de referencia seleccionada"></label><button id="analyze" class="action-full">Sugerir divisiones desde foto</button><button id="comparePhoto" class="action-full quiet" disabled>Comparar foto y diseño</button><button id="analyzeAI" class="action-full quiet">Analizar con IA real (servidor opcional)</button><div id="status" class="status" role="status"></div><p class="hint">Experimental: detecta contraste vertical, no reconoce muebles ni calcula medidas reales. Confirma dimensiones manualmente.</p></section>
+ <section class="panel"><div class="section-head"><h2>Foto de referencia</h2><span class="section-num">01</span></div><label class="drop" id="drop"><input id="photo" type="file" accept="image/png,image/jpeg,image/webp"><div class="big">▧</div><div class="name" id="filename">Seleccionar foto o croquis</div><p class="muted">JPG, PNG o WebP, hasta 12 MB</p><img id="preview" alt="Fotografía de referencia seleccionada"></label><button id="analyze" class="action-full">Sugerir divisiones desde foto</button><button id="comparePhoto" class="action-full quiet" disabled>Comparar foto y diseño</button><button id="analyzeAI" class="action-full quiet" disabled title="Configura un endpoint en Muebles360Config.aiEndpoint para habilitar">Analizar con IA real (no configurado)</button><div id="status" class="status" role="status" aria-live="polite"></div><p class="hint">Experimental: detecta contraste vertical, no reconoce muebles ni calcula medidas reales. Confirma dimensiones manualmente.</p></section>
  <section class="panel"><div class="section-head"><h2>Ficha comercial</h2><span class="section-num">CLIENTE</span></div>
  <div class="two"><div class="input-row"><label class="input-label" for="clientName">Cliente / empresa</label><input id="clientName" type="text" maxlength="120" placeholder="Cliente por confirmar"></div><div class="input-row"><label class="input-label" for="clientContact">Correo o teléfono</label><input id="clientContact" type="text" maxlength="140" placeholder="Contacto"></div></div>
  <div class="two"><div class="input-row"><label class="input-label" for="quoteRef">Referencia del presupuesto</label><input id="quoteRef" type="text" maxlength="60" value="ING-0001"></div><div class="input-row"><label class="input-label" for="projectStage">Etapa</label><select id="projectStage"><option value="Borrador">Borrador</option><option value="Enviado">Enviado</option><option value="Aprobado">Aprobado</option><option value="Fabricación">Fabricación</option><option value="Instalado">Instalado</option></select></div></div>
  <div class="input-row"><label class="input-label" for="projectNotes">Observaciones y alcance</label><textarea id="projectNotes" maxlength="1200" rows="3" placeholder="Ej.: Incluye instalación en Temuco; cubierta sujeta a medición."></textarea></div>
  <button id="exportQuote" class="action-full primary">Descargar presupuesto imprimible</button><p class="hint">Se genera un HTML autónomo para imprimir o guardar como PDF. No se envía a ningún cliente automáticamente.</p></section>
- <section class="panel"><div class="section-head"><h2>Tipo y dimensiones</h2><span class="section-num">02</span></div><div class="input-row"><label class="input-label" for="projectName">Nombre del proyecto</label><input id="projectName" type="text" maxlength="80" value="Proyecto demostrativo" placeholder="Ej.: Cocina departamento Villarrica"></div><div class="input-row"><label class="input-label" for="category">Tipo de mueble</label><select id="category"><option value="cocina">Mueble de cocina</option><option value="closet">Clóset / ropero</option><option value="vanitorio">Vanitorio</option></select></div><div class="two"><div class="input-row"><label class="input-label" for="width">Ancho (mm)</label><input id="width" type="number" min="600" max="3600" step="10"></div><div class="input-row"><label class="input-label" for="height">Alto (mm)</label><input id="height" type="number" min="500" max="2600" step="10"></div></div><div class="two"><div class="input-row"><label class="input-label" for="depth">Profundidad (mm)</label><input id="depth" type="number" min="350" max="750" step="10"></div><div class="input-row"><label class="input-label" for="thickness">Tablero</label><select id="thickness"><option value="18">18 mm</option><option value="15">15 mm</option></select></div></div><div class="two"><div class="input-row"><label class="input-label" for="modules">Nº de módulos</label><input id="modules" type="number" min="1" max="6" step="1"></div><div class="input-row"><label class="input-label" for="baseType">Apoyo</label><select id="baseType"><option value="zocalo">Zócalo 100 mm</option><option value="patas">Patas 120 mm</option><option value="suspendido">Suspendido</option></select></div></div><div class="two"><div class="input-row"><label class="input-label" for="shelves">Repisas por cuerpo</label><input id="shelves" type="number" min="0" max="5"></div><div class="input-row"><label class="input-label" for="drawers">Cajones por cajonera</label><input id="drawers" type="number" min="1" max="5"></div></div></section>
+ <section class="panel"><div class="section-head"><h2>Tipo y dimensiones</h2><span class="section-num">02</span></div><div class="input-row"><label class="input-label" for="projectName">Nombre del proyecto</label><input id="projectName" type="text" maxlength="80" value="Proyecto demostrativo" placeholder="Ej.: Cocina departamento Villarrica"></div><div class="input-row"><label class="input-label" for="category">Tipo de mueble</label><select id="category"><option value="cocina">Mueble de cocina</option><option value="closet">Clóset / ropero</option><option value="vanitorio">Vanitorio</option></select></div><div class="two"><div class="input-row"><label class="input-label" for="width">Ancho (mm)</label><input id="width" type="number" min="600" max="3600" step="10" value="1800"></div><div class="input-row"><label class="input-label" for="height">Alto (mm)</label><input id="height" type="number" min="500" max="2600" step="10" value="850"></div></div><div class="two"><div class="input-row"><label class="input-label" for="depth">Profundidad (mm)</label><input id="depth" type="number" min="350" max="750" step="10" value="600"></div><div class="input-row"><label class="input-label" for="thickness">Tablero</label><select id="thickness"><option value="18" selected>18 mm</option><option value="15">15 mm</option></select></div></div><div class="two"><div class="input-row"><label class="input-label" for="modules">Nº de módulos</label><input id="modules" type="number" min="1" max="6" step="1" value="3"></div><div class="input-row"><label class="input-label" for="baseType">Apoyo</label><select id="baseType"><option value="zocalo" selected>Zócalo 100 mm</option><option value="patas">Patas 120 mm</option><option value="suspendido">Suspendido</option></select></div></div><div class="two"><div class="input-row"><label class="input-label" for="shelves">Repisas por cuerpo</label><input id="shelves" type="number" min="0" max="5" step="1" value="1"></div><div class="input-row"><label class="input-label" for="drawers">Cajones por cajonera</label><input id="drawers" type="number" min="1" max="5" step="1" value="3"></div></div></section>
  <section class="panel"><div class="section-head"><h2>Distribución modular</h2><span class="section-num">03</span></div><p class="muted" style="margin-bottom:12px">Selecciona un cuerpo para modificar su frente.</p><div id="moduleButtons" class="module-row"></div><div class="input-row" style="margin-top:13px"><label class="input-label" for="moduleType">Frente del módulo seleccionado</label><select id="moduleType"><option value="puerta">Puerta abatible</option><option value="cajones">Cajonera</option><option value="abierto">Abierto / repisas</option></select></div>
-<div class="two"><div class="input-row"><label class="input-label" for="moduleWidth">Ancho útil del módulo (mm)</label><input id="moduleWidth" type="number" min="260" max="3600" step="1"><p class="hint">Redistribuye espacio entre módulos.</p></div>
-<div class="input-row"><label class="input-label" for="moduleDrawers">Cajones en este módulo</label><input id="moduleDrawers" type="number" min="1" max="5" step="1"></div></div>
-<div class="input-row"><label class="input-label" for="moduleShelves">Repisas en este módulo</label><input id="moduleShelves" type="number" min="0" max="5" step="1"></div>
+<div class="two"><div class="input-row"><label class="input-label" for="moduleWidth">Ancho útil del módulo (mm)</label><input id="moduleWidth" type="number" min="260" max="3600" step="1" value="600"><p class="hint">Redistribuye espacio entre módulos.</p></div>
+<div class="input-row"><label class="input-label" for="moduleDrawers">Cajones en este módulo</label><input id="moduleDrawers" type="number" min="1" max="5" step="1" value="3"></div></div>
+<div class="input-row"><label class="input-label" for="moduleShelves">Repisas en este módulo</label><input id="moduleShelves" type="number" min="0" max="5" step="1" value="1"></div>
 <div class="small-actions"><button id="moduleMoveLeft" title="Intercambiar posición con el módulo anterior">← Mover módulo</button><button id="moduleMoveRight" title="Intercambiar posición con el módulo siguiente">Mover módulo →</button></div><p class="field-note">Selecciona un frente desde el visor o usa los botones 01, 02, 03…</p></section>
  <section class="panel"><div class="section-head"><h2>Terminaciones</h2><span class="section-num">04</span></div><div class="swatches swatchbar" id="swatches"></div></section>
 </aside>
-<section class="viewport" id="viewport" aria-label="Visor de mueble tridimensional"><canvas id="viewer" aria-label="Modelo tridimensional interactivo"></canvas><div class="viewer-tools"><button id="viewFront">Frente</button><button id="viewSide">Lateral</button><button id="viewTop">Planta</button><button id="toggleDoors">Abrir frentes</button><button id="resetView" title="Restablecer vista">↺ Vista</button><button id="enable3D" class="accent-view" title="Three.js requiere conexión a internet">3D avanzado ↗</button></div><div class="float" id="hud">Modelo paramétrico: medidas aproximadas</div><div class="selected" id="selected" hidden></div></section>
+<section class="viewport" id="viewport" aria-label="Visor de mueble tridimensional"><canvas id="viewer" aria-label="Modelo tridimensional interactivo"></canvas><div class="viewer-tools"><button id="viewFront">Frente</button><button id="viewSide">Lateral</button><button id="viewTop">Planta</button><button id="toggleDoors">Abrir frentes</button><button id="resetView" title="Restablecer vista">↺ Vista</button><button id="enable3D" class="accent-view" title="Three.js requiere conexión a internet">3D avanzado ↗</button></div><div class="float" id="hud" aria-live="polite">Modelo paramétrico: medidas aproximadas</div><div class="selected" id="selected" hidden></div></section>
 <aside class="side right">
  <section class="panel"><div class="section-head"><h2>Costeo preliminar</h2><span class="section-num">05</span></div><div class="two"><div class="input-row"><label class="input-label" for="sheetPrice">Plancha principal (CLP)</label><input id="sheetPrice" type="number" min="0" step="1000" value="52000"></div><div class="input-row"><label class="input-label" for="margin">Margen bruto objetivo (%)</label><input id="margin" type="number" min="0" max="75" value="25"></div></div><details class="price-details"><summary>Editar precios de materiales y mano de obra</summary><div class="two" style="padding-top:13px">
 <div class="input-row"><label class="input-label" for="sheet15">Plancha 15 mm</label><input id="sheet15" type="number" min="0" step="1000" value="46000"></div>
@@ -74,16 +74,93 @@ dialog.photo-compare::backdrop{background:#000b;backdrop-filter:blur(3px)}
  <div class="input-row"><label class="input-label" for="installationHours">Horas de instalación (estimación)</label><input id="installationHours" type="number" min="0" max="500" step="0.5" value="0"></div>
  <div class="input-row"><label class="input-label" for="deliveryFee">Despacho / traslado (CLP)</label><input id="deliveryFee" type="number" min="0" step="1000" value="0"></div>
  <div class="input-row"><label class="input-label" for="contingencyPct">Reserva por imprevistos (%)</label><input id="contingencyPct" type="number" min="0" max="100" step="1" value="0"></div></div>
-</details><div class="two"><div class="input-row"><label class="input-label" for="kerf">Espesor de corte (mm)</label><input id="kerf" type="number" min="0" max="10" step="1" value="4"></div><div class="input-row"><label class="input-label" for="trim">Saneado de bordes (mm)</label><input id="trim" type="number" min="0" max="30" step="1" value="8"></div></div><div class="input-row"><label style="display:flex;align-items:center;gap:8px;font-size:.75rem"><input type="checkbox" id="allowRotation"> Permitir giro de piezas en plancha (revisar veta)</label></div><div class="input-row"><label style="display:flex;align-items:center;gap:8px;font-size:.75rem"><input type="checkbox" id="vat"> Incluir IVA 19% en cotización simulada</label></div><div class="line"><span>Planchas melamina (estimadas)</span><strong id="boards">—</strong></div><div class="line"><span>Planchas MDF traseras (estimadas)</span><strong id="backs">—</strong></div><div class="line"><span>Tapacanto</span><strong id="edge">—</strong></div><div class="line"><span>Bisagras / pares de correderas</span><strong id="hardware">—</strong></div><details class="price-details"><summary>Ver desglose de costos directos</summary><div class="line"><span>Tableros</span><strong id="costBoards">—</strong></div><div class="line"><span>Tapacantos</span><strong id="costEdge">—</strong></div><div class="line"><span>Herrajes y patas</span><strong id="costHardware">—</strong></div><div class="line"><span>Cubierta</span><strong id="costTop">—</strong></div><div class="line"><span>Mano de obra</span><strong id="costLabor">—</strong></div><div class="line"><span>Instalación</span><strong id="costInstallation">—</strong></div><div class="line"><span>Despacho</span><strong id="costDelivery">—</strong></div></details><div class="line"><span>Rendimiento de planchas</span><strong id="yieldPct">—</strong></div><div class="line"><span>Costo directo estimado</span><strong id="directCost">—</strong></div><div class="line"><span>Gastos indirectos</span><strong id="overhead">—</strong></div><div class="line"><span>Contingencia</span><strong id="contingency">—</strong></div><div class="line"><span>Subtotal venta</span><strong id="subtotal">—</strong></div><div class="line" id="vatRow" hidden><span>IVA</span><strong id="vatValue">—</strong></div><div class="totalbox"><small>Precio estimado de venta</small><strong id="total">—</strong></div><div class="status-line" id="quoteStatus">Evaluando geometría y costos…</div><p class="hint">Precios de muestra, editables. No incluye traslados, instalaciones especiales, lavaplatos ni integración con proveedores.</p></section>
+</details><div class="two"><div class="input-row"><label class="input-label" for="kerf">Espesor de corte (mm)</label><input id="kerf" type="number" min="0" max="10" step="1" value="4"></div><div class="input-row"><label class="input-label" for="trim">Saneado de bordes (mm)</label><input id="trim" type="number" min="0" max="30" step="1" value="8"></div></div><div class="input-row"><label style="display:flex;align-items:center;gap:8px;font-size:.75rem"><input type="checkbox" id="allowRotation"> Permitir giro de piezas en plancha (revisar veta)</label></div><div class="input-row"><label style="display:flex;align-items:center;gap:8px;font-size:.75rem"><input type="checkbox" id="vat"> Incluir IVA 19% en cotización simulada</label></div><div class="line"><span>Planchas melamina (estimadas)</span><strong id="boards">—</strong></div><div class="line"><span>Planchas MDF traseras (estimadas)</span><strong id="backs">—</strong></div><div class="line"><span>Tapacanto</span><strong id="edge">—</strong></div><div class="line"><span>Bisagras / pares de correderas</span><strong id="hardware">—</strong></div><details class="price-details"><summary>Ver desglose de costos directos</summary><div class="line"><span>Tableros</span><strong id="costBoards">—</strong></div><div class="line"><span>Tapacantos</span><strong id="costEdge">—</strong></div><div class="line"><span>Herrajes y patas</span><strong id="costHardware">—</strong></div><div class="line"><span>Cubierta</span><strong id="costTop">—</strong></div><div class="line"><span>Mano de obra</span><strong id="costLabor">—</strong></div><div class="line"><span>Instalación</span><strong id="costInstallation">—</strong></div><div class="line"><span>Despacho</span><strong id="costDelivery">—</strong></div></details><div class="line"><span>Rendimiento de planchas</span><strong id="yieldPct">—</strong></div><div class="line"><span>Costo directo estimado</span><strong id="directCost">—</strong></div><div class="line"><span>Gastos indirectos</span><strong id="overhead">—</strong></div><div class="line"><span>Contingencia</span><strong id="contingency">—</strong></div><div class="line"><span>Subtotal venta</span><strong id="subtotal">—</strong></div><div class="line" id="vatRow" hidden><span>IVA</span><strong id="vatValue">—</strong></div><div class="totalbox"><small>Precio estimado de venta</small><strong id="total">—</strong></div><div class="status-line" id="quoteStatus" aria-live="polite">Evaluando geometría y costos…</div><p class="hint">Precios de muestra, editables. No incluye traslados, instalaciones especiales, lavaplatos ni integración con proveedores.</p></section>
  <section class="panel"><div class="section-head"><h2>Distribución de cortes</h2><span class="section-num">06</span></div><p class="muted">Acomodo orientativo de piezas por plancha con pérdida de corte y saneado. No sustituye nesting industrial.</p><div class="sheet-meta" id="sheetSummary">Calculando…</div><div class="sheet-previews" id="sheetPreviews"></div><div class="small-actions" style="margin-top:10px"><button id="exportCutSVG">Descargar plano de planchas SVG</button></div></section>
  <section class="panel"><div class="section-head"><h2>Despiece preliminar</h2><span class="section-num">07</span></div><div class="tablewrap"><table><thead><tr><th>Pieza</th><th>Cant.</th><th>L × A × E (mm)</th></tr></thead><tbody id="cutlist"></tbody></table></div><div class="line"><span>Componentes físicos modelados</span><strong id="partsCount">—</strong></div><div class="exports"><button id="exportCSV">Exportar CSV</button><button id="exportSVG">Croquis SVG</button><button id="print">Imprimir vista</button><button id="exportJSON">Exportar JSON</button></div><div class="alert" id="alerts"></div></section>
- <p class="foot-note">El modo 3D avanzado carga Three.js desde CDN y requiere internet; el visor local funciona sin internet. Los archivos de proyectos se guardan en tu dispositivo. INGEBAM Muebles360 V3 · Prototipo comercial independiente. No es un producto oficial de Muebles Lasch. Validar dimensiones, cálculos, vetas, herrajes y anclajes con un mueblista antes de fabricar.</p>
+ <p class="foot-note">El modo 3D avanzado carga Three.js desde CDN y requiere internet; el visor local funciona sin internet. Los archivos de proyectos se guardan en tu dispositivo. INGEBAM Muebles360 V3.1 · Prototipo comercial independiente. No es un producto oficial de Muebles Lasch. Validar dimensiones, cálculos, vetas, herrajes y anclajes con un mueblista antes de fabricar.</p>
 </aside></div>
 <dialog class="photo-compare" id="photoCompareModal" aria-labelledby="compareHeading">
  <div class="compare-header"><h2 id="compareHeading">Comprobación: referencia versus diseño paramétrico</h2><button id="closeCompare" type="button">Cerrar ✕</button></div>
  <div class="compare-grid"><figure><figcaption>Imagen del cliente (original)</figcaption><img id="compareOriginal" alt="Fotografía de referencia cargada por el usuario"></figure><figure><figcaption>Alzado generado por Muebles360 (estimación editable)</figcaption><div id="compareGenerated"></div></figure></div>
  <p class="compare-note">La vista de la derecha es un croquis técnico reconstruido a partir de los parámetros actuales; NO es una reconstrucción visual automática ni un plano validado. Ajusta las medidas, puertas y módulos para aproximar el diseño. Tu fotografía permanece en este navegador y no se envía a GitHub.</p>
 </dialog>
+<script>
+window.Muebles360Config = Object.freeze({
+  aiEndpoint: "",
+  defaults: {
+    width: 1800,
+    height: 850,
+    depth: 600,
+    thickness: 18,
+    modules: 3,
+    baseType: "zocalo",
+    shelves: 1,
+    drawers: 3,
+    moduleWidth: 600,
+    moduleDrawers: 3,
+    moduleShelves: 1
+  }
+});
+
+(function bootstrapMuebles360Safeguards() {
+  const cfg = window.Muebles360Config;
+  const aiBtn = document.getElementById("analyzeAI");
+  const hudEl = document.getElementById("hud");
+  const enable3DBtn = document.getElementById("enable3D");
+  const loadInput = document.getElementById("loadProject");
+
+  if (aiBtn) {
+    if (cfg.aiEndpoint) {
+      aiBtn.disabled = false;
+      aiBtn.textContent = "Analizar con IA real";
+      aiBtn.title = "Enviar referencia al endpoint configurado";
+    } else {
+      aiBtn.disabled = true;
+      aiBtn.textContent = "Analizar con IA real (no configurado)";
+    }
+  }
+
+  document.querySelectorAll('input[type="number"]').forEach((input) => {
+    input.addEventListener("change", () => {
+      const raw = input.value.trim() === "" ? NaN : Number(input.value);
+      const min = input.min !== "" ? Number(input.min) : -Infinity;
+      const max = input.max !== "" ? Number(input.max) : Infinity;
+      const fallback = cfg.defaults[input.id] !== undefined ? cfg.defaults[input.id] : (Number.isFinite(min) ? min : 0);
+      if (!Number.isFinite(raw)) {
+        input.value = String(fallback);
+        return;
+      }
+      const clamped = Math.min(max, Math.max(min, raw));
+      if (clamped !== raw) {
+        input.value = String(clamped);
+      }
+    });
+  });
+
+  if (enable3DBtn) {
+    enable3DBtn.addEventListener("click", () => {
+      if (!navigator.onLine && hudEl) {
+        hudEl.textContent = "Sin conexión a internet: usando visor paramétrico local.";
+      }
+    }, { capture: true });
+  }
+
+  // Validación rápida síncrona. La lectura JSON completa y sus errores
+  // se procesan una sola vez en app.js; un listener async no bloquearía
+  // el handler de importación y podría provocar mensajes contradictorios.
+  if (loadInput) {
+    loadInput.addEventListener("change", (event) => {
+      const file = event.target?.files?.[0];
+      if (!file) return;
+      if (file.size > 1024 * 1024 || !(/\.json$/i.test(file.name) || file.type === "application/json")) {
+        event.stopImmediatePropagation();
+        document.getElementById("status").textContent = "Selecciona un proyecto JSON de hasta 1 MB.";
+        loadInput.value = "";
+      }
+    }, { capture: true });
+  }
+})();
+</script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script src="./furnitureCore.js"></script><script src="./viewer.js"></script><script src="./vision.js"></script><script src="./renderer3d.js"></script><script src="./quoteEngine.js"></script><script src="./app.js"></script>
 </body></html>
