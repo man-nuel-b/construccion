@@ -74,3 +74,15 @@ Los campos de clientes se guardan en el navegador local. En equipos compartidos,
 
 ## Comparar fotografía y diseño
 En **Foto de referencia**, selecciona una imagen JPG/PNG/WebP. Pulsa *Sugerir divisiones desde foto* para obtener una sugerencia heurística por contrastes y *Comparar foto y diseño* para visualizar lado a lado la fotografía original y el alzado técnico parametrizado. La fotografía permanece en el dispositivo y no se guarda en GitHub ni en los archivos JSON. El dibujo no representa la imagen exactamente: por ahora se basa en la configuración del mueble y en medidas introducidas por el usuario.
+
+
+## Actualización V3.1 — estabilidad e importación
+
+- Configuración centralizada en `window.Muebles360Config`: `aiEndpoint` permanece vacío en GitHub Pages.
+- Validación de valores vacíos y fuera de rango en campos numéricos antes del procesamiento del modelo.
+- Comprobación síncrona de extensión y tamaño de JSON; la validación de estructura y errores de lectura sigue siendo responsabilidad de `app.js`.
+- Mensajes de accesibilidad con `aria-live=polite` y avisos de conexión del visor Three.js.
+- `app.js` utiliza el endpoint opcional configurado en vez de una ruta fija.
+- **Seguridad:** no se incluyen credenciales; las fotografías se mantienen locales salvo que el usuario active explícitamente la integración IA.
+
+La cubicación y el despiece son preliminares y necesitan revisión de taller antes de producción.
