@@ -1,4 +1,4 @@
-# INGEBAM Muebles360 V3.4.3 — Configurador paramétrico y gestión de cortes
+# INGEBAM Muebles360 V3.5 — Configurador paramétrico y gestión de cortes
 
 **Prototipo técnico comercial independiente.** No pertenece oficialmente a Muebles Lasch, no ha sido encargado ni validado por esa empresa y los precios son ficticios.
 
@@ -114,7 +114,7 @@ Solo se actualizan archivos de la carpeta `muebles360/`; el resto de los proyect
 Pruebas: `node tests.js` y `node tests-vision.js` (incluye rectificación, rechazo de cuadriláteros inválidos y opciones de revisión).
 
 
-## V3.4 — Conexión multimodal verificable y análisis de área seleccionada
+## V3.5 — Conexión multimodal verificable y análisis de área seleccionada
 
 - El análisis con IA real **no está habilitado en GitHub Pages**: Pages aloja solo archivos estáticos. El botón permanece deshabilitado y el modo local sigue funcionando sin internet.
 - Para activar el análisis con IA en una instalación **local**, configura la variable de entorno `GEMINI_API_KEY` y ejecuta `node server.js` desde la carpeta del proyecto. Abre `http://127.0.0.1:8765/`; el navegador consulta `/api/capabilities` y habilita el botón únicamente si el servidor confirma la disponibilidad de la clave.
@@ -126,3 +126,14 @@ Pruebas: `node tests.js` y `node tests-vision.js` (incluye rectificación, recha
 - `tests-ai.js` incluye pruebas de proporciones, sanitización de resultados, validación de MIME, ausencia de clave y un proveedor multimodal simulado. Ejecuta `node tests-ai.js`.
 
 **No es software oficial de Muebles Lasch.** La IA no mide con precisión desde una foto, no certifica piezas, soportes, juntas ni planos CNC; requiere revisión de fabricante.
+
+
+## V3.5 — guías directas y revisión fotográfica
+
+- Se pueden **arrastrar las divisiones amarillas** en la vista de revisión para alinear anchos proporcionales con la fotografía. Las proporciones se reflejan en los campos numéricos.
+- Si se marca un cuadrilátero para rectificar, el detector toma la imagen ya corregida como región completa (no aplica otra vez el ROI previo).
+- Se comprueba la disponibilidad de IA en el origen configurado; GitHub Pages sigue funcionando solo en modo local y no contiene claves.
+- El croquis es orientativo: por una foto aislada no se conocen dimensiones ocultas, herrajes reales ni escala de fabricación.
+- Enlace de versión para evitar caché: `https://man-nuel-b.github.io/construccion/muebles360/?v=3.5`
+
+- V3.5 agrega estilo de puerta liso o con marco decorativo en ambos visores. El marco simulado no está incluido en el despiece, costos o procesos CNC.
