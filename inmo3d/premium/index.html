@@ -15,11 +15,14 @@ aside b{font-size:14px;color:#f3ce90}aside p{color:#c4c9d0;margin:6px 0}
 #status{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;color:#f6d9ab;padding:18px;background:#111c27e8;border-radius:12px}
 #status[hidden]{display:none}
 @media(max-width:680px){header{left:13px;top:12px}header strong{font-size:17px}aside{top:70px;right:12px;max-width:195px;font-size:10px;padding:10px}nav{left:9px;right:9px;bottom:10px}button{padding:9px;font-size:12px}}
+#snapshot{background:#785831;border-color:#dfb675;color:#fff3db}
+#snapshot:disabled{opacity:.6;cursor:wait}
+@media(max-width:680px){nav{max-height:36vh;overflow-y:auto}aside{display:none}}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"}}</script>
 </head><body>
-<header><strong>INGEBAM <span style="color:#ecc282">Inmo3D</span></strong><small>Laboratorio de renderización arquitectónica premium · V11.4</small></header>
-<aside><b>Escena de referencia</b><p>Geometría 3D, mobiliario detallado, cielo procedural, vegetación volumétrica, sombras de contacto, reflejos ambientales y oclusión ambiental opcional, materiales físicos, iluminación arquitectónica y paisajismo.</p><p>Prototipo visual independiente: no incluye los modelos ni el cotizador comercial original.</p><p id="fps">Preparando GPU…</p></aside>
+<header><strong>INGEBAM <span style="color:#ecc282">Inmo3D</span></strong><small>Laboratorio de renderización arquitectónica premium · V11.5</small></header>
+<aside><b>Escena de referencia</b><p>Geometría 3D, mobiliario detallado, cielo procedural, vegetación volumétrica, sombras de contacto, reflejos ambientales y oclusión ambiental opcional, materiales físicos, iluminación arquitectónica y paisajismo.</p><p>Prototipo visual independiente: no incluye los modelos ni el cotizador comercial original. Ahora incluye cámara fotográfica y exportación PNG.</p><p id="fps">Preparando GPU…</p></aside>
 <div id="status">Cargando escena arquitectónica…</div>
 <nav aria-label="Controles de cámara">
 <button data-view="front" aria-pressed="true">Fachada</button>
@@ -29,5 +32,11 @@ aside b{font-size:14px;color:#f3ce90}aside p{color:#c4c9d0;margin:6px 0}
 <button id="timeofday" aria-pressed="false">Atardecer</button>
 <button id="quality" aria-pressed="false">Alta calidad</button>
 <button id="ambient" aria-pressed="false" title="Sombras de oclusión ambiental para equipos con GPU suficiente">Oclusión ambiental</button>
+<button data-lens="24" aria-pressed="false" title="Gran angular 24 mm">24 mm</button>
+<button data-lens="35" aria-pressed="true" title="Focal arquitectónica 35 mm">35 mm</button>
+<button data-lens="50" aria-pressed="false" title="Lente de detalle 50 mm">50 mm</button>
+<button id="framing" aria-pressed="false" title="Modo de encuadre fotográfico">Encuadre</button>
+<button id="composition" aria-pressed="false" title="Cuadrícula de tercios">Tercios</button>
+<button id="snapshot" title="Exportar vista actual a imagen PNG">Guardar PNG</button>
 </nav>
 <script type="module" src="./scene.js"></script></body></html>
