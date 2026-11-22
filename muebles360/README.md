@@ -1,4 +1,4 @@
-# INGEBAM Muebles360 V3.5 — Configurador paramétrico y gestión de cortes
+# INGEBAM Muebles360 V3.6 — Configurador paramétrico y gestión de cortes
 
 **Prototipo técnico comercial independiente.** No pertenece oficialmente a Muebles Lasch, no ha sido encargado ni validado por esa empresa y los precios son ficticios.
 
@@ -137,3 +137,16 @@ Pruebas: `node tests.js` y `node tests-vision.js` (incluye rectificación, recha
 - Enlace de versión para evitar caché: `https://man-nuel-b.github.io/construccion/muebles360/?v=3.5`
 
 - V3.5 agrega estilo de puerta liso o con marco decorativo en ambos visores. El marco simulado no está incluido en el despiece, costos o procesos CNC.
+
+
+## V3.6 — fotografía con varios muebles, niveles horizontales y superposición
+
+- **Conjunto por fotografía:** se pueden guardar hasta cinco zonas independientes de una foto mediante selección de cuatro esquinas o ROI rectangular. Al pulsar una zona se recupera su contorno, se la puede analizar por separado y, después de revisar o editar el modelo, guardar sus parámetros y presupuesto estimado.
+- **Líneas horizontales de revisión:** dentro del panel de propuestas las líneas celestes pueden moverse con el puntero; los botones añaden o quitan niveles. La cantidad sugerida de cajones/repisas se actualiza para módulos abiertos, cajoneras y mixtos; los cálculos físicos siguen distribuyendo los interiores de forma regular, por lo que los **niveles visuales NO son cotas de corte**. El fabricante debe introducir las alturas reales en una futura ampliación del motor.
+- **Comparación superpuesta:** muestra un recorte o una vista rectificada de la foto bajo un esquema frontal semitransparente. El regulador cambia la opacidad del croquis de 0 a 100%. El ajuste sirve para comparar proporciones, no para recuperar profundidad ni escala absoluta.
+- **Conjunto separado:** el botón «Exportar conjunto JSON» guarda metadatos de las zonas, parámetros y estimaciones separadas; **no incluye la fotografía**. La suma mostrada no tiene optimización de planchas compartida, no es una cotización global validada y los archivos de conjunto todavía no se importan automáticamente.
+- **Privacidad:** el detector local y la superposición no transfieren fotos. El botón de IA real mantiene el consentimiento explícito y depende de un servidor privado con `GEMINI_API_KEY`.
+- **Servidor:** la lista de rutas estáticas permite ahora `photoStudio.js` y `v36.html` para probar el editor con `node server.js`.
+- **Pruebas:** `node tests.js`, `node tests-vision.js`, `node tests-ai.js`, `node tests-v35.js`, `node tests-v36.js`. Se validó la interfaz por contenido local con Playwright (sin navegar a localhost, bloqueado por política del entorno), con fotografía de ejemplo, guardado de zona, guía horizontal, aplicación, exportación y control de superposición. El visor Three.js externo y una llamada real a Gemini aún necesitan verificación en el ambiente de despliegue.
+
+**No reemplaza software CAD/CAM de fabricación ni certifica medidas constructivas.**
