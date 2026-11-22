@@ -1,4 +1,4 @@
-# INGEBAM Muebles360 V2 — Configurador paramétrico y gestión de cortes
+# INGEBAM Muebles360 V3 — Configurador paramétrico y gestión de cortes
 
 **Prototipo técnico comercial independiente.** No pertenece oficialmente a Muebles Lasch, no ha sido encargado ni validado por esa empresa y los precios son ficticios.
 
@@ -55,10 +55,22 @@ Luego abrir `http://127.0.0.1:8765/`. El servidor permanece local, no aloja púb
 
 ## Pruebas realizadas
 
-- 14 pruebas del motor paramétrico y de corte, desde Node.js.
+- 20 pruebas del motor y cotización paramétrico y de corte, desde Node.js.
 - Pruebas de interacción de navegador mediante documento inyectado (la navegación automática a localhost y file:// estaba bloqueada por política del entorno): edición de módulo, cambio de cotización, guardar/reabrir JSON, exportar CSV y SVG, detección de piezas sin cabida, vista móvil sin desplazamiento horizontal.
 - El modo Three.js en línea y el endpoint de Gemini deben verificarse en un navegador conectado con las credenciales correspondientes.
 
-## Publicación GitHub Pages
 
-La demo web está en `https://man-nuel-b.github.io/construccion/muebles360/`. GitHub Pages no ejecuta `server.js`: el botón de IA remota queda deshabilitado en la versión pública. La detección heurística local, el editor y las exportaciones sí funcionan en el navegador. El visor Three.js avanzado requiere acceso a CDN.
+## Mejoras de V3 (noviembre 2026)
+- Ficha comercial de cliente, contacto, referencia, etapa del proyecto y observaciones. Se guarda solo en el navegador o en el JSON descargado; no existe CRM remoto ni envíos automáticos.
+- Presupuesto HTML imprimible, con despiece y advertencias; abrir el archivo descargado y usar **Imprimir / Guardar PDF**. No es una factura ni un plano aprobado.
+- Deshacer/rehacer hasta 50 estados registrados tras cambios de controles; cambiar la fotografía no forma parte del historial.
+- Reordenar los módulos conservando anchos, frentes y números de cajones/repisas.
+- Costos adicionales editables: horas de instalación, despacho y contingencia.
+- Permite una cajonera de un solo cajón, y advierte cuando las puertas/cajoneras son demasiado anchas.
+- Compatibilidad con proyectos JSON V2; nuevo formato V3 incluye los datos comerciales.
+
+## Seguridad y privacidad
+Los campos de clientes se guardan en el navegador local. En equipos compartidos, eliminar el almacenamiento del sitio después de trabajar y evitar subir información personal de clientes a servicios públicos. El código de GitHub Pages no incorpora una base de datos privada.
+
+## Comparar fotografía y diseño
+En **Foto de referencia**, selecciona una imagen JPG/PNG/WebP. Pulsa *Sugerir divisiones desde foto* para obtener una sugerencia heurística por contrastes y *Comparar foto y diseño* para visualizar lado a lado la fotografía original y el alzado técnico parametrizado. La fotografía permanece en el dispositivo y no se guarda en GitHub ni en los archivos JSON. El dibujo no representa la imagen exactamente: por ahora se basa en la configuración del mueble y en medidas introducidas por el usuario.
