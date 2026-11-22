@@ -1,4 +1,4 @@
-/* INGEBAM Muebles360 V3.3 — App, cotizador y revisión fotográfica. Ninguna foto se sube sin activar IA. */
+/* INGEBAM Muebles360 V3.4 — App, cotizador y revisión fotográfica. Ninguna foto se sube sin activar IA. */
 (()=>{'use strict';
  const C=window.MueblesCore,Money=new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0});
  const id=x=>document.getElementById(x),money=x=>Money.format(x),ehtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -213,21 +213,23 @@
   try{if(photoCorners.length>0&&photoCorners.length!==4)throw Error('Completa las cuatro esquinas o limpia la selección.');const result=await window.MueblesVision.suggestFromImage(selectedPhoto,{roi:visionROI(),corners:photoCorners.length===4?photoCorners:undefined});result.category=state.category;reviewVision(result)}
   catch(e){id('status').textContent='Análisis no disponible: '+e.message}finally{btn.disabled=false}
  });
+ function btnUnavailable(){return id('analyzeAI').dataset.ready!=='true'}
  id('analyzeAI').addEventListener('click',async()=>{
   if(!selectedPhoto){id('status').textContent='Primero sube una fotografía.';return}
-  const endpoint=window.Muebles360Config?.aiEndpoint;if(!endpoint){id('status').textContent='Falta configurar el servidor de IA privado.';return}
+  const endpoint=window.Muebles360Config?.aiEndpoint;if(!endpoint||btnUnavailable()){ id('status').textContent='Falta configurar el servidor de IA privado.';return}
   const btn=id('analyzeAI');btn.disabled=true;id('status').textContent='Analizando fotografía mediante IA de servidor privado…';
-  try{const data=await new Promise((resolve,reject)=>{const rd=new FileReader();rd.onload=()=>resolve(String(rd.result).split(',')[1]);rd.onerror=()=>reject(Error('No se pudo leer la imagen'));rd.readAsDataURL(selectedPhoto)});
-   const resp=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data,mimeType:selectedPhoto.type})});
+  try{if(photoCorners.length>0&&photoCorners.length!==4)throw Error('Completa las cuatro esquinas o restablece la selección.');
+   const prepared=await window.MueblesVision.prepareImageForAI(selectedPhoto,{roi:visionROI(),corners:photoCorners.length===4?photoCorners:undefined});
+   const resp=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:prepared.data,mimeType:prepared.mimeType})});
    const answer=await resp.json();if(!resp.ok)throw Error(answer.error||`Error ${resp.status}`);
-   const suggested=window.MueblesVision.normalizeAI(answer,state);reviewVision(suggested);
-   id('status').textContent='IA remota analizó la fotografía original. Revisa los módulos y las medidas; la rectificación local no se envía al servidor.';
+   const suggested=window.MueblesVision.normalizeAI(answer,state);suggested.previewURL=prepared.previewURL;suggested.roi={x0:0,y0:0,x1:1,y1:1};reviewVision(suggested);
+   id('status').textContent='IA multimodal analizó únicamente la zona seleccionada. Revisa cada módulo antes de aplicar el diseño; no se estimaron medidas reales.';
   }catch(e){id('status').textContent=e instanceof TypeError?'No se pudo conectar con el servicio de IA.':String(e.message||e)}finally{btn.disabled=false}
  });
  function download(filename,content,mime){const blob=new Blob([content],{type:mime}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
  function svgFront(){
   const m=current.model,p=m.params,scale=Math.min(900/p.width,650/p.height),pad=95,w=p.width*scale+2*pad,h=p.height*scale+2*pad,x=pad,y=pad;
-  const f=v=>Number(v.toFixed(1));let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${f(w)}" height="${f(h)}" viewBox="0 0 ${f(w)} ${f(h)}"><rect width="100%" height="100%" fill="white"/><text x="30" y="28" font-family="Arial,sans-serif" font-size="15">INGEBAM Muebles360 V3.3 · Alzado frontal preliminar</text><rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(p.height*scale)}" fill="none" stroke="#1e293b" stroke-width="3"/>`;
+  const f=v=>Number(v.toFixed(1));let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${f(w)}" height="${f(h)}" viewBox="0 0 ${f(w)} ${f(h)}"><rect width="100%" height="100%" fill="white"/><text x="30" y="28" font-family="Arial,sans-serif" font-size="15">INGEBAM Muebles360 V3.4 · Alzado frontal preliminar</text><rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(p.height*scale)}" fill="none" stroke="#1e293b" stroke-width="3"/>`;
   const bodyH=m.dimensions.carcassH*scale,baseH=(p.baseType==='zocalo'?100:p.baseType==='patas'?120:0)*scale,topH=(p.category==='closet'?0:30)*scale;
   if(baseH)out+=`<rect x="${x}" y="${f(y+p.height*scale-baseH)}" width="${f(p.width*scale)}" height="${f(baseH)}" fill="#ece5db" stroke="#1e293b"/>`;
   if(topH)out+=`<rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(topH)}" fill="#d4dce5" stroke="#1e293b"/>`;
@@ -255,6 +257,16 @@
  id('exportCutSVG').addEventListener('click',exportCutSVG);
  id('exportJSON').addEventListener('click',jsonProject);id('saveProject').addEventListener('click',jsonProject);id('print').addEventListener('click',()=>window.print());
  id('exportQuote').addEventListener('click',()=>{const meta={...getMeta(),projectName:id('projectName').value,date:new Date().toISOString().slice(0,10)},html=window.MueblesQuote.makeQuoteHTML(current,meta);download('INGEBAM_Presupuesto_'+(meta.quoteRef||'preliminar').replace(/[^a-z0-9_-]/gi,'_')+'.html',html,'text/html;charset=utf-8');id('status').textContent=current.validForQuote?'Presupuesto preliminar descargado. Ábrelo para imprimir o guardar en PDF.':'Presupuesto descargado CON ADVERTENCIA: piezas sin distribuir. No entregar como cotización definitiva.';});
+ // La API es privada y opcional. Github Pages no aloja backend ni credenciales.
+ async function detectAICapability(){
+  const endpoint=window.Muebles360Config?.aiEndpoint;if(!endpoint)return;
+  const btn=id('analyzeAI');btn.disabled=true;btn.dataset.ready='false';
+  try{const resp=await fetch('/api/capabilities',{cache:'no-store',signal:AbortSignal.timeout(2500)});
+   if(!resp.ok)return;const config=await resp.json();if(config.aiAvailable===true){btn.disabled=false;btn.dataset.ready='true';btn.textContent='Analizar zona seleccionada con IA real';btn.title='Envía solo la zona elegida al servicio de IA al hacer clic.';}
+   else{btn.textContent='IA real: configurar clave en servidor local';btn.title='Para activar, define GEMINI_API_KEY en un servidor privado.';}
+  }catch{btn.textContent='IA real: servidor no disponible';}
+ }
+ detectAICapability();
  // Recuperación automática de trabajo local; sin enviar datos a terceros.
  try{const saved=JSON.parse(localStorage.getItem('ingebam-muebles360-v3')||localStorage.getItem('ingebam-muebles360-v2')||'null');if(saved?.params){state=C.normalize(saved.params);setPriceFields(saved.prices||{});id('projectName').value=String(saved.projectName||'Proyecto recuperado').slice(0,80);setMeta(saved.meta||{});id('status').textContent='Se recuperó tu último diseño local.'}}catch{}
  update();
