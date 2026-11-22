@@ -86,3 +86,17 @@ En **Foto de referencia**, selecciona una imagen JPG/PNG/WebP. Pulsa *Sugerir di
 - **Seguridad:** no se incluyen credenciales; las fotografías se mantienen locales salvo que el usuario active explícitamente la integración IA.
 
 La cubicación y el despiece son preliminares y necesitan revisión de taller antes de producción.
+
+## Actualización V3.2 — fotografía → propuesta editable
+
+- Al subir una fotografía JPG/PNG/WebP, pulsa **Reconocer divisiones y frentes (experimental)**. El algoritmo ejecuta análisis de píxeles en tu navegador: detecta candidatos a separaciones verticales, líneas horizontales y propone `puerta`, `cajones`, `abierto` o `mixto`.
+- **No se modifica el modelo automáticamente.** El panel de revisión enseña la foto con separaciones y permite editar la clasificación, número de cajones, repisas y porcentaje de cuerpo mixto; solo **Aplicar diseño revisado** genera los nuevos módulos. **Descartar** mantiene el diseño anterior.
+- Si la foto incluye fondo o muebles contiguos, en **Ajustar región de análisis** modifica los porcentajes que delimitan el área observada. El análisis no rectifica perspectiva ni recupera medidas del mundo real.
+- El tipo **Mixto** incorpora repisas superiores, un entrepaño separador y cajones inferiores al despiece aproximado. Cada módulo conserva su ancho editable y una proporción inferior de cajones (25 a 75%).
+- La detección local **no es una IA semántica entrenada**; puede equivocarse por texturas, marcos o reflejos. Las confianzas son heurísticas, no probabilidades calibradas.
+- La función de IA multimodal con Gemini existe como **integración opcional de servidor** (`server.js`). Debes disponer de `GEMINI_API_KEY` en una variable de entorno del servidor. Al iniciar `PORT=8765 GEMINI_API_KEY=... node server.js` sobre tu equipo, la interfaz servida en `http://127.0.0.1:8765/` habilita el botón de IA remota. No introduzcas API keys en la web ni subas secretos al repositorio. La página pública de GitHub Pages solo ejecuta el análisis local.
+- Las respuestas de IA se someten a normalización y revisión humana; ninguna dimensión se infiere de la foto. Las piezas ocultas, vetas, correderas, holguras y refuerzos deben validarse con un profesional antes de fabricar.
+- Pruebas: `node tests.js` (20 pruebas heredadas) y `node tests-vision.js` (5 pruebas V3.2). El navegador automatizado del entorno de construcción no pudo abrir páginas locales por `ERR_BLOCKED_BY_ADMINISTRATOR`; es necesario validar visualmente en Chrome/Edge real.
+
+### Alcance de despliegue
+Solo se actualizan archivos de la carpeta `muebles360/`; el resto de los proyectos y la portada `index.html` de INGEBAM permanecen iguales. La fotografía de prueba no se envía a GitHub ni a servidores al ejecutar el reconocimiento local.
