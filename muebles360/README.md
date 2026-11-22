@@ -1,4 +1,4 @@
-# INGEBAM Muebles360 V3.3 — Configurador paramétrico y gestión de cortes
+# INGEBAM Muebles360 V3.4.3 — Configurador paramétrico y gestión de cortes
 
 **Prototipo técnico comercial independiente.** No pertenece oficialmente a Muebles Lasch, no ha sido encargado ni validado por esa empresa y los precios son ficticios.
 
@@ -112,3 +112,17 @@ Solo se actualizan archivos de la carpeta `muebles360/`; el resto de los proyect
 6. El botón de Gemini sigue siendo una integración opcional local: analiza la foto original si se activa con el servidor privado. La corrección de cuatro esquinas se aplica únicamente al detector geométrico local.
 
 Pruebas: `node tests.js` y `node tests-vision.js` (incluye rectificación, rechazo de cuadriláteros inválidos y opciones de revisión).
+
+
+## V3.4 — Conexión multimodal verificable y análisis de área seleccionada
+
+- El análisis con IA real **no está habilitado en GitHub Pages**: Pages aloja solo archivos estáticos. El botón permanece deshabilitado y el modo local sigue funcionando sin internet.
+- Para activar el análisis con IA en una instalación **local**, configura la variable de entorno `GEMINI_API_KEY` y ejecuta `node server.js` desde la carpeta del proyecto. Abre `http://127.0.0.1:8765/`; el navegador consulta `/api/capabilities` y habilita el botón únicamente si el servidor confirma la disponibilidad de la clave.
+- Al pulsar **Analizar zona seleccionada con IA real**, el navegador prepara un JPEG de la zona elegida por el usuario (ROI rectangular o cuatro esquinas rectificadas) y solo en ese momento envía esa zona al servidor. El servidor reenvía la imagen al proveedor Gemini. La clave **nunca** se incluye en HTML, repositorios ni peticiones del navegador.
+- El servidor solicita frentes visibles (puertas, cajones, repisas, mixtos), número de módulos y sus proporciones `x0`/`x1`, nivel de confianza e incertidumbres. Las respuestas se validan, acotan y pasan al panel de revisión **antes** de modificar el diseño.
+- Los anchos propuestos por IA son relativos al recorte y **no equivalen a medidas reales**. El ancho total debe introducirse manualmente; cualquier despiece y cotización siguen siendo preliminares.
+- Se verificó el flujo local con la fotografía de prueba del clóset (detección de cinco zonas y aplicación editable) usando la interfaz de navegador. Se ejecutaron 20 pruebas del núcleo, 9 pruebas de visión y 6 pruebas nuevas de integración simulada; **no se probó una llamada real a Gemini por falta de una clave API privada**.
+- El servidor opcional escucha solamente `127.0.0.1`, valida formato y tamaño de imagen (PNG/JPEG/WebP hasta 12 MB), y expone una ruta de capacidades sin devolver secretos. No se recomienda publicarlo en internet tal cual; para una futura versión pública hay que agregar autenticación, autorización, rate limit, controles de costos, registros seguros y política de privacidad.
+- `tests-ai.js` incluye pruebas de proporciones, sanitización de resultados, validación de MIME, ausencia de clave y un proveedor multimodal simulado. Ejecuta `node tests-ai.js`.
+
+**No es software oficial de Muebles Lasch.** La IA no mide con precisión desde una foto, no certifica piezas, soportes, juntas ni planos CNC; requiere revisión de fabricante.
