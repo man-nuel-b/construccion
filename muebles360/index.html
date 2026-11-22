@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es-CL"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>INGEBAM Muebles360 V3.5 — Diseñador paramétrico, despiece y optimización</title>
+<title>INGEBAM Muebles360 V3.6 — Diseñador paramétrico, despiece y optimización</title>
 <meta name="description" content="Prototipo INGEBAM de diseño de muebles a medida, referencia fotográfica, despiece preliminar y presupuestos."/>
 <meta name="robots" content="noindex,nofollow"/>
 <style>
@@ -61,6 +61,23 @@ dialog.photo-compare::backdrop{background:#000b;backdrop-filter:blur(3px)}
 #cornerCanvas{width:100%;height:auto;object-fit:contain;display:block;touch-action:none;cursor:crosshair;border-radius:7px;background:#111923}
 .corner-picker .hint{margin-bottom:7px}.corner-actions{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
 .corner-actions button{font-size:.71rem;padding:6px 8px}.vision-result .ratio{margin-top:7px}
+
+/* Muebles360 V3.6 — conjuntos, guías horizontales y superposición */
+.zone-studio{border:1px solid #557184;background:#172a39;border-radius:11px;padding:12px;margin:10px 0}
+.zone-studio>strong{color:#efca92;font-size:.81rem}.zone-studio .two{align-items:center}
+.photo-zone-list{display:flex;flex-direction:column;gap:7px;margin:10px 0}
+.zone-entry{display:flex;align-items:center;gap:6px;border:1px solid #476078;border-radius:9px;padding:7px;min-width:0}
+.zone-entry.active{border-color:#edbc75;background:#513f2b66}.zone-entry button:first-child{flex:1;text-align:left;min-width:0;white-space:normal}
+.zone-entry .remove{background:#473037;border-color:#815162;flex:0 0 auto}
+.zone-sum{color:#f5d49d;font-weight:750}
+.horiz-actions{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}.horiz-actions button{padding:6px 9px;font-size:.7rem}
+#visionOverlay{cursor:crosshair}
+.compare-overlay-control{margin-top:15px;padding:10px 12px;background:#263343;border-radius:9px;font-size:.82rem}
+.compare-overlay-control label{display:flex;justify-content:space-between;gap:10px}.compare-overlay-control input{width:100%;margin-top:8px;accent-color:#ddb274}
+.photo-overlay{position:relative;margin-top:10px;border:1px solid #5f7790;background:#d6d3c9;overflow:hidden;border-radius:9px;width:100%;height:min(50vh,500px)}
+.photo-overlay img,.photo-overlay>div{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.photo-overlay>div{pointer-events:none;opacity:.65}.photo-overlay svg{height:100%;width:100%;display:block}
+@media(max-width:700px){.photo-overlay{height:280px}}
 </style></head>
 <body>
 <header><div class="brand"><span class="brandmark">IB</span><div><div class="brand-name">INGEBAM <span style="color:#dcb47e">Muebles360</span></div><div class="brand-sub">Diseño · Despiece · Cotización</div></div></div><div class="header-actions"><span class="badge">Demostración no oficial</span><button id="undoChange" class="quiet" title="Deshacer edición" disabled>↶ Deshacer</button><button id="redoChange" class="quiet" title="Rehacer edición" disabled>↷ Rehacer</button><button id="newProject" class="quiet">Nuevo</button><label class="btn file-picker" for="loadProject">Abrir proyecto<input id="loadProject" type="file" accept="application/json,.json"></label><button id="saveProject" class="primary">Guardar proyecto</button></div></header>
@@ -73,6 +90,14 @@ dialog.photo-compare::backdrop{background:#000b;backdrop-filter:blur(3px)}
   <div class="corner-actions"><button id="undoCorner" type="button">Quitar última esquina</button><button id="resetCorners" type="button">Limpiar selección</button></div>
   <p class="hint">Se recortará solo el mueble delimitado y se corregirá su perspectiva aproximada antes del análisis local. No mide dimensiones reales.</p>
  </div>
+ <div class="zone-studio" aria-label="Múltiples muebles en una fotografía">
+  <strong>Conjunto de muebles · zonas independientes</strong>
+  <p class="hint">Delimita un mueble con cuatro esquinas (o ajusta la región porcentual) y pulsa Guardar zona. Repite con los muebles contiguos.</p>
+  <div class="two"><input id="zoneLabel" type="text" maxlength="45" placeholder="Ej.: Ropero derecho" aria-label="Nombre de la zona"><button id="addPhotoZone" type="button">+ Guardar zona</button></div>
+  <div id="photoZoneList" class="photo-zone-list"></div>
+  <div class="small-actions"><button id="saveZoneDesign" type="button">Guardar diseño en zona</button><button id="exportZoneSet" type="button">Exportar conjunto JSON</button></div>
+  <p id="zoneSummary" class="hint" aria-live="polite">Sin zonas guardadas. Los diseños y presupuestos serán independientes.</p>
+ </div>
  <button id="analyze" class="action-full">Reconocer divisiones y frentes (experimental)</button><button id="comparePhoto" class="action-full quiet" disabled>Comparar foto y diseño</button><button id="analyzeAI" class="action-full quiet" disabled title="Requiere servidor privado con clave de IA; las fotos no se suben hasta pulsar el botón.">Analizar zona con IA real (requiere servidor)</button><div id="status" class="status" role="status" aria-live="polite"></div>
  <details class="vision-roi"><summary>Ajustar región de análisis</summary><div class="two" style="padding-top:10px">
  <label class="input-label">Izquierda (%)<input id="roiLeft" type="number" min="0" max="60" value="2"></label>
@@ -83,7 +108,7 @@ dialog.photo-compare::backdrop{background:#000b;backdrop-filter:blur(3px)}
  <div id="visionReviewPanel" class="vision-review" hidden aria-label="Revisión de reconocimiento fotográfico">
  <strong class="vision-title">Revisión antes de modificar el diseño</strong>
  <p class="hint" id="visionDescription"></p>
- <p class="hint" id="guideHelp">Arrastra los puntos amarillos ↔ sobre la fotografía para alinear las divisiones entre módulos. Las medidas son proporciones visuales.</p><canvas id="visionOverlay" aria-label="Imagen con divisiones detectadas; arrastra los puntos amarillos para ajustar anchos"></canvas>
+ <p class="hint" id="guideHelp">Arrastra las guías amarillas ↔ para definir anchos; arrastra las líneas celestes ↕ para ajustar niveles horizontales. Añade o quita líneas desde cada módulo. Son proporciones visuales, NO medidas reales.</p><canvas id="visionOverlay" aria-label="Imagen con divisiones detectadas; arrastra los puntos amarillos para ajustar anchos"></canvas>
  <label class="input-label" for="visionCategory">Categoría propuesta</label>
  <select id="visionCategory"><option value="cocina">Cocina</option><option value="closet">Clóset</option><option value="vanitorio">Vanitorio</option></select>
  <div id="visionResults" class="vision-results"></div>
@@ -122,11 +147,13 @@ dialog.photo-compare::backdrop{background:#000b;backdrop-filter:blur(3px)}
 </details><div class="two"><div class="input-row"><label class="input-label" for="kerf">Espesor de corte (mm)</label><input id="kerf" type="number" min="0" max="10" step="1" value="4"></div><div class="input-row"><label class="input-label" for="trim">Saneado de bordes (mm)</label><input id="trim" type="number" min="0" max="30" step="1" value="8"></div></div><div class="input-row"><label style="display:flex;align-items:center;gap:8px;font-size:.75rem"><input type="checkbox" id="allowRotation"> Permitir giro de piezas en plancha (revisar veta)</label></div><div class="input-row"><label style="display:flex;align-items:center;gap:8px;font-size:.75rem"><input type="checkbox" id="vat"> Incluir IVA 19% en cotización simulada</label></div><div class="line"><span>Planchas melamina (estimadas)</span><strong id="boards">—</strong></div><div class="line"><span>Planchas MDF traseras (estimadas)</span><strong id="backs">—</strong></div><div class="line"><span>Tapacanto</span><strong id="edge">—</strong></div><div class="line"><span>Bisagras / pares de correderas</span><strong id="hardware">—</strong></div><details class="price-details"><summary>Ver desglose de costos directos</summary><div class="line"><span>Tableros</span><strong id="costBoards">—</strong></div><div class="line"><span>Tapacantos</span><strong id="costEdge">—</strong></div><div class="line"><span>Herrajes y patas</span><strong id="costHardware">—</strong></div><div class="line"><span>Cubierta</span><strong id="costTop">—</strong></div><div class="line"><span>Mano de obra</span><strong id="costLabor">—</strong></div><div class="line"><span>Instalación</span><strong id="costInstallation">—</strong></div><div class="line"><span>Despacho</span><strong id="costDelivery">—</strong></div></details><div class="line"><span>Rendimiento de planchas</span><strong id="yieldPct">—</strong></div><div class="line"><span>Costo directo estimado</span><strong id="directCost">—</strong></div><div class="line"><span>Gastos indirectos</span><strong id="overhead">—</strong></div><div class="line"><span>Contingencia</span><strong id="contingency">—</strong></div><div class="line"><span>Subtotal venta</span><strong id="subtotal">—</strong></div><div class="line" id="vatRow" hidden><span>IVA</span><strong id="vatValue">—</strong></div><div class="totalbox"><small>Precio estimado de venta</small><strong id="total">—</strong></div><div class="status-line" id="quoteStatus" aria-live="polite">Evaluando geometría y costos…</div><p class="hint">Precios de muestra, editables. Despacho e instalación son editables; otros trabajos especiales y accesorios no incluidos salvo cotización adicional.</p></section>
  <section class="panel"><div class="section-head"><h2>Distribución de cortes</h2><span class="section-num">06</span></div><p class="muted">Acomodo orientativo de piezas por plancha con pérdida de corte y saneado. No sustituye nesting industrial.</p><div class="sheet-meta" id="sheetSummary">Calculando…</div><div class="sheet-previews" id="sheetPreviews"></div><div class="small-actions" style="margin-top:10px"><button id="exportCutSVG">Descargar plano de planchas SVG</button></div></section>
  <section class="panel"><div class="section-head"><h2>Despiece preliminar</h2><span class="section-num">07</span></div><div class="tablewrap"><table><thead><tr><th>Pieza</th><th>Cant.</th><th>L × A × E (mm)</th></tr></thead><tbody id="cutlist"></tbody></table></div><div class="line"><span>Componentes físicos modelados</span><strong id="partsCount">—</strong></div><div class="exports"><button id="exportCSV">Exportar CSV</button><button id="exportSVG">Croquis SVG</button><button id="print">Imprimir vista</button><button id="exportJSON">Exportar JSON</button></div><div class="alert" id="alerts"></div></section>
- <p class="foot-note">La IA multimodal requiere un servidor privado y una clave configurada allí. El navegador envía solo el área seleccionada al pulsar el botón de IA, nunca durante la carga de fotos. El modo 3D avanzado carga Three.js desde CDN y requiere internet; el visor local funciona sin internet. Los archivos de proyectos se guardan en tu dispositivo. INGEBAM Muebles360 V3.5 · Prototipo comercial independiente. No es un producto oficial de Muebles Lasch. Validar dimensiones, cálculos, vetas, herrajes y anclajes con un mueblista antes de fabricar.</p>
+ <p class="foot-note">La IA multimodal requiere un servidor privado y una clave configurada allí. El navegador envía solo el área seleccionada al pulsar el botón de IA, nunca durante la carga de fotos. El modo 3D avanzado carga Three.js desde CDN y requiere internet; el visor local funciona sin internet. Los archivos de proyectos se guardan en tu dispositivo. INGEBAM Muebles360 V3.6 · Prototipo comercial independiente. No es un producto oficial de Muebles Lasch. Validar dimensiones, cálculos, vetas, herrajes y anclajes con un mueblista antes de fabricar.</p>
 </aside></div>
 <dialog class="photo-compare" id="photoCompareModal" aria-labelledby="compareHeading">
  <div class="compare-header"><h2 id="compareHeading">Comprobación: referencia versus diseño paramétrico</h2><button id="closeCompare" type="button">Cerrar ✕</button></div>
  <div class="compare-grid"><figure><figcaption>Imagen del cliente (original)</figcaption><img id="compareOriginal" alt="Fotografía de referencia cargada por el usuario"></figure><figure><figcaption>Alzado generado por Muebles360 (estimación editable)</figcaption><div id="compareGenerated"></div></figure></div>
+ <div class="compare-overlay-control"><label for="compareOpacity">Superposición · intensidad del croquis <output id="opacityValue">65%</output></label><input id="compareOpacity" type="range" min="0" max="100" value="65" step="5"><p class="hint">La fotografía se rectifica o recorta según la zona activa; el alzado se deforma visualmente para compararlos, sin cambiar la geometría del mueble.</p></div>
+ <div class="photo-overlay" id="compareOverlayWrap"><img id="compareOverlayPhoto" alt="Región seleccionada de la foto"><div id="compareOverlayDrawing" aria-hidden="true"></div></div>
  <p class="compare-note">La vista de la derecha es un croquis técnico reconstruido a partir de los parámetros actuales; NO es una reconstrucción visual automática ni un plano validado. Ajusta las medidas, puertas y módulos para aproximar el diseño. Tu fotografía permanece en este navegador y no se envía a GitHub.</p>
 </dialog>
 <script>
@@ -203,5 +230,5 @@ window.Muebles360Config = Object.freeze({
 })();
 </script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
-<script src="./furnitureCore.js"></script><script src="./viewer.js"></script><script src="./vision.js"></script><script src="./renderer3d.js"></script><script src="./quoteEngine.js"></script><script src="./app.js"></script>
+<script src="./furnitureCore.js"></script><script src="./viewer.js"></script><script src="./vision.js"></script><script src="./photoStudio.js"></script><script src="./renderer3d.js"></script><script src="./quoteEngine.js"></script><script src="./app.js"></script>
 </body></html>
