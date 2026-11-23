@@ -8,7 +8,7 @@ const PRESETS={
  vanitorio:{label:'Vanitorio',width:1200,height:750,depth:500,modules:2,shelves:0,drawers:2,baseType:'suspendido',moduleTypes:['puerta','cajones']}
 };
 const FINISHES={roble:{label:'Roble natural',color:'#b99264'},nogal:{label:'Nogal oscuro',color:'#60432d'},blanco:{label:'Blanco mate',color:'#e9e9e6'},grafito:{label:'Grafito',color:'#424b58'}};
-const DEFAULT_PRICES={sheet18:52000,sheet15:46000,back3:17000,edgeMeter:1500,hinge:3200,runnerPair:14500,handle:2800,leg:3800,countertopMeter:75000,laborHour:9500,installationHours:0,deliveryFee:0,contingencyPct:0,overheadPct:12,marginPct:25,includeVat:false,kerfMm:4,trimMm:8,allowRotation:false};
+const DEFAULT_PRICES={hardwareProfile:'estandar',softCloseHinge:6900,softCloseRunnerPair:27500,sheet18:52000,sheet15:46000,back3:17000,edgeMeter:1500,hinge:3200,runnerPair:14500,handle:2800,leg:3800,countertopMeter:75000,laborHour:9500,installationHours:0,deliveryFee:0,contingencyPct:0,overheadPct:12,marginPct:25,includeVat:false,kerfMm:4,trimMm:8,allowRotation:false};
 const BOARD_W=2440,BOARD_H=1830,MIN_CLEAR=260;
 const n=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
@@ -36,9 +36,10 @@ function normalize(raw={}){
  const moduleShelves=Array.from({length:modules},(_,i)=>int(clamp(n(raw.moduleShelves?.[i],shelves),0,5),shelves));
  const moduleDrawers=Array.from({length:modules},(_,i)=>int(clamp(n(raw.moduleDrawers?.[i],drawers),1,5),drawers));
  const moduleMixPct=Array.from({length:modules},(_,i)=>int(clamp(n(raw.moduleMixPct?.[i],45),25,75),45));
+ const moduleHingeSides=Array.from({length:modules},(_,i)=>['left','right'].includes(raw.moduleHingeSides?.[i])?raw.moduleHingeSides[i]:(i%2===0?'left':'right'));
  const baseType=['zocalo','patas','suspendido'].includes(raw.baseType)?raw.baseType:preset.baseType;
  const frontStyle=raw.frontStyle==='marco'?'marco':'liso';
- return {category,width,height,depth,thickness,modules,moduleTypes,moduleWidths,moduleShelves,moduleDrawers,moduleMixPct,baseType,shelves,drawers,frontStyle,finish:Object.hasOwn(FINISHES,raw.finish)?raw.finish:'roble'};
+ return {category,width,height,depth,thickness,modules,moduleTypes,moduleWidths,moduleShelves,moduleDrawers,moduleMixPct,moduleHingeSides,baseType,shelves,drawers,frontStyle,finish:Object.hasOwn(FINISHES,raw.finish)?raw.finish:'roble'};
 }
 function resizeModule(raw,index,newWidth){
  const p=normalize(raw);if(!Number.isInteger(index)||index<0||index>=p.modules)return p;
@@ -99,7 +100,7 @@ function generate(raw){
   }
   if(type==='puerta'){
    const doorW=cw+T-doorGap,doorH=carcassH-2*doorGap;
-   const part=add('Puerta abatible','front',doorW,doorH,T,x,baseY+carcassH/2,frontZ,4,{moduleIndex:i,motion:'door',hingeSide:i%2===0?'left':'right'});
+   const part=add('Puerta abatible','front',doorW,doorH,T,x,baseY+carcassH/2,frontZ,4,{moduleIndex:i,motion:'door',hingeSide:p.moduleHingeSides[i]});
    if(part){hardware.hinges+=doorH>1900?4:doorH>950?3:2;hardware.handles++;}
   }else if(type==='cajones'||type==='mixto'){
    const count=p.moduleDrawers[i],frontH=type==='mixto'?lowerH:carcassH,frH=(frontH-(count+1)*doorGap)/count;
@@ -176,12 +177,13 @@ function layoutCutSheets(parts,options={}){
 }
 function estimate(raw,rawPrices={}){
  const model=generate(raw),pr={...DEFAULT_PRICES,...rawPrices};
+ pr.hardwareProfile=pr.hardwareProfile==='cierre_suave'?'cierre_suave':'estandar';
  const nesting=layoutCutSheets(model.parts,pr),boards={sheets18:nesting.counts.sheet18,sheets15:nesting.counts.sheet15,sheets3:nesting.counts.back3};
  let edgeMm=0;for(const p of model.parts){if(p.kind==='countertop'||p.kind==='back')continue;edgeMm+=p.edges===4?2*(p.length+p.width):p.edges*p.length}
  const costs={
   boards:boards.sheets18*pr.sheet18+boards.sheets15*pr.sheet15+boards.sheets3*pr.back3,
   edgeband:edgeMm/1000*pr.edgeMeter,
-  hardware:model.hardware.hinges*pr.hinge+model.hardware.runners*pr.runnerPair+model.hardware.handles*pr.handle+model.hardware.legs*pr.leg,
+  hardware:model.hardware.hinges*(pr.hardwareProfile==='cierre_suave'?clamp(n(pr.softCloseHinge,DEFAULT_PRICES.softCloseHinge),0,1000000):pr.hinge)+model.hardware.runners*(pr.hardwareProfile==='cierre_suave'?clamp(n(pr.softCloseRunnerPair,DEFAULT_PRICES.softCloseRunnerPair),0,1000000):pr.runnerPair)+model.hardware.handles*pr.handle+model.hardware.legs*pr.leg,
   countertop:model.params.category==='closet'?0:model.params.width/1000*pr.countertopMeter,
   labor:(4+2.5*model.params.modules+1.2*model.hardware.runners)*pr.laborHour,
   installation:clamp(n(pr.installationHours,0),0,500)*pr.laborHour,
@@ -190,9 +192,32 @@ function estimate(raw,rawPrices={}){
  const directCost=Object.values(costs).reduce((a,b)=>a+b,0),overhead=directCost*clamp(n(pr.overheadPct),0,100)/100,contingency=directCost*clamp(n(pr.contingencyPct),0,100)/100,margin=clamp(n(pr.marginPct),0,75)/100;
  const subtotal=(directCost+overhead+contingency)/(1-margin),vat=pr.includeVat?subtotal*.19:0;
  if(nesting.unplaced.length)model.alerts.unshift(`Atención: ${nesting.unplaced.length} pieza(s) no caben en la plancha configurada. El costo puede estar SUBESTIMADO.`);
+ if(pr.hardwareProfile==='cierre_suave')model.alerts.unshift('Cierre suave seleccionado: comprobar modelos de bisagras/correderas, compatibilidad, carga y perforaciones con proveedor.');
  if(pr.allowRotation)model.alerts.unshift('Orientación de veta: se permitieron giros en distribución de corte; revisar cada pieza con el taller.');
  return {model,prices:pr,boards,nesting,edgeMeters:edgeMm/1000,costs,directCost,overhead,contingency,subtotal,vat,total:subtotal+vat,margin,validForQuote:nesting.unplaced.length===0};
 }
-root.MueblesCore={PRESETS,FINISHES,DEFAULT_PRICES,BOARD_W,BOARD_H,normalize,resizeModule,generate,consolidate,layoutCutSheets,estimate};
+// Lista para compras orientativa, derivada de los mismos costos del motor.
+// No incorpora tornillería, adhesivos, desperdicios adicionales ni códigos de proveedor.
+function purchaseList(estimateResult){
+ const e=estimateResult,pr=e.prices,h=e.model.hardware;
+ const rows=[];
+ function push(code,description,unit,qty,unitCost){
+  if(!Number.isFinite(qty)||qty<=0)return;
+  const q=Math.round(qty*1000)/1000,c=Math.max(0,Number(unitCost)||0);
+  rows.push({code,description,unit,qty:q,unitCost:c,total:Math.round(q*c)});
+ }
+ push('TAB-18','Tablero melamina 18 mm (2440 × 1830)','plancha',e.nesting.counts.sheet18,pr.sheet18);
+ push('TAB-15','Tablero melamina 15 mm (2440 × 1830)','plancha',e.nesting.counts.sheet15,pr.sheet15);
+ push('MDF-03','Trasera MDF 3 mm (2440 × 1830)','plancha',e.nesting.counts.back3,pr.back3);
+ push('CANTO','Tapacanto PVC estimado','m',e.edgeMeters,pr.edgeMeter);
+ const soft=pr.hardwareProfile==='cierre_suave';
+ push(soft?'BIS-SU':'BIS-STD',soft?'Bisagra cierre suave':'Bisagra estándar','unidad',h.hinges,soft?pr.softCloseHinge:pr.hinge);
+ push(soft?'COR-SU':'COR-STD',soft?'Corredera cierre suave (par)':'Corredera estándar (par)','par',h.runners,soft?pr.softCloseRunnerPair:pr.runnerPair);
+ push('TIR','Tirador','unidad',h.handles,pr.handle);
+ push('PAT','Pata regulable','unidad',h.legs,pr.leg);
+ if(e.model.params.category!=='closet')push('CUB','Cubierta estimada','m lineal',e.model.params.width/1000,pr.countertopMeter);
+ return {rows,total:rows.reduce((a,r)=>a+r.total,0),hardwareProfile:pr.hardwareProfile,incomplete:e.nesting.unplaced.length>0,unplaced:e.nesting.unplaced.length};
+}
+root.MueblesCore={PRESETS,FINISHES,DEFAULT_PRICES,BOARD_W,BOARD_H,normalize,resizeModule,generate,consolidate,layoutCutSheets,estimate,purchaseList};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.MueblesCore;
 })(typeof window!=='undefined'?window:globalThis);
