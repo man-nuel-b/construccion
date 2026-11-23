@@ -190,6 +190,7 @@ function estimate(raw,rawPrices={}){
  const directCost=Object.values(costs).reduce((a,b)=>a+b,0),overhead=directCost*clamp(n(pr.overheadPct),0,100)/100,contingency=directCost*clamp(n(pr.contingencyPct),0,100)/100,margin=clamp(n(pr.marginPct),0,75)/100;
  const subtotal=(directCost+overhead+contingency)/(1-margin),vat=pr.includeVat?subtotal*.19:0;
  if(nesting.unplaced.length)model.alerts.unshift(`Atención: ${nesting.unplaced.length} pieza(s) no caben en la plancha configurada. El costo puede estar SUBESTIMADO.`);
+ if(pr.allowRotation)model.alerts.unshift('Orientación de veta: se permitieron giros en distribución de corte; revisar cada pieza con el taller.');
  return {model,prices:pr,boards,nesting,edgeMeters:edgeMm/1000,costs,directCost,overhead,contingency,subtotal,vat,total:subtotal+vat,margin,validForQuote:nesting.unplaced.length===0};
 }
 root.MueblesCore={PRESETS,FINISHES,DEFAULT_PRICES,BOARD_W,BOARD_H,normalize,resizeModule,generate,consolidate,layoutCutSheets,estimate};
