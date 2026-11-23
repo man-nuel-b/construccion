@@ -1,4 +1,4 @@
-/* INGEBAM Muebles360 V3.7 — Ficha de revisión y documentación PRELIMINAR.
+/* INGEBAM Muebles360 V3.8 — Ficha de revisión y documentación PRELIMINAR.
    No reemplaza planos aprobados, medición en terreno ni certificación de taller. */
 (function(root){'use strict';
 const CHECKS=[
@@ -30,6 +30,8 @@ function technicalHTML(estimate,meta={},checks={},elevationSVG=''){
  const moduleRows=p.moduleWidths.map((w,i)=>`<tr><td>${i+1}</td><td>${esc(p.moduleTypes[i])}</td><td>${w}</td><td>${p.moduleShelves[i]}</td><td>${p.moduleDrawers[i]}</td></tr>`).join('');
  const qaRows=CHECKS.map(c=>`<tr><td>${checks[c.id]===true?'Registrado':'Pendiente'}</td><td>${esc(c.label)}</td><td>${esc(c.help)}</td></tr>`).join('');
  const warns=[...qa.blocks,...qa.warnings].map(x=>`<li>${esc(x)}</li>`).join('');
+ const purchases=root.MueblesCore.purchaseList(estimate);
+ const purchaseRows=purchases.rows.map(r=>`<tr><td>${esc(r.code)}</td><td>${esc(r.description)}</td><td>${r.qty} ${esc(r.unit)}</td><td>${clp(r.total)}</td></tr>`).join('');
  const n=estimate.nesting;
  const countBy={sheet18:n.counts.sheet18,sheet15:n.counts.sheet15,back3:n.counts.back3};
  const byMat=`Melamina 18 mm: ${countBy.sheet18}; melamina 15 mm: ${countBy.sheet15}; MDF 3 mm: ${countBy.back3}`;
@@ -47,7 +49,7 @@ function technicalHTML(estimate,meta={},checks={},elevationSVG=''){
  <h2>Despiece individual PRELIMINAR (${estimate.model.parts.length} piezas)</h2><table><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>
  <p class="note">Cantidades y tapacantos son orientativos; no incluye orientación confirmada de veta, perforaciones, molduras ni tolerancias específicas de proveedor.</p>
  <h2>Presupuesto interno de referencia</h2><p>Tableros ${clp(estimate.costs.boards)} · Herrajes ${clp(estimate.costs.hardware)} · Tapacanto ${clp(estimate.costs.edgeband)} · Mano de obra ${clp(estimate.costs.labor)} · Instalación ${clp(estimate.costs.installation)} · Despacho ${clp(estimate.costs.delivery)}</p><p><b>Costo directo:</b> ${clp(estimate.directCost)} · <b>Precio estimado:</b> ${clp(estimate.total)} ${estimate.prices.includeVat?'(IVA simulado incluido)':'(sin IVA simulado)'}</p>
- <h2>Registro de comprobaciones</h2><table><thead><tr><th>Estado declarado</th><th>Comprobación</th><th>Contenido</th></tr></thead><tbody>${qaRows}</tbody></table>
+ <h2>Lista de materiales y herrajes para revisión</h2><p>Perfil: ${estimate.prices.hardwareProfile==='cierre_suave'?'Cierre suave':'Estándar'} · Total de insumos ${clp(purchases.total)} (excluye mano de obra y gastos indirectos).</p><table><thead><tr><th>Código</th><th>Insumo</th><th>Cantidad</th><th>Costo estimado</th></tr></thead><tbody>${purchaseRows}</tbody></table><h2>Registro de comprobaciones</h2><table><thead><tr><th>Estado declarado</th><th>Comprobación</th><th>Contenido</th></tr></thead><tbody>${qaRows}</tbody></table>
  <h2>Riesgos y pendientes de fabricación</h2><ul>${warns||'<li>Requiere revisión técnica general antes de fabricar.</li>'}</ul>
  <footer>INGEBAM Muebles360 V3.7 · Documento de estudio generado localmente. La marca comercial del posible cliente no implica su aprobación. Se debe validar físicamente la medición, las tolerancias, los anclajes, la veta, el sistema de montaje y el despiece antes de fabricar. Ninguna casilla constituye certificación automática.</footer>
  </body></html>`;
