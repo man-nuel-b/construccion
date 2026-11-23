@@ -1,17 +1,25 @@
-# INGEBAM Muebles360 V3.7 — Control técnico y documentación
+# INGEBAM Muebles360 V3.8 — Herrajes, puertas y lista de compras
 
-Versión de trabajo de diseño paramétrico, comparación de fotos, costeo y despiece **preliminar**. Basado en V3.6.
+Versión comercial y técnica de **demostración**, basada en V3.7; no es software aprobado por una mueblería ni plano CNC.
 
-## Mejoras V3.7
+## Novedades
 
-- Lista de seis verificaciones técnicas registradas por proyecto (medición, uniones, herrajes, tableros, precios y despiece).
-- Las casillas se invalidan al modificar el diseño o los precios. Se incluyen en proyecto JSON y se recuperan al importar.
-- Ficha técnica descargable en HTML para imprimir o guardar PDF: distribución modular, alzado, despiece por ID y módulo, estimación de tapacanto, costos y advertencias.
-- Exportación CSV mejorada: ID de pieza, módulo y metros de tapacanto estimado por pieza.
-- Advertencia explícita cuando se habilitan giros en el plan de corte, ya que pueden cambiar la orientación de veta.
+- Sentido de apertura de puerta **por módulo** (bisagras izquierda/derecha), reflejado en la visualización de apertura.
+- Perfil de herrajes **estándar / cierre suave**, con precios unitarios diferenciados de bisagras y correderas.
+- Costos actualizados automáticamente usando el mismo conteo de herrajes del motor paramétrico.
+- Lista de compras preliminar: planchas por espesor, MDF, metros de tapacanto, bisagras, correderas, tiradores, patas y cubiertas; exportación CSV.
+- Ficha técnica imprimible ampliada con el perfil de herrajes y lista de insumos para revisión.
+- Inspector de piezas: identificador y material al seleccionar una pieza en el visor.
+- El proyecto JSON conserva el sentido de apertura de puertas y el perfil/precios de herrajes; compatible con proyectos anteriores mediante valores por defecto.
 
-## Probar
+## Limitaciones importantes
 
-Abrir `index.html` con un servidor estático local o GitHub Pages. La vista local, el despiece y el panel de revisión no requieren conexión. `3D avanzado` sigue requiriendo Three.js por CDN. Ejecutar `node tests.js`, `node tests-vision.js`, `node tests-v35.js`, `node tests-v36.js`, `node tests-manufacturing.js` (y `node tests-ai.js` con servidor simulado, cuando esté disponible).
+La lista de compras NO es una orden de compra ni un despiece certificado. No considera tornillería, sellantes, mecanizados, herrajes con códigos específicos, orientación de veta validada, ni accesorios particulares. Los precios son ficticios/editables. Las puertas grandes requieren comprobación de peso, bisagras y despejes. Cambiar el perfil de herrajes NO modifica la geometría de los cajones: confirma dimensiones, recorridos y cargas del modelo real con el proveedor.
 
-**Aviso:** Aunque estén marcadas todas las casillas, el documento no constituye aprobación técnica, plano CNC ni garantía de fabricabilidad. No incluye mecanizados, molduras, planificación CNC, tolerancias específicas de herrajes ni verificación física de cargas. Los precios son ficticios/estimados. Un profesional debe revisar mediciones y despiece antes de fabricar.
+La IA con Gemini requiere backend privado y clave en el servidor. GitHub Pages solo ofrece el análisis geométrico local.
+
+## Ejecutar
+
+Abrir `index.html` en Chrome/Edge para funcionamiento local. Ejecutar pruebas `node tests.js`, `node tests-manufacturing.js`, `node tests-v38.js` en la carpeta del proyecto.
+
+No se modifican otros proyectos de INGEBAM.
