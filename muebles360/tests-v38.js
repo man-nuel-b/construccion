@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict');
+const C=require('./furnitureCore.js');
+const M=require('./manufacturing.js');
+let count=0;const t=(name,fn)=>{fn();console.log('OK',name);count++};
+t('Apertura independiente por módulo',()=>{const model=C.generate({category:'cocina',moduleHingeSides:['right','left','left']});const doors=model.parts.filter(p=>p.motion==='door');assert.equal(doors[0].hingeSide,'right');assert.equal(doors[1].hingeSide,'left')});
+t('Apertura por defecto alternada',()=>{assert.deepEqual(C.normalize({modules:3}).moduleHingeSides,['left','right','left'])});
+t('Apertura inválida normalizada',()=>{assert.deepEqual(C.normalize({modules:2,moduleHingeSides:['opposite','right']}).moduleHingeSides,['left','right'])});
+t('Precio de cierre suave aumenta costo directo',()=>{const a=C.estimate({},{}),b=C.estimate({},{hardwareProfile:'cierre_suave'});assert.ok(b.costs.hardware>a.costs.hardware);assert.ok(b.total>a.total)});
+t('Perfil desconocido cae a estándar',()=>{assert.equal(C.estimate({},{hardwareProfile:'inventado'}).prices.hardwareProfile,'estandar')});
+t('Lista de compras cuadra con costos del motor (insumos)',()=>{for(const category of Object.keys(C.PRESETS)){const e=C.estimate({category});const list=C.purchaseList(e);const expected=e.costs.boards+e.costs.edgeband+e.costs.hardware+e.costs.countertop;assert.ok(Math.abs(expected-list.total)<=2);assert.ok(list.rows.every(r=>r.qty>0&&r.total>=0))}});
+t('No incluye insumos con cantidad cero',()=>{const e=C.estimate({category:'closet',baseType:'zocalo',moduleTypes:['abierto']});const p=C.purchaseList(e);assert.equal(p.rows.filter(r=>r.code==='PAT').length,0)});
+t('Detecta piezas fuera de plancha en compra',()=>{const p=C.purchaseList(C.estimate({category:'closet',height:2600}));assert.equal(p.incomplete,true);assert.ok(p.unplaced>0)});
+t('La ficha técnica incluye compras y perfil',()=>{const html=M.technicalHTML(C.estimate({},{hardwareProfile:'cierre_suave'}));assert.ok(html.includes('Cierre suave'));assert.ok(html.includes('Lista de materiales y herrajes'))});
+t('Presupuesto comercial no muestra herrajes premium por error',()=>{const Q=require('./quoteEngine.js');const h=Q.makeQuoteHTML(C.estimate({},{hardwareProfile:'cierre_suave'}),{});assert.ok(h.includes('cierre suave'))});
+console.log(`V3.8: ${count} pruebas completadas.`);
