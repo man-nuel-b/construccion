@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('node:assert/strict');
+const C=require('./furnitureCore.js');
+const M=require('./manufacturing.js');
+let n=0;const t=(name,fn)=>{fn();n++;console.log('OK',name)};
+t('Lista de comprobaciones contiene identificadores únicos',()=>{assert.equal(M.CHECKS.length,6);assert.equal(new Set(M.CHECKS.map(c=>c.id)).size,6)});
+t('El registro comienza pendiente',()=>{const x=M.assessment(C.estimate({}));assert.equal(x.checksCompleted,0);assert.equal(x.reviewRecorded,false)});
+t('Las comprobaciones no sustituyen la revisión profesional',()=>{const all=Object.fromEntries(M.CHECKS.map(t=>[t.id,true]));const x=M.assessment(C.estimate({}),all);assert.equal(x.reviewRecorded,true);assert.match(x.status,/NO certificado/)});
+t('Piezas fuera de tablero siguen bloqueadas aunque se marquen las casillas',()=>{const all=Object.fromEntries(M.CHECKS.map(t=>[t.id,true]));const x=M.assessment(C.estimate({category:'closet',height:2600}),all);assert.equal(x.reviewRecorded,false);assert.ok(x.blocks.some(s=>s.includes('sin ubicar')))});
+t('Marco decorativo no puede confundirse con molduras cubicadas',()=>{const x=M.assessment(C.estimate({frontStyle:'marco'}));assert.ok(x.blocks.some(s=>s.includes('Molduras')))});
+t('Tapacanto 4 cantos usa perímetro completo',()=>{const p={kind:'front',length:500,width:250,edges:4};assert.equal(M.edgeMm(p),1500)});
+t('Tapacanto de repisa un canto longitudinal',()=>{assert.equal(M.edgeMm({kind:'interior',length:700,width:400,edges:1}),700)});
+t('MDF trasera no cotiza cantos',()=>{assert.equal(M.edgeMm({kind:'back',length:700,width:400,edges:1}),0)});
+t('Ficha técnica usa unidades y piezas individuales',()=>{const e=C.estimate({});const html=M.technicalHTML(e,{projectName:'Cocina Villarrica'});assert.match(html,/Cocina Villarrica/);assert.match(html,/Despiece individual PRELIMINAR/);assert.match(html,/Módulo/);assert.match(html,/NO certificado|Revisión pendiente/)});
+t('Ficha técnica escapa HTML no confiable',()=>{const html=M.technicalHTML(C.estimate({}),{projectName:'<img src=x onerror=alert(1)>',client:'A & B'});assert.ok(!html.includes('<img src=x onerror=alert(1)>'));assert.ok(html.includes('&lt;img'));assert.ok(html.includes('A &amp; B'))});
+t('Rotación de planchas alerta por posible cambio de veta',()=>{const e=C.estimate({}, {allowRotation:true});assert.ok(e.model.alerts.some(x=>x.includes('veta')))});
+console.log(`${n} pruebas V3.7 de fabricación completadas.`);
