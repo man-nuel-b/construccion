@@ -1,4 +1,4 @@
-/* INGEBAM Muebles360 V3.7 — App, cotizador y revisión fotográfica. Ninguna foto se sube sin activar IA. */
+/* INGEBAM Muebles360 V3.8 — App, cotizador y revisión fotográfica. Ninguna foto se sube sin activar IA. */
 (()=>{'use strict';
  const C=window.MueblesCore,Money=new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0});
  const id=x=>document.getElementById(x),money=x=>Money.format(x),ehtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -20,14 +20,16 @@
   const box=id('selected');if(!part){box.hidden=true;return;}
   box.hidden=false;box.replaceChildren();const strong=document.createElement('strong');strong.textContent=part.name;box.append(strong);
   const div=document.createElement('div');div.textContent=`${part.length} × ${part.width} × ${part.thickness} mm`;
-  box.append(div);if(Number.isInteger(part.moduleIndex)){selectedModule=part.moduleIndex;syncFields();viewer.selectModule?.(selectedModule)}
+  box.append(div);const detail=document.createElement('div');detail.textContent=`${part.id} · ${part.material} · módulo ${Number.isInteger(part.moduleIndex)?part.moduleIndex+1:'general'}`;box.append(detail);if(Number.isInteger(part.moduleIndex)){selectedModule=part.moduleIndex;syncFields();viewer.selectModule?.(selectedModule)}
  }
- const unitPriceIds=['sheet15','back3','edgeMeter','hinge','runnerPair','handle','countertopMeter','laborHour','overheadPct','leg','installationHours','deliveryFee','contingencyPct'];
- function getPrices(){const pr={...C.DEFAULT_PRICES,sheet18:Math.max(0,Number(id('sheetPrice').value)||0),marginPct:Math.max(0,Number(id('margin').value)||0),includeVat:id('vat').checked,kerfMm:Number(id('kerf').value),trimMm:Number(id('trim').value),allowRotation:id('allowRotation').checked};for(const k of unitPriceIds)pr[k]=Math.max(0,Number(id(k).value)||0);return pr}
- function setPriceFields(pr){for(const k of unitPriceIds)id(k).value=pr[k]??C.DEFAULT_PRICES[k];id('sheetPrice').value=pr.sheet18??C.DEFAULT_PRICES.sheet18;id('margin').value=pr.marginPct??C.DEFAULT_PRICES.marginPct;id('vat').checked=Boolean(pr.includeVat);id('kerf').value=pr.kerfMm??4;id('trim').value=pr.trimMm??8;id('allowRotation').checked=Boolean(pr.allowRotation)}
+ const unitPriceIds=['softCloseHinge','softCloseRunnerPair','sheet15','back3','edgeMeter','hinge','runnerPair','handle','countertopMeter','laborHour','overheadPct','leg','installationHours','deliveryFee','contingencyPct'];
+ function getPrices(){const pr={...C.DEFAULT_PRICES,hardwareProfile:id('hardwareProfile').value,sheet18:Math.max(0,Number(id('sheetPrice').value)||0),marginPct:Math.max(0,Number(id('margin').value)||0),includeVat:id('vat').checked,kerfMm:Number(id('kerf').value),trimMm:Number(id('trim').value),allowRotation:id('allowRotation').checked};for(const k of unitPriceIds)pr[k]=Math.max(0,Number(id(k).value)||0);return pr}
+ function setPriceFields(pr){id('hardwareProfile').value=pr.hardwareProfile==='cierre_suave'?'cierre_suave':'estandar';for(const k of unitPriceIds)id(k).value=pr[k]??C.DEFAULT_PRICES[k];id('sheetPrice').value=pr.sheet18??C.DEFAULT_PRICES.sheet18;id('margin').value=pr.marginPct??C.DEFAULT_PRICES.marginPct;id('vat').checked=Boolean(pr.includeVat);id('kerf').value=pr.kerfMm??4;id('trim').value=pr.trimMm??8;id('allowRotation').checked=Boolean(pr.allowRotation)}
  function syncFields(){
   for(const k of controls)id(k).value=state[k];
   id('moduleType').value=state.moduleTypes[selectedModule]||'puerta';
+  id('moduleHingeSide').value=state.moduleHingeSides[selectedModule]||'left';
+  id('moduleHingeSide').disabled=state.moduleTypes[selectedModule]!=='puerta';
   id('moduleWidth').value=state.moduleWidths[selectedModule]||'';
   id('moduleWidth').disabled=state.modules===1;
   id('moduleDrawers').value=state.moduleDrawers[selectedModule]??state.drawers;
@@ -87,6 +89,16 @@
   id('qaStatus').textContent=`${report.status} · ${report.checksCompleted}/${M.CHECKS.length} comprobaciones · ${report.blocks.length} correcciones`;
   id('qaStatus').classList.toggle('qa-risk',report.blocks.length>0);
  }
+ function renderPurchaseList(e){
+  const buy=C.purchaseList(e),host=id('purchaseRows');host.replaceChildren();
+  for(const item of buy.rows){const tr=document.createElement('tr');
+   for(const value of [item.description,`${item.qty.toLocaleString('es-CL')} ${item.unit}`,money(item.unitCost),money(item.total)]){
+    const td=document.createElement('td');td.textContent=value;tr.append(td);
+   }host.append(tr);
+  }
+  id('purchaseTotal').textContent=money(buy.total);
+  id('purchaseWarning').textContent=buy.incomplete?`ATENCIÓN: ${buy.unplaced} piezas sin ubicar. Las planchas y el costo de compras están incompletos.`:'Cantidades orientativas. No contempla tornillería, adhesivos, embalaje ni mecanizados.';
+ }
  function update(){
   state=C.normalize(state);selectedModule=Math.min(selectedModule,state.modules-1);syncFields();
   const nextFingerprint=JSON.stringify({params:state,prices:getPrices()});
@@ -110,22 +122,23 @@
    const tr=document.createElement('tr');for(const v of [part.name,part.qty,`${part.length} × ${part.width} × ${part.thickness}`]){const td=document.createElement('td');td.textContent=v;tr.append(td)}tb.append(tr)
   }
   id('alerts').replaceChildren();for(const a of m.alerts){const p=document.createElement('p');p.textContent='• '+a;id('alerts').append(p)}
-  renderSheets(e.nesting);remember();saveLocal()
+  renderSheets(e.nesting);renderPurchaseList(e);remember();saveLocal()
  }
  for(const k of controls)id(k).addEventListener('change',e=>{
   if(k==='category'){state=C.normalize({category:e.target.value,finish:state.finish,thickness:state.thickness});selectedModule=0;viewer.reset()}
-  else if(k==='modules'){const len=Math.round(Number(e.target.value));state={...state,modules:len,moduleTypes:Array.from({length:Math.max(1,len)},(_,i)=>state.moduleTypes[i]||'puerta'),moduleWidths:undefined,moduleShelves:undefined,moduleDrawers:undefined,moduleMixPct:undefined}}
+  else if(k==='modules'){const len=Math.round(Number(e.target.value));state={...state,modules:len,moduleTypes:Array.from({length:Math.max(1,len)},(_,i)=>state.moduleTypes[i]||'puerta'),moduleWidths:undefined,moduleShelves:undefined,moduleDrawers:undefined,moduleMixPct:undefined,moduleHingeSides:undefined}}
   else if(['width','height','depth','thickness','shelves','drawers'].includes(k)){state={...state,[k]:Number(e.target.value)};
    if(k==='shelves')state.moduleShelves=Array(state.modules).fill(Number(e.target.value));
    if(k==='drawers')state.moduleDrawers=Array(state.modules).fill(Number(e.target.value));
   }else state={...state,[k]:e.target.value};update();
  });
+ id('moduleHingeSide').addEventListener('change',e=>{const arr=[...state.moduleHingeSides];arr[selectedModule]=e.target.value==='right'?'right':'left';state={...state,moduleHingeSides:arr};update()});
  id('moduleType').addEventListener('change',e=>{const moduleTypes=[...state.moduleTypes];moduleTypes[selectedModule]=e.target.value;state={...state,moduleTypes};update()});
  id('moduleMixPct').addEventListener('change',e=>{const arr=[...state.moduleMixPct];arr[selectedModule]=Math.max(25,Math.min(75,Math.round(Number(e.target.value)||45)));state={...state,moduleMixPct:arr};update()});
  id('moduleWidth').addEventListener('change',e=>{state=C.resizeModule(state,selectedModule,Number(e.target.value));update()});
- for(const [control,step] of [['moduleMoveLeft',-1],['moduleMoveRight',1]])id(control).addEventListener('click',()=>{const j=selectedModule+step;if(j<0||j>=state.modules)return;const next={...state};for(const key of ['moduleTypes','moduleWidths','moduleShelves','moduleDrawers','moduleMixPct']){const list=[...state[key]];[list[selectedModule],list[j]]=[list[j],list[selectedModule]];next[key]=list}state=next;selectedModule=j;update()});
+ for(const [control,step] of [['moduleMoveLeft',-1],['moduleMoveRight',1]])id(control).addEventListener('click',()=>{const j=selectedModule+step;if(j<0||j>=state.modules)return;const next={...state};for(const key of ['moduleTypes','moduleWidths','moduleShelves','moduleDrawers','moduleMixPct','moduleHingeSides']){const list=[...state[key]];[list[selectedModule],list[j]]=[list[j],list[selectedModule]];next[key]=list}state=next;selectedModule=j;update()});
  for(const key of ['moduleDrawers','moduleShelves'])id(key).addEventListener('change',e=>{const p=key==='moduleDrawers'?'moduleDrawers':'moduleShelves';const arr=[...state[p]];arr[selectedModule]=Number(e.target.value);state={...state,[p]:arr};update()});
- for(const k of ['sheetPrice','margin','vat','kerf','trim','allowRotation',...unitPriceIds])id(k).addEventListener('change',update);
+ for(const k of ['sheetPrice','margin','vat','kerf','trim','allowRotation','hardwareProfile',...unitPriceIds])id(k).addEventListener('change',update);
  id('projectName').addEventListener('change',update);for(const k of metaIds)id(k).addEventListener('change',update);
  id('undoChange').addEventListener('click',()=>{if(!history.past.length)return;history.future.push(snapshot());restoreHistory(history.past.pop())});
  id('redoChange').addEventListener('click',()=>{if(!history.future.length)return;history.past.push(snapshot());restoreHistory(history.future.pop())});
@@ -421,8 +434,17 @@
   download(`INGEBAM_FichaTecnica_${safeRef}.html`,documentHTML,'text/html;charset=utf-8');
   id('status').textContent='Ficha técnica de revisión descargada. No es orden de corte ni plano certificado.';
  });
- function jsonProject(){const project={title:'INGEBAM Muebles360 - Proyecto editable',version:'3.7',qaChecks,createdAt:new Date().toISOString(),projectName:id('projectName').value||'Sin nombre',meta:getMeta(),params:state,prices:current.prices,estimate:{total:current.total,directCost:current.directCost,boards:current.boards,edgeMeters:current.edgeMeters,unplaced:current.nesting.unplaced.length},note:'No apto para fabricación sin revisión profesional. No incluye fotografía cargada.'};download('INGEBAM_Muebles360_V3_7_Proyecto.json',JSON.stringify(project,null,2),'application/json')}
+ function jsonProject(){const project={title:'INGEBAM Muebles360 - Proyecto editable',version:'3.8',qaChecks,createdAt:new Date().toISOString(),projectName:id('projectName').value||'Sin nombre',meta:getMeta(),params:state,prices:current.prices,estimate:{total:current.total,directCost:current.directCost,boards:current.boards,edgeMeters:current.edgeMeters,unplaced:current.nesting.unplaced.length},note:'No apto para fabricación sin revisión profesional. No incluye fotografía cargada.'};download('INGEBAM_Muebles360_V3_7_Proyecto.json',JSON.stringify(project,null,2),'application/json')}
  id('loadProject').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>1024*1024)throw new Error('El proyecto excede 1 MB.');const obj=JSON.parse(await file.text());if(!obj.params||typeof obj.params!=='object'||Array.isArray(obj.params))throw new Error('JSON no contiene parámetros válidos.');state=C.normalize(obj.params);selectedModule=0;if(obj.prices)setPriceFields(obj.prices);id('projectName').value=String(obj.projectName||'Proyecto importado').slice(0,80);setMeta(obj.meta||{});qaChecks={...(obj.qaChecks||{})};technicalFingerprint=JSON.stringify({params:state,prices:getPrices()});clearPhoto();update();id('status').textContent='Proyecto cargado y recalculado con el motor V3.7.'}catch(err){id('status').textContent='No se pudo abrir el proyecto: '+err.message}finally{id('loadProject').value=''}});
+ id('exportPurchase').addEventListener('click',()=>{
+  const buy=C.purchaseList(current);
+  const rows=[['Código','Insumo','Unidad','Cantidad','Precio_unitario_CLP','Total_CLP'],...buy.rows.map(i=>[i.code,i.description,i.unit,i.qty,i.unitCost,i.total])];
+  rows.push(['','TOTAL','','','',buy.total]);
+  // No se exportan datos arbitrarios de clientes en este CSV.
+  const cell=v=>`"${String(v).replace(/"/g,'""')}"`;
+  download('INGEBAM_Muebles360_V3_8_Compras_PRELIMINAR.csv','\ufeff'+rows.map(row=>row.map(cell).join(';')).join('\r\n'),'text/csv;charset=utf-8');
+  id('status').textContent=buy.incomplete?'Lista descargada con piezas sin ubicar: no usar como orden de compra.':'Lista de compras PRELIMINAR descargada; verificar proveedor y especificaciones.';
+ });
  id('exportCSV').addEventListener('click',csv);id('exportSVG').addEventListener('click',()=>download('INGEBAM_Muebles360_V3_Alzado.svg',svgFront(),'image/svg+xml'));
  id('exportCutSVG').addEventListener('click',exportCutSVG);
  id('exportJSON').addEventListener('click',jsonProject);id('saveProject').addEventListener('click',jsonProject);id('print').addEventListener('click',()=>window.print());
