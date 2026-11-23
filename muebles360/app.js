@@ -1,18 +1,19 @@
-/* INGEBAM Muebles360 V3.6 — App, cotizador y revisión fotográfica. Ninguna foto se sube sin activar IA. */
+/* INGEBAM Muebles360 V3.7 — App, cotizador y revisión fotográfica. Ninguna foto se sube sin activar IA. */
 (()=>{'use strict';
  const C=window.MueblesCore,Money=new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0});
  const id=x=>document.getElementById(x),money=x=>Money.format(x),ehtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let state=C.normalize({category:'cocina'}),current=null,selectedModule=0,selectedPhoto=null,photoURL=null,advanced=null,pendingVision=null,photoCorners=[],cornerPickerOpen=false,dragGuideIndex=-1;
  let dragHorizontalRegion=-1,dragHorizontalLine=-1,photoZones=[],activePhotoZone=-1;
- const S=window.MueblesPhotoStudio;
+ const S=window.MueblesPhotoStudio, M=window.MueblesManufacturing;
+ let qaChecks={}, technicalFingerprint=null;
  let reviewWeightInputs=[],reviewDrawersInputs=[],reviewShelvesInputs=[];
  const metaIds=['clientName','clientContact','quoteRef','projectStage','projectNotes'];
  const history={past:[],future:[],last:null,restoring:false};
- function snapshot(){return JSON.stringify({params:state,prices:getPrices(),projectName:id('projectName').value,meta:getMeta()})}
+ function snapshot(){return JSON.stringify({params:state,prices:getPrices(),projectName:id('projectName').value,meta:getMeta(),qaChecks})}
  function remember(){const next=snapshot();if(history.last!==null&&history.last!==next&&!history.restoring){history.past.push(history.last);if(history.past.length>50)history.past.shift();history.future=[];}history.last=next;id('undoChange').disabled=!history.past.length;id('redoChange').disabled=!history.future.length}
  function getMeta(){return {client:id('clientName').value.slice(0,120),contact:id('clientContact').value.slice(0,140),quoteRef:id('quoteRef').value.slice(0,60),stage:id('projectStage').value,notes:id('projectNotes').value.slice(0,1200)}}
  function setMeta(meta={}){id('clientName').value=meta.client||'';id('clientContact').value=meta.contact||'';id('quoteRef').value=meta.quoteRef||'ING-0001';id('projectStage').value=['Borrador','Enviado','Aprobado','Fabricación','Instalado'].includes(meta.stage)?meta.stage:'Borrador';id('projectNotes').value=meta.notes||''}
- function restoreHistory(value){history.restoring=true;try{const v=JSON.parse(value);state=C.normalize(v.params);selectedModule=Math.min(selectedModule,state.modules-1);setPriceFields(v.prices||{});id('projectName').value=v.projectName||'';setMeta(v.meta||{});update()}finally{history.restoring=false;history.last=snapshot();id('undoChange').disabled=!history.past.length;id('redoChange').disabled=!history.future.length}}
+ function restoreHistory(value){history.restoring=true;try{const v=JSON.parse(value);state=C.normalize(v.params);selectedModule=Math.min(selectedModule,state.modules-1);setPriceFields(v.prices||{});id('projectName').value=v.projectName||'';setMeta(v.meta||{});qaChecks={...(v.qaChecks||{})};technicalFingerprint=JSON.stringify({params:C.normalize(state),prices:getPrices()});update()}finally{history.restoring=false;history.last=snapshot();id('undoChange').disabled=!history.past.length;id('redoChange').disabled=!history.future.length}}
  const localViewer=new window.FurnitureViewer(id('viewer'),onSelectPart);let viewer=localViewer;
  const controls=['category','width','height','depth','thickness','modules','baseType','shelves','drawers','frontStyle'];
  function onSelectPart(part){
@@ -71,8 +72,26 @@
    button.title='Clic para descargar el croquis de esta plancha';host.append(button);
   });
  }
+
+ function saveLocal(){try{localStorage.setItem('ingebam-muebles360-v3',JSON.stringify({projectName:id('projectName').value,params:state,prices:getPrices(),meta:getMeta(),qaChecks}))}catch{}}
+ function renderManufacturingQA(){
+  const host=id('qaItems');host.replaceChildren();
+  for(const task of M.CHECKS){
+   const label=document.createElement('label');label.className='qa-item';
+   const input=document.createElement('input');input.type='checkbox';input.checked=qaChecks[task.id]===true;
+   const txt=document.createElement('span'),strong=document.createElement('strong'),small=document.createElement('small');
+   strong.textContent=task.label;small.textContent=task.help;txt.append(strong,small);label.append(input,txt);
+   input.addEventListener('change',()=>{qaChecks[task.id]=input.checked;renderManufacturingQA();remember();saveLocal()});host.append(label);
+  }
+  const report=M.assessment(current,qaChecks);
+  id('qaStatus').textContent=`${report.status} · ${report.checksCompleted}/${M.CHECKS.length} comprobaciones · ${report.blocks.length} correcciones`;
+  id('qaStatus').classList.toggle('qa-risk',report.blocks.length>0);
+ }
  function update(){
   state=C.normalize(state);selectedModule=Math.min(selectedModule,state.modules-1);syncFields();
+  const nextFingerprint=JSON.stringify({params:state,prices:getPrices()});
+  if(technicalFingerprint!==null&&nextFingerprint!==technicalFingerprint)qaChecks={};
+  technicalFingerprint=nextFingerprint;
   current=C.estimate(state,getPrices());const e=current,m=e.model;viewer.setModel(m);viewer.selectModule?.(selectedModule);
   id('boards').textContent=`${e.boards.sheets18+e.boards.sheets15} planchas`;
   id('backs').textContent=`${e.boards.sheets3} planchas`;
@@ -84,13 +103,14 @@
   id('subtotal').textContent=money(e.subtotal);id('vatValue').textContent=money(e.vat);
   id('vatRow').hidden=!e.prices.includeVat;id('total').textContent=money(e.total);
   id('partsCount').textContent=m.parts.length;
+  renderManufacturingQA();
   id('quoteStatus').textContent=e.validForQuote?'Estimación de materiales sin piezas fuera de plancha. Requiere validación técnica.':`${e.nesting.unplaced.length} pieza(s) sin ubicar: precio incompleto; revisar dimensiones y orientación.`;
   id('quoteStatus').style.borderColor=e.validForQuote?'#38546b':'#be794f';
   const cut=C.consolidate(m.parts),tb=id('cutlist');tb.replaceChildren();for(const part of cut){if(part.kind==='countertop')continue;
    const tr=document.createElement('tr');for(const v of [part.name,part.qty,`${part.length} × ${part.width} × ${part.thickness}`]){const td=document.createElement('td');td.textContent=v;tr.append(td)}tb.append(tr)
   }
   id('alerts').replaceChildren();for(const a of m.alerts){const p=document.createElement('p');p.textContent='• '+a;id('alerts').append(p)}
-  renderSheets(e.nesting);remember();try{localStorage.setItem('ingebam-muebles360-v3',JSON.stringify({projectName:id('projectName').value,params:state,prices:e.prices,meta:getMeta()}))}catch{}
+  renderSheets(e.nesting);remember();saveLocal()
  }
  for(const k of controls)id(k).addEventListener('change',e=>{
   if(k==='category'){state=C.normalize({category:e.target.value,finish:state.finish,thickness:state.thickness});selectedModule=0;viewer.reset()}
@@ -319,7 +339,7 @@
   download('INGEBAM_Muebles360_Conjunto_V36.json',JSON.stringify(payload,null,2),'application/json');
  });
  function clearPhoto(){photoZones=[];activePhotoZone=-1;renderPhotoZones();photoCorners=[];cornerPickerOpen=false;id('cornerPicker').hidden=true;clearVision();id('comparePhoto').disabled=true;if(photoURL)URL.revokeObjectURL(photoURL);photoURL=null;selectedPhoto=null;id('photo').value='';id('preview').removeAttribute('src');id('drop').classList.remove('loaded');id('filename').textContent='Seleccionar foto o croquis'}
- id('newProject').addEventListener('click',()=>{state=C.normalize({category:'cocina'});selectedModule=0;viewer.isOpen=false;setPriceFields(C.DEFAULT_PRICES);id('projectName').value='Nuevo proyecto';setMeta({});clearPhoto();id('status').textContent='Nuevo proyecto iniciado.';update()});
+ id('newProject').addEventListener('click',()=>{state=C.normalize({category:'cocina'});selectedModule=0;viewer.isOpen=false;setPriceFields(C.DEFAULT_PRICES);id('projectName').value='Nuevo proyecto';setMeta({});qaChecks={};technicalFingerprint=null;clearPhoto();id('status').textContent='Nuevo proyecto iniciado.';update()});
  function setPhoto(file){if(!file)return;photoZones=[];activePhotoZone=-1;renderPhotoZones();const valid=['image/png','image/jpeg','image/webp'].includes(file.type);if(!valid||file.size>12*1024*1024){id('status').textContent='Selecciona JPG, PNG o WebP de hasta 12 MB.';return}clearVision();photoCorners=[];cornerPickerOpen=false;id('cornerPicker').hidden=true;selectedPhoto=file;if(photoURL)URL.revokeObjectURL(photoURL);photoURL=URL.createObjectURL(file);id('preview').src=photoURL;id('drop').classList.add('loaded');id('filename').textContent=file.name;id('comparePhoto').disabled=false;id('status').textContent='Imagen cargada. Confirma medidas y pulsa Comparar foto y diseño.'}
  id('photo').addEventListener('change',e=>setPhoto(e.target.files[0]));
  function frontOverlaySVG(){
@@ -372,7 +392,7 @@
  function download(filename,content,mime){const blob=new Blob([content],{type:mime}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
  function svgFront(){
   const m=current.model,p=m.params,scale=Math.min(900/p.width,650/p.height),pad=95,w=p.width*scale+2*pad,h=p.height*scale+2*pad,x=pad,y=pad;
-  const f=v=>Number(v.toFixed(1));let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${f(w)}" height="${f(h)}" viewBox="0 0 ${f(w)} ${f(h)}"><rect width="100%" height="100%" fill="white"/><text x="30" y="28" font-family="Arial,sans-serif" font-size="15">INGEBAM Muebles360 V3.6 · Alzado frontal preliminar</text><rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(p.height*scale)}" fill="none" stroke="#1e293b" stroke-width="3"/>`;
+  const f=v=>Number(v.toFixed(1));let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${f(w)}" height="${f(h)}" viewBox="0 0 ${f(w)} ${f(h)}"><rect width="100%" height="100%" fill="white"/><text x="30" y="28" font-family="Arial,sans-serif" font-size="15">INGEBAM Muebles360 V3.7 · Alzado frontal preliminar</text><rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(p.height*scale)}" fill="none" stroke="#1e293b" stroke-width="3"/>`;
   const bodyH=m.dimensions.carcassH*scale,baseH=(p.baseType==='zocalo'?100:p.baseType==='patas'?120:0)*scale,topH=(p.category==='closet'?0:30)*scale;
   if(baseH)out+=`<rect x="${x}" y="${f(y+p.height*scale-baseH)}" width="${f(p.width*scale)}" height="${f(baseH)}" fill="#ece5db" stroke="#1e293b"/>`;
   if(topH)out+=`<rect x="${x}" y="${y}" width="${f(p.width*scale)}" height="${f(topH)}" fill="#d4dce5" stroke="#1e293b"/>`;
@@ -387,15 +407,22 @@
   out+=`<text x="${f(x+p.width*scale/2)}" y="${f(y+p.height*scale+39)}" text-anchor="middle" font-size="14" font-family="Arial">ANCHO TOTAL ${p.width} mm</text><text x="${x-28}" y="${f(y+p.height*scale/2)}" font-size="14" text-anchor="middle" transform="rotate(-90 ${x-28} ${f(y+p.height*scale/2)})" font-family="Arial">${p.height} mm</text><text x="${x}" y="${f(h-11)}" font-size="11" font-family="Arial" fill="#ab5331">CROQUIS NO APTO PARA CORTE SIN VALIDACIÓN TÉCNICA</text></svg>`;
   return out;
  }
- function csv(){const rows=[['Pieza','Cantidad','Largo_mm','Ancho_mm','Espesor_mm','Material','N_Cantos_estimados'],...C.consolidate(current.model.parts).filter(p=>p.kind!=='countertop').map(p=>[p.name,p.qty,p.length,p.width,p.thickness,p.material,p.edges])];download('INGEBAM_Muebles360_V3_Despiece.csv','\ufeff'+rows.map(row=>row.join(';')).join('\r\n'),'text/csv;charset=utf-8')}
+ function csv(){const rows=[['ID','Modulo','Pieza','Cantidad','Largo_mm','Ancho_mm','Espesor_mm','Material','Cantos_estimados','Tapacanto_mm'],...current.model.parts.filter(p=>p.kind!=='countertop').map(p=>[p.id,p.moduleIndex===undefined?'General':p.moduleIndex+1,p.name,1,p.length,p.width,p.thickness,p.material,p.edges,M.edgeMm(p)])];download('INGEBAM_Muebles360_V3_7_Despiece.csv','\ufeff'+rows.map(row=>row.join(';')).join('\r\n'),'text/csv;charset=utf-8')}
  function exportCutSVG(){const sheets=current.nesting.sheets,cols=2,W=2440,H=1830,pad=210,cellW=W+pad,cellH=H+pad+100,rows=Math.ceil(sheets.length/cols);
   let s=`<svg xmlns="http://www.w3.org/2000/svg" width="${cols*cellW}" height="${rows*cellH+130}" viewBox="0 0 ${cols*cellW} ${rows*cellH+130}"><rect width="100%" height="100%" fill="white"/><text x="30" y="70" font-size="52" font-family="Arial" fill="#203247">INGEBAM · distribución preliminar de cortes (NO CNC)</text>`;
   sheets.forEach((board,i)=>{const x=(i%cols)*cellW+50,y=Math.floor(i/cols)*cellH+140;s+=`<g transform="translate(${x} ${y})"><text x="0" y="-26" font-family="Arial" font-size="37" fill="#243647">Plancha ${i+1}: ${board.material}</text><rect width="2440" height="1830" fill="#f6f7f8" stroke="#34485c" stroke-width="5"/>`;
    for(const it of board.items){s+=`<rect x="${it.x}" y="${it.y}" width="${it.w}" height="${it.h}" stroke="#495467" stroke-width="3" fill="${cutColors[board.material]||'#ddd'}"/><text x="${it.x+it.w/2}" y="${it.y+Math.min(90,it.h/2)}" text-anchor="middle" font-size="${Math.min(28,Math.max(13,it.w/14))}" font-family="Arial" fill="#243647">${ehtml(it.name)}</text><text x="${it.x+it.w/2}" y="${it.y+Math.min(125,it.h*.75)}" text-anchor="middle" font-size="${Math.min(24,Math.max(13,it.w/15))}" font-family="Arial">${it.length}×${it.width}</text>`}
    s+='</g>'});s+='</svg>';download('INGEBAM_Muebles360_V3_Planchas.svg',s,'image/svg+xml');
  }
- function jsonProject(){const project={title:'INGEBAM Muebles360 - Proyecto editable',version:'3.0',createdAt:new Date().toISOString(),projectName:id('projectName').value||'Sin nombre',meta:getMeta(),params:state,prices:current.prices,estimate:{total:current.total,directCost:current.directCost,boards:current.boards,edgeMeters:current.edgeMeters,unplaced:current.nesting.unplaced.length},note:'No apto para fabricación sin revisión profesional. No incluye fotografía cargada.'};download('INGEBAM_Muebles360_V3_Proyecto.json',JSON.stringify(project,null,2),'application/json')}
- id('loadProject').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>1024*1024)throw new Error('El proyecto excede 1 MB.');const obj=JSON.parse(await file.text());if(!obj.params||typeof obj.params!=='object'||Array.isArray(obj.params))throw new Error('JSON no contiene parámetros válidos.');state=C.normalize(obj.params);selectedModule=0;if(obj.prices)setPriceFields(obj.prices);id('projectName').value=String(obj.projectName||'Proyecto importado').slice(0,80);setMeta(obj.meta||{});clearPhoto();update();id('status').textContent='Proyecto cargado y recalculado con el motor V3.'}catch(err){id('status').textContent='No se pudo abrir el proyecto: '+err.message}finally{id('loadProject').value=''}});
+ id('exportTech').addEventListener('click',()=>{
+  const meta={...getMeta(),projectName:id('projectName').value};
+  const documentHTML=M.technicalHTML(current,meta,qaChecks,svgFront());
+  const safeRef=(meta.quoteRef||'BORRADOR').replace(/[^a-z0-9_-]/gi,'_');
+  download(`INGEBAM_FichaTecnica_${safeRef}.html`,documentHTML,'text/html;charset=utf-8');
+  id('status').textContent='Ficha técnica de revisión descargada. No es orden de corte ni plano certificado.';
+ });
+ function jsonProject(){const project={title:'INGEBAM Muebles360 - Proyecto editable',version:'3.7',qaChecks,createdAt:new Date().toISOString(),projectName:id('projectName').value||'Sin nombre',meta:getMeta(),params:state,prices:current.prices,estimate:{total:current.total,directCost:current.directCost,boards:current.boards,edgeMeters:current.edgeMeters,unplaced:current.nesting.unplaced.length},note:'No apto para fabricación sin revisión profesional. No incluye fotografía cargada.'};download('INGEBAM_Muebles360_V3_7_Proyecto.json',JSON.stringify(project,null,2),'application/json')}
+ id('loadProject').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>1024*1024)throw new Error('El proyecto excede 1 MB.');const obj=JSON.parse(await file.text());if(!obj.params||typeof obj.params!=='object'||Array.isArray(obj.params))throw new Error('JSON no contiene parámetros válidos.');state=C.normalize(obj.params);selectedModule=0;if(obj.prices)setPriceFields(obj.prices);id('projectName').value=String(obj.projectName||'Proyecto importado').slice(0,80);setMeta(obj.meta||{});qaChecks={...(obj.qaChecks||{})};technicalFingerprint=JSON.stringify({params:state,prices:getPrices()});clearPhoto();update();id('status').textContent='Proyecto cargado y recalculado con el motor V3.7.'}catch(err){id('status').textContent='No se pudo abrir el proyecto: '+err.message}finally{id('loadProject').value=''}});
  id('exportCSV').addEventListener('click',csv);id('exportSVG').addEventListener('click',()=>download('INGEBAM_Muebles360_V3_Alzado.svg',svgFront(),'image/svg+xml'));
  id('exportCutSVG').addEventListener('click',exportCutSVG);
  id('exportJSON').addEventListener('click',jsonProject);id('saveProject').addEventListener('click',jsonProject);id('print').addEventListener('click',()=>window.print());
@@ -412,6 +439,6 @@
  }
  detectAICapability();
  // Recuperación automática de trabajo local; sin enviar datos a terceros.
- renderPhotoZones();try{const saved=JSON.parse(localStorage.getItem('ingebam-muebles360-v3')||localStorage.getItem('ingebam-muebles360-v2')||'null');if(saved?.params){state=C.normalize(saved.params);setPriceFields(saved.prices||{});id('projectName').value=String(saved.projectName||'Proyecto recuperado').slice(0,80);setMeta(saved.meta||{});id('status').textContent='Se recuperó tu último diseño local.'}}catch{}
+ renderPhotoZones();try{const saved=JSON.parse(localStorage.getItem('ingebam-muebles360-v3')||localStorage.getItem('ingebam-muebles360-v2')||'null');if(saved?.params){state=C.normalize(saved.params);setPriceFields(saved.prices||{});id('projectName').value=String(saved.projectName||'Proyecto recuperado').slice(0,80);setMeta(saved.meta||{});qaChecks={...(saved.qaChecks||{})};technicalFingerprint=JSON.stringify({params:state,prices:getPrices()});id('status').textContent='Se recuperó tu último diseño local.'}}catch{}
  update();
 })();
