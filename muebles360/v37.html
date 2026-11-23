@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="es-CL"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>INGEBAM Muebles360 V3.7 — Diseñador paramétrico, despiece y optimización</title>
+<meta name="description" content="Prototipo INGEBAM de diseño de muebles a medida, referencia fotográfica, despiece preliminar y presupuestos."/>
+<meta name="robots" content="noindex,nofollow"/>
+<style>
+:root{--bg:#111721;--card:#1d2633;--card2:#17202c;--line:#354150;--text:#f2f4f6;--muted:#a5b2c2;--gold:#dcb47e;--green:#5dccaf;--r:13px;font-family:Inter,'Segoe UI',system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}button{cursor:pointer}header{min-height:66px;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);background:#151d28;position:relative;z-index:5}.brand{display:flex;align-items:center;gap:12px}.brandmark{border:1px solid #a98055;background:#27251f;color:#ffe7c4;padding:9px;border-radius:9px;font-weight:900;letter-spacing:-.08em}.brand-name{font-size:1.11rem;font-weight:850;letter-spacing:-.02em}.brand-sub{font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold)}.header-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+button,.btn{background:#2b394b;border:1px solid #405169;color:#f5f7fa;border-radius:9px;padding:9px 13px;font-weight:650;font-size:.83rem}button:hover{background:#384b63}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}.primary{background:#bb8a4e;border-color:#bb8a4e;color:#151920}.primary:hover{background:#d2a66b}.quiet{background:transparent}.badge{font-size:.67rem;border:1px solid #6d593d;background:#58422640;color:#f1c994;border-radius:99px;padding:5px 8px;white-space:nowrap}
+.workspace{display:grid;grid-template-columns:minmax(272px,315px) minmax(380px,1fr) minmax(288px,325px);height:calc(100vh - 66px);min-height:600px}.side{background:#192330;padding:16px;overflow:auto;display:flex;flex-direction:column;gap:14px}.side.left{border-right:1px solid var(--line)}.side.right{border-left:1px solid var(--line)}.panel{background:var(--card2);border:1px solid var(--line);border-radius:var(--r);padding:15px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 0 13px}.section-head h2{font-size:.80rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin:0}.section-num{color:#637588;font-size:.72rem;font-weight:800}.muted{color:var(--muted);font-size:.77rem;line-height:1.45;margin:7px 0 0}.input-label{display:block;font-weight:650;font-size:.76rem;margin-bottom:7px;color:#d8e0e9}.input-row{margin-bottom:14px}.input-row:last-child{margin-bottom:0}input[type=number],input[type=text],select,textarea{border:1px solid #3d4d60;background:#233041;color:var(--text);padding:9px 10px;border-radius:8px;width:100%;min-width:0}input[type=range]{width:100%;accent-color:#d7a96d}.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.hint{font-size:.68rem;color:#90a1b3;margin-top:5px}.drop{display:block;border:1.5px dashed #6e7f91;border-radius:11px;padding:19px 10px;text-align:center;cursor:pointer;background:#25314288}.drop:hover{border-color:var(--gold)}.drop input{display:none}.drop .big{font-size:1.8rem;line-height:1}.drop .name{font-size:.78rem;font-weight:700;margin-top:6px}.drop img{max-height:135px;max-width:100%;object-fit:contain;margin:7px auto 0;display:none}.drop.loaded img{display:block}.drop.loaded .big{display:none}.action-full{width:100%;margin-top:10px}.swatches{display:flex;gap:9px}.swatch{border:2px solid transparent;width:47px;height:43px;border-radius:9px;padding:0;position:relative}.swatch.on{outline:2px solid var(--gold);outline-offset:2px}.swatch:after{content:attr(title);position:absolute;top:42px;left:0;font-size:.6rem;color:var(--muted);white-space:nowrap}.swatchbar{padding-bottom:22px}.module-row{display:flex;gap:8px;flex-wrap:wrap}.module-pill{font-size:.74rem;padding:7px 10px}.module-pill.active{background:#a77944;color:#11161f;border-color:#cda367}.viewport{position:relative;min-height:380px;background:#151b24;overflow:hidden}.viewport canvas{display:block;width:100%;height:100%;touch-action:none}.viewport .float{position:absolute;left:16px;bottom:14px;background:#131b24d9;border:1px solid #536071a3;border-radius:10px;padding:9px 11px;font-size:.73rem;color:#e3e8ed;pointer-events:none;max-width:calc(100% - 32px)}.viewer-tools{position:absolute;right:14px;top:14px;display:flex;gap:7px}.viewer-tools button{background:#182331d9}.selected{position:absolute;right:14px;bottom:14px;border:1px solid #c49a56;background:#21262ee8;border-radius:8px;padding:8px 10px;font-size:.73rem;max-width:220px}.selected strong{color:var(--gold)}.line{display:flex;justify-content:space-between;gap:9px;margin:10px 0;font-size:.78rem}.line span{color:var(--muted)}.line strong{font-variant-numeric:tabular-nums;text-align:right}.totalbox{background:#22362e;border:1px solid #476e5a;border-radius:10px;padding:13px;margin:10px 0}.totalbox small{color:#afc9b8;text-transform:uppercase;font-weight:650;font-size:.67rem}.totalbox strong{display:block;color:#88e2bb;font-size:1.7rem;margin-top:2px;font-variant-numeric:tabular-nums}.tablewrap{overflow:auto;max-height:240px;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%;font-size:.69rem}th,td{padding:8px 5px;text-align:left;border-bottom:1px solid #344357}thead{position:sticky;top:0;background:#233041}th{color:#e1bf8c}td{color:#d0d8e2}.alert{margin-top:12px;padding:10px;background:#493b2538;border:1px solid #866238;border-radius:8px;color:#f0cc99;font-size:.73rem;line-height:1.4}.alert p{margin:4px 0}.exports{display:grid;grid-template-columns:1fr 1fr;gap:8px}.exports button{padding:9px 4px;font-size:.73rem}.foot-note{font-size:.68rem;color:#8293a6;padding:3px 4px 18px}.status{font-size:.73rem;line-height:1.45;min-height:22px;color:#e0bd84}
+@media(max-width:1150px){.workspace{grid-template-columns:270px minmax(330px,1fr)}.side.right{grid-column:1 / -1;border-top:1px solid var(--line);border-left:0;display:grid;grid-template-columns:1fr 1fr;align-content:start}.workspace{height:auto}.viewport{min-height:620px}.side.left{height:620px}.side.right .foot-note{grid-column:1 / -1}}
+@media(max-width:700px){header{padding:11px 13px}.brand-name{font-size:.94rem}.brand-sub{font-size:.6rem}.badge{display:none}.workspace{display:flex;flex-direction:column}.viewport{order:0;height:390px;min-height:390px}.side.left{order:1;height:auto;border-right:0}.side.right{order:2;display:flex;border-left:0}.side{padding:12px}.header-actions button{font-size:.72rem;padding:8px}.panel{padding:13px}}
+button:disabled{opacity:.42;cursor:not-allowed}textarea{resize:vertical;min-height:75px}#exportQuote{margin-bottom:6px}@media print{header,.side.left,.viewer-tools,.drop,.exports{display:none!important}.workspace{display:block;height:auto}.side.right{display:block!important}.viewport{height:370px}.panel{break-inside:avoid}}
+
+/* Muebles360 V2 — paneles adicionales */
+.price-details{background:#1d2c3b;border:1px solid #354b62;border-radius:9px;padding:10px;margin:11px 0}.price-details summary{cursor:pointer;font-size:.75rem;font-weight:700;color:#e4c08d}.price-details .input-row{margin-bottom:8px}.price-details .input-label{font-size:.68rem}
+.viewer-tools{left:14px;right:14px;flex-wrap:wrap;justify-content:flex-end;z-index:3}
+.viewer-tools button{font-size:.74rem;padding:8px 9px}.viewer-tools .accent-view{border-color:#97754d;color:#ffdcaa}
+.input-compact{margin-top:11px}.field-note{font-size:.68rem;color:#91a7be;margin:4px 0 10px}.small-actions{display:flex;gap:7px;flex-wrap:wrap}
+.small-actions button{padding:8px 10px;font-size:.73rem}.status-line{border:1px solid #38546b;background:#162636;border-radius:8px;padding:9px;color:#d4e2ee;font-size:.73rem;margin-bottom:10px}
+.sheet-meta{font-size:.72rem;color:#a9bacb;margin-bottom:10px}.sheet-previews{display:grid;gap:9px;max-height:355px;overflow:auto}
+.sheet-preview{border:1px solid #405268;background:#0e1722;border-radius:10px;padding:8px;display:block;width:100%;text-align:left;cursor:pointer}
+.sheet-preview:hover{border-color:#d5aa6e}.sheet-preview svg{width:100%;height:auto;max-height:175px;display:block;background:#edf1f5;border-radius:4px}
+.sheet-preview strong{font-size:.73rem;color:#e7eff6}.sheet-preview em{font-size:.67rem;color:#aab6c6;font-style:normal}
+[data-mode='3d'] #viewer{display:none}
+.webgl-canvas{position:absolute;inset:0;z-index:0;outline:0}
+.desktop-note{display:block}.file-picker{position:relative}.file-picker input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+@media(max-width:700px){.viewer-tools{top:7px;left:7px;right:7px;gap:4px}.viewer-tools button{font-size:.67rem;padding:6px 7px}.selected{bottom:62px;max-width:185px}.viewport .float{font-size:.66rem;bottom:8px}.header-actions{gap:6px}}
+
+/* Vista de contraste para validar la semejanza de la referencia. */
+dialog.photo-compare{background:#141d2a;color:#edf2f8;border:1px solid #5a6a79;border-radius:14px;width:min(1100px,95vw);max-height:94vh;padding:20px;box-shadow:0 20px 80px #000a}
+dialog.photo-compare::backdrop{background:#000b;backdrop-filter:blur(3px)}
+.compare-header{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:14px}
+.compare-header h2{margin:0;font-size:1.1rem}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.compare-grid figure{margin:0;border:1px solid #465365;background:#253043;border-radius:10px;padding:10px;min-width:0}
+.compare-grid figcaption{margin-bottom:9px;color:#e8c290;font-size:.81rem;font-weight:700}
+.compare-grid img,.compare-grid svg{display:block;max-width:100%;width:100%;height:55vh;object-fit:contain;background:#e5e9ee;border-radius:6px}
+.compare-note{color:#bccad9;font-size:.8rem;line-height:1.5;margin-top:14px}
+@media(max-width:780px){.compare-grid{grid-template-columns:1fr}.compare-grid img,.compare-grid svg{height:30vh}dialog.photo-compare{padding:12px}}
+@media print{.sheet-previews{max-height:none}.sheet-preview{break-inside:avoid}}
+
+/* V3.2: revisión visual de propuestas fotográficas */
+.vision-roi{background:#1e2b39;border:1px solid #405268;border-radius:9px;padding:10px;margin-top:8px}
+.vision-roi summary{font-size:.76rem;font-weight:700;cursor:pointer;color:#d9bb89}
+.vision-review{background:#172b34;border:1px solid #5a826e;border-radius:11px;padding:12px;margin-top:12px}
+.vision-review[hidden]{display:none!important}
+.vision-title{font-size:.8rem;color:#add6b2}
+#visionOverlay{width:100%;height:auto;max-height:none;background:#202c38;border-radius:8px;margin:10px 0;border:1px solid #54717b;touch-action:none;cursor:ew-resize} #visionOverlay:focus-visible{outline:2px solid #f5c475}
+.vision-results{display:grid;gap:8px;margin:10px 0;max-height:290px;overflow:auto}
+.vision-result{border:1px solid #465766;border-radius:7px;padding:9px;background:#21313c}
+.vision-result strong{font-size:.76rem}
+.vision-result small{font-size:.65rem;color:#b8c8d2}
+.vision-result .two{margin-top:7px}
+.vision-result label{font-size:.67rem;color:#b8c8d2}
+.vision-result select,.vision-result input{padding:6px;font-size:.73rem}
+
+/* V3.3: delimitación de un mueble y corrección manual de perspectiva. */
+.corner-picker{margin:11px 0;padding:10px;border:1px solid #53647b;border-radius:10px;background:#182533}
+.corner-picker[hidden]{display:none!important}
+#cornerCanvas{width:100%;height:auto;object-fit:contain;display:block;touch-action:none;cursor:crosshair;border-radius:7px;background:#111923}
+.corner-picker .hint{margin-bottom:7px}.corner-actions{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
+.corner-actions button{font-size:.71rem;padding:6px 8px}.vision-result .ratio{margin-top:7px}
+
+/* Muebles360 V3.6 — conjuntos, guías horizontales y superposición */
+.zone-studio{border:1px solid #557184;background:#172a39;border-radius:11px;padding:12px;margin:10px 0}
+.zone-studio>strong{color:#efca92;font-size:.81rem}.zone-studio .two{align-items:center}
+.photo-zone-list{display:flex;flex-direction:column;gap:7px;margin:10px 0}
+.zone-entry{display:flex;align-items:center;gap:6px;border:1px solid #476078;border-radius:9px;padding:7px;min-width:0}
+.zone-entry.active{border-color:#edbc75;background:#513f2b66}.zone-entry button:first-child{flex:1;text-align:left;min-width:0;white-space:normal}
+.zone-entry .remove{background:#473037;border-color:#815162;flex:0 0 auto}
+.zone-sum{color:#f5d49d;font-weight:750}
+.horiz-actions{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}.horiz-actions button{padding:6px 9px;font-size:.7rem}
+#visionOverlay{cursor:crosshair}
+.compare-overlay-control{margin-top:15px;padding:10px 12px;background:#263343;border-radius:9px;font-size:.82rem}
+.compare-overlay-control label{display:flex;justify-content:space-between;gap:10px}.compare-overlay-control input{width:100%;margin-top:8px;accent-color:#ddb274}
+.photo-overlay{position:relative;margin-top:10px;border:1px solid #5f7790;background:#d6d3c9;overflow:hidden;border-radius:9px;width:100%;height:min(50vh,500px)}
+.photo-overlay img,.photo-overlay>div{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.photo-overlay>div{pointer-events:none;opacity:.65}.photo-overlay svg{height:100%;width:100%;display:block}
+@media(max-width:700px){.photo-overlay{height:280px}}
+
+/* V3.7 — registro de revisión de fabricación */
+.qa-items{display:grid;gap:7px;margin:13px 0}
+.qa-item{display:flex;gap:9px;align-items:flex-start;padding:9px;border:1px solid #41536a;border-radius:8px;background:#213044}
+.qa-item input{width:17px;height:17px;margin-top:2px;flex:none;accent-color:#cfa165}
+.qa-item strong{display:block;font-size:.77rem;font-weight:750;color:#e8ebee}.qa-item small{font-size:.67rem;color:#aebfcd;display:block;line-height:1.45}
+.qa-risk{border-color:#bd7551!important;color:#f6c1a6!important}
+</style></head>
+<body>
+<header><div class="brand"><span class="brandmark">IB</span><div><div class="brand-name">INGEBAM <span style="color:#dcb47e">Muebles360</span></div><div class="brand-sub">Diseño · Despiece · Cotización</div></div></div><div class="header-actions"><span class="badge">Demostración no oficial</span><button id="undoChange" class="quiet" title="Deshacer edición" disabled>↶ Deshacer</button><button id="redoChange" class="quiet" title="Rehacer edición" disabled>↷ Rehacer</button><button id="newProject" class="quiet">Nuevo</button><label class="btn file-picker" for="loadProject">Abrir proyecto<input id="loadProject" type="file" accept="application/json,.json"></label><button id="saveProject" class="primary">Guardar proyecto</button></div></header>
+<div class="workspace">
+<aside class="side left">
+ <section class="panel"><div class="section-head"><h2>Foto de referencia</h2><span class="section-num">01</span></div><label class="drop" id="drop"><input id="photo" type="file" accept="image/png,image/jpeg,image/webp"><div class="big">▧</div><div class="name" id="filename">Seleccionar foto o croquis</div><p class="muted">JPG, PNG o WebP, hasta 12 MB</p><img id="preview" alt="Fotografía de referencia seleccionada"></label><button id="chooseCorners" class="action-full quiet" type="button">Delimitar mueble · 4 esquinas</button>
+ <div id="cornerPicker" class="corner-picker" hidden>
+  <p class="hint" id="cornerStatus">Selecciona 4 puntos en orden: superior izquierda, superior derecha, inferior derecha, inferior izquierda.</p>
+  <canvas id="cornerCanvas" aria-label="Fotografía: marca las cuatro esquinas del mueble"></canvas>
+  <div class="corner-actions"><button id="undoCorner" type="button">Quitar última esquina</button><button id="resetCorners" type="button">Limpiar selección</button></div>
+  <p class="hint">Se recortará solo el mueble delimitado y se corregirá su perspectiva aproximada antes del análisis local. No mide dimensiones reales.</p>
+ </div>
+ <div class="zone-studio" aria-label="Múltiples muebles en una fotografía">
+  <strong>Conjunto de muebles · zonas independientes</strong>
+  <p class="hint">Delimita un mueble con cuatro esquinas (o ajusta la región porcentual) y pulsa Guardar zona. Repite con los muebles contiguos.</p>
+  <div class="two"><input id="zoneLabel" type="text" maxlength="45" placeholder="Ej.: Ropero derecho" aria-label="Nombre de la zona"><button id="addPhotoZone" type="button">+ Guardar zona</button></div>
+  <div id="photoZoneList" class="photo-zone-list"></div>
+  <div class="small-actions"><button id="saveZoneDesign" type="button">Guardar diseño en zona</button><button id="exportZoneSet" type="button">Exportar conjunto JSON</button></div>
+  <p id="zoneSummary" class="hint" aria-live="polite">Sin zonas guardadas. Los diseños y presupuestos serán independientes.</p>
+ </div>
+ <button id="analyze" class="action-full">Reconocer divisiones y frentes (experimental)</button><button id="comparePhoto" class="action-full quiet" disabled>Comparar foto y diseño</button><button id="analyzeAI" class="action-full quiet" disabled title="Requiere servidor privado con clave de IA; las fotos no se suben hasta pulsar el botón.">Analizar zona con IA real (requiere servidor)</button><div id="status" class="status" role="status" aria-live="polite"></div>
+ <details class="vision-roi"><summary>Ajustar región de análisis</summary><div class="two" style="padding-top:10px">
+ <label class="input-label">Izquierda (%)<input id="roiLeft" type="number" min="0" max="60" value="2"></label>
+ <label class="input-label">Derecha (%)<input id="roiRight" type="number" min="40" max="100" value="98"></label>
+ <label class="input-label">Arriba (%)<input id="roiTop" type="number" min="0" max="60" value="2"></label>
+ <label class="input-label">Abajo (%)<input id="roiBottom" type="number" min="40" max="100" value="98"></label>
+ </div><p class="hint">Ajusta esta región del área delimitada, o de la fotografía completa si no marcas esquinas.</p></details>
+ <div id="visionReviewPanel" class="vision-review" hidden aria-label="Revisión de reconocimiento fotográfico">
+ <strong class="vision-title">Revisión antes de modificar el diseño</strong>
+ <p class="hint" id="visionDescription"></p>
+ <p class="hint" id="guideHelp">Arrastra las guías amarillas ↔ para definir anchos; arrastra las líneas celestes ↕ para ajustar niveles horizontales. Añade o quita líneas desde cada módulo. Son proporciones visuales, NO medidas reales.</p><canvas id="visionOverlay" aria-label="Imagen con divisiones detectadas; arrastra los puntos amarillos para ajustar anchos"></canvas>
+ <label class="input-label" for="visionCategory">Categoría propuesta</label>
+ <select id="visionCategory"><option value="cocina">Cocina</option><option value="closet">Clóset</option><option value="vanitorio">Vanitorio</option></select>
+ <div id="visionResults" class="vision-results"></div>
+ <div class="small-actions"><button class="primary" id="applyVision">Aplicar diseño revisado</button><button id="discardVision">Descartar</button></div>
+ <p class="hint">Propuestas por contraste: puertas, repisas y cajones pueden confundirse con vetas o sombras. No se infieren medidas reales.</p>
+ </div><p class="hint">Experimental: analiza separaciones verticales y horizontales; sugiere posibles puertas, cajones y repisas. No es reconocimiento semántico certificado ni calcula medidas.</p></section>
+ <section class="panel"><div class="section-head"><h2>Ficha comercial</h2><span class="section-num">CLIENTE</span></div>
+ <div class="two"><div class="input-row"><label class="input-label" for="clientName">Cliente / empresa</label><input id="clientName" type="text" maxlength="120" placeholder="Cliente por confirmar"></div><div class="input-row"><label class="input-label" for="clientContact">Correo o teléfono</label><input id="clientContact" type="text" maxlength="140" placeholder="Contacto"></div></div>
+ <div class="two"><div class="input-row"><label class="input-label" for="quoteRef">Referencia del presupuesto</label><input id="quoteRef" type="text" maxlength="60" value="ING-0001"></div><div class="input-row"><label class="input-label" for="projectStage">Etapa</label><select id="projectStage"><option value="Borrador">Borrador</option><option value="Enviado">Enviado</option><option value="Aprobado">Aprobado</option><option value="Fabricación">Fabricación</option><option value="Instalado">Instalado</option></select></div></div>
+ <div class="input-row"><label class="input-label" for="projectNotes">Observaciones y alcance</label><textarea id="projectNotes" maxlength="1200" rows="3" placeholder="Ej.: Incluye instalación en Temuco; cubierta sujeta a medición."></textarea></div>
+ <button id="exportQuote" class="action-full primary">Descargar presupuesto imprimible</button><p class="hint">Se genera un HTML autónomo para imprimir o guardar como PDF. No se envía a ningún cliente automáticamente.</p></section>
+ <section class="panel"><div class="section-head"><h2>Tipo y dimensiones</h2><span class="section-num">02</span></div><div class="input-row"><label class="input-label" for="projectName">Nombre del proyecto</label><input id="projectName" type="text" maxlength="80" value="Proyecto demostrativo" placeholder="Ej.: Cocina departamento Villarrica"></div><div class="input-row"><label class="input-label" for="category">Tipo de mueble</label><select id="category"><option value="cocina">Mueble de cocina</option><option value="closet">Clóset / ropero</option><option value="vanitorio">Vanitorio</option></select></div><div class="two"><div class="input-row"><label class="input-label" for="width">Ancho (mm)</label><input id="width" type="number" min="600" max="3600" step="10" value="1800"></div><div class="input-row"><label class="input-label" for="height">Alto (mm)</label><input id="height" type="number" min="500" max="2600" step="10" value="850"></div></div><div class="two"><div class="input-row"><label class="input-label" for="depth">Profundidad (mm)</label><input id="depth" type="number" min="350" max="750" step="10" value="600"></div><div class="input-row"><label class="input-label" for="thickness">Tablero</label><select id="thickness"><option value="18" selected>18 mm</option><option value="15">15 mm</option></select></div></div><div class="two"><div class="input-row"><label class="input-label" for="modules">Nº de módulos</label><input id="modules" type="number" min="1" max="6" step="1" value="3"></div><div class="input-row"><label class="input-label" for="baseType">Apoyo</label><select id="baseType"><option value="zocalo" selected>Zócalo 100 mm</option><option value="patas">Patas 120 mm</option><option value="suspendido">Suspendido</option></select></div></div><div class="two"><div class="input-row"><label class="input-label" for="shelves">Repisas por cuerpo</label><input id="shelves" type="number" min="0" max="5" step="1" value="1"></div><div class="input-row"><label class="input-label" for="drawers">Cajones por cajonera</label><input id="drawers" type="number" min="1" max="5" step="1" value="3"></div></div></section>
+ <section class="panel"><div class="section-head"><h2>Distribución modular</h2><span class="section-num">03</span></div><p class="muted" style="margin-bottom:12px">Selecciona un cuerpo para modificar su frente.</p><div id="moduleButtons" class="module-row"></div><div class="input-row" style="margin-top:13px"><label class="input-label" for="moduleType">Frente del módulo seleccionado</label><select id="moduleType"><option value="puerta">Puerta abatible</option><option value="cajones">Cajonera</option><option value="abierto">Abierto / repisas</option><option value="mixto">Mixto: repisas arriba y cajones abajo</option></select></div>
+<div class="two"><div class="input-row"><label class="input-label" for="moduleWidth">Ancho útil del módulo (mm)</label><input id="moduleWidth" type="number" min="260" max="3600" step="1" value="600"><p class="hint">Redistribuye espacio entre módulos.</p></div>
+<div class="input-row"><label class="input-label" for="moduleDrawers">Cajones en este módulo</label><input id="moduleDrawers" type="number" min="1" max="5" step="1" value="3"></div></div>
+<div class="input-row"><label class="input-label" for="moduleShelves">Repisas en este módulo</label><input id="moduleShelves" type="number" min="0" max="5" step="1" value="1"></div><div class="input-row"><label class="input-label" for="moduleMixPct">Altura ocupada por cajones en módulo mixto (%)</label><input id="moduleMixPct" type="number" min="25" max="75" step="1" value="45"></div>
+<div class="small-actions"><button id="moduleMoveLeft" title="Intercambiar posición con el módulo anterior">← Mover módulo</button><button id="moduleMoveRight" title="Intercambiar posición con el módulo siguiente">Mover módulo →</button></div><p class="field-note">Selecciona un frente desde el visor o usa los botones 01, 02, 03…</p></section>
+ <section class="panel"><div class="section-head"><h2>Terminaciones</h2><span class="section-num">04</span></div><div class="swatches swatchbar" id="swatches"></div><div class="input-row" style="margin-top:10px"><label class="input-label" for="frontStyle">Estilo visual de las puertas</label><select id="frontStyle"><option value="liso">Liso contemporáneo</option><option value="marco">Con marco decorativo (aproximación)</option></select><p class="hint">El marco es solo una simulación visual; su fabricación y costo no están incluidos.</p></div></section>
+</aside>
+<section class="viewport" id="viewport" aria-label="Visor de mueble tridimensional"><canvas id="viewer" aria-label="Modelo tridimensional interactivo"></canvas><div class="viewer-tools"><button id="viewFront">Frente</button><button id="viewSide">Lateral</button><button id="viewTop">Planta</button><button id="toggleDoors">Abrir frentes</button><button id="resetView" title="Restablecer vista">↺ Vista</button><button id="enable3D" class="accent-view" title="Three.js requiere conexión a internet">3D avanzado ↗</button></div><div class="float" id="hud" aria-live="polite">Modelo paramétrico: medidas aproximadas</div><div class="selected" id="selected" hidden></div></section>
+<aside class="side right">
+ <section class="panel"><div class="section-head"><h2>Costeo preliminar</h2><span class="section-num">05</span></div><div class="two"><div class="input-row"><label class="input-label" for="sheetPrice">Plancha principal (CLP)</label><input id="sheetPrice" type="number" min="0" step="1000" value="52000"></div><div class="input-row"><label class="input-label" for="margin">Margen bruto objetivo (%)</label><input id="margin" type="number" min="0" max="75" value="25"></div></div><details class="price-details"><summary>Editar precios de materiales y mano de obra</summary><div class="two" style="padding-top:13px">
+<div class="input-row"><label class="input-label" for="sheet15">Plancha 15 mm</label><input id="sheet15" type="number" min="0" step="1000" value="46000"></div>
+<div class="input-row"><label class="input-label" for="back3">MDF 3 mm</label><input id="back3" type="number" min="0" step="1000" value="17000"></div>
+<div class="input-row"><label class="input-label" for="edgeMeter">Tapacanto por metro</label><input id="edgeMeter" type="number" min="0" step="100" value="1500"></div>
+<div class="input-row"><label class="input-label" for="hinge">Bisagra / un.</label><input id="hinge" type="number" min="0" step="100" value="3200"></div>
+<div class="input-row"><label class="input-label" for="runnerPair">Par de correderas</label><input id="runnerPair" type="number" min="0" step="100" value="14500"></div>
+<div class="input-row"><label class="input-label" for="handle">Tirador / un.</label><input id="handle" type="number" min="0" step="100" value="2800"></div>
+<div class="input-row"><label class="input-label" for="countertopMeter">Cubierta / metro</label><input id="countertopMeter" type="number" min="0" step="1000" value="75000"></div>
+<div class="input-row"><label class="input-label" for="laborHour">Mano de obra / hora</label><input id="laborHour" type="number" min="0" step="500" value="9500"></div>
+<div class="input-row"><label class="input-label" for="overheadPct">Gastos indirectos (%)</label><input id="overheadPct" type="number" min="0" max="100" step="1" value="12"></div>
+<div class="input-row"><label class="input-label" for="leg">Pata / un.</label><input id="leg" type="number" min="0" step="100" value="3800"></div>
+ <div class="input-row"><label class="input-label" for="installationHours">Horas de instalación (estimación)</label><input id="installationHours" type="number" min="0" max="500" step="0.5" value="0"></div>
+ <div class="input-row"><label class="input-label" for="deliveryFee">Despacho / traslado (CLP)</label><input id="deliveryFee" type="number" min="0" step="1000" value="0"></div>
+ <div class="input-row"><label class="input-label" for="contingencyPct">Reserva por imprevistos (%)</label><input id="contingencyPct" type="number" min="0" max="100" step="1" value="0"></div></div>
+</details><div class="two"><div class="input-row"><label class="input-label" for="kerf">Espesor de corte (mm)</label><input id="kerf" type="number" min="0" max="10" step="1" value="4"></div><div class="input-row"><label class="input-label" for="trim">Saneado de bordes (mm)</label><input id="trim" type="number" min="0" max="30" step="1" value="8"></div></div><div class="input-row"><label style="display:flex;align-items:center;gap:8px;font-size:.75rem"><input type="checkbox" id="allowRotation"> Permitir giro de piezas en plancha (revisar veta)</label></div><div class="input-row"><label style="display:flex;align-items:center;gap:8px;font-size:.75rem"><input type="checkbox" id="vat"> Incluir IVA 19% en cotización simulada</label></div><div class="line"><span>Planchas melamina (estimadas)</span><strong id="boards">—</strong></div><div class="line"><span>Planchas MDF traseras (estimadas)</span><strong id="backs">—</strong></div><div class="line"><span>Tapacanto</span><strong id="edge">—</strong></div><div class="line"><span>Bisagras / pares de correderas</span><strong id="hardware">—</strong></div><details class="price-details"><summary>Ver desglose de costos directos</summary><div class="line"><span>Tableros</span><strong id="costBoards">—</strong></div><div class="line"><span>Tapacantos</span><strong id="costEdge">—</strong></div><div class="line"><span>Herrajes y patas</span><strong id="costHardware">—</strong></div><div class="line"><span>Cubierta</span><strong id="costTop">—</strong></div><div class="line"><span>Mano de obra</span><strong id="costLabor">—</strong></div><div class="line"><span>Instalación</span><strong id="costInstallation">—</strong></div><div class="line"><span>Despacho</span><strong id="costDelivery">—</strong></div></details><div class="line"><span>Rendimiento de planchas</span><strong id="yieldPct">—</strong></div><div class="line"><span>Costo directo estimado</span><strong id="directCost">—</strong></div><div class="line"><span>Gastos indirectos</span><strong id="overhead">—</strong></div><div class="line"><span>Contingencia</span><strong id="contingency">—</strong></div><div class="line"><span>Subtotal venta</span><strong id="subtotal">—</strong></div><div class="line" id="vatRow" hidden><span>IVA</span><strong id="vatValue">—</strong></div><div class="totalbox"><small>Precio estimado de venta</small><strong id="total">—</strong></div><div class="status-line" id="quoteStatus" aria-live="polite">Evaluando geometría y costos…</div><p class="hint">Precios de muestra, editables. Despacho e instalación son editables; otros trabajos especiales y accesorios no incluidos salvo cotización adicional.</p></section>
+ <section class="panel"><div class="section-head"><h2>Distribución de cortes</h2><span class="section-num">06</span></div><p class="muted">Acomodo orientativo de piezas por plancha con pérdida de corte y saneado. No sustituye nesting industrial.</p><div class="sheet-meta" id="sheetSummary">Calculando…</div><div class="sheet-previews" id="sheetPreviews"></div><div class="small-actions" style="margin-top:10px"><button id="exportCutSVG">Descargar plano de planchas SVG</button></div></section>
+ <section class="panel"><div class="section-head"><h2>Despiece preliminar</h2><span class="section-num">07</span></div><div class="tablewrap"><table><thead><tr><th>Pieza</th><th>Cant.</th><th>L × A × E (mm)</th></tr></thead><tbody id="cutlist"></tbody></table></div><div class="line"><span>Componentes físicos modelados</span><strong id="partsCount">—</strong></div><div class="exports"><button id="exportCSV">Exportar CSV</button><button id="exportSVG">Croquis SVG</button><button id="print">Imprimir vista</button><button id="exportJSON">Exportar JSON</button></div><div class="alert" id="alerts"></div></section>
+ <section class="panel" aria-labelledby="qaHeading" id="qaPanel"><div class="section-head"><h2 id="qaHeading">Revisión de fabricación</h2><span class="section-num">08</span></div>
+ <p class="muted">Estas comprobaciones las declara el usuario. Se reinician si cambia el diseño o sus costos. No certifican fabricación.</p>
+ <div id="qaItems" class="qa-items"></div>
+ <div class="status-line" id="qaStatus" role="status" aria-live="polite">Revisión técnica pendiente.</div>
+ <button id="exportTech" type="button" class="action-full primary">Descargar ficha técnica de revisión</button>
+ <p class="hint">Incluye alzado, despiece individual, tapacantos estimados, módulos, alertas y registro de verificaciones.</p>
+ </section>
+ <p class="foot-note">La IA multimodal requiere un servidor privado y una clave configurada allí. El navegador envía solo el área seleccionada al pulsar el botón de IA, nunca durante la carga de fotos. El modo 3D avanzado carga Three.js desde CDN y requiere internet; el visor local funciona sin internet. Los archivos de proyectos se guardan en tu dispositivo. INGEBAM Muebles360 V3.7 · Prototipo comercial independiente. No es un producto oficial de Muebles Lasch. Validar dimensiones, cálculos, vetas, herrajes y anclajes con un mueblista antes de fabricar.</p>
+</aside></div>
+<dialog class="photo-compare" id="photoCompareModal" aria-labelledby="compareHeading">
+ <div class="compare-header"><h2 id="compareHeading">Comprobación: referencia versus diseño paramétrico</h2><button id="closeCompare" type="button">Cerrar ✕</button></div>
+ <div class="compare-grid"><figure><figcaption>Imagen del cliente (original)</figcaption><img id="compareOriginal" alt="Fotografía de referencia cargada por el usuario"></figure><figure><figcaption>Alzado generado por Muebles360 (estimación editable)</figcaption><div id="compareGenerated"></div></figure></div>
+ <div class="compare-overlay-control"><label for="compareOpacity">Superposición · intensidad del croquis <output id="opacityValue">65%</output></label><input id="compareOpacity" type="range" min="0" max="100" value="65" step="5"><p class="hint">La fotografía se rectifica o recorta según la zona activa; el alzado se deforma visualmente para compararlos, sin cambiar la geometría del mueble.</p></div>
+ <div class="photo-overlay" id="compareOverlayWrap"><img id="compareOverlayPhoto" alt="Región seleccionada de la foto"><div id="compareOverlayDrawing" aria-hidden="true"></div></div>
+ <p class="compare-note">La vista de la derecha es un croquis técnico reconstruido a partir de los parámetros actuales; NO es una reconstrucción visual automática ni un plano validado. Ajusta las medidas, puertas y módulos para aproximar el diseño. Tu fotografía permanece en este navegador y no se envía a GitHub.</p>
+</dialog>
+<script>
+window.Muebles360Config = Object.freeze({
+  aiEndpoint: (location.hostname === "127.0.0.1" && location.port === "8765") ? "/api/analyze-furniture" : "",
+  defaults: {
+    width: 1800,
+    height: 850,
+    depth: 600,
+    thickness: 18,
+    modules: 3,
+    baseType: "zocalo",
+    shelves: 1,
+    drawers: 3,
+    moduleWidth: 600,
+    moduleDrawers: 3,
+    moduleShelves: 1
+  }
+});
+
+(function bootstrapMuebles360Safeguards() {
+  const cfg = window.Muebles360Config;
+  const aiBtn = document.getElementById("analyzeAI");
+  const hudEl = document.getElementById("hud");
+  const enable3DBtn = document.getElementById("enable3D");
+  const loadInput = document.getElementById("loadProject");
+
+  if (aiBtn) {
+    aiBtn.disabled=true;
+    aiBtn.dataset.ready='false';
+    aiBtn.textContent=cfg.aiEndpoint?'Comprobando servidor de IA…':'IA real: disponible solo con servidor privado';
+    aiBtn.title='Las imágenes no se envían al seleccionar un archivo ni al utilizar análisis local.';
+  }
+
+  document.querySelectorAll('input[type="number"]').forEach((input) => {
+    input.addEventListener("change", () => {
+      const raw = input.value.trim() === "" ? NaN : Number(input.value);
+      const min = input.min !== "" ? Number(input.min) : -Infinity;
+      const max = input.max !== "" ? Number(input.max) : Infinity;
+      const fallback = cfg.defaults[input.id] !== undefined ? cfg.defaults[input.id] : (Number.isFinite(min) ? min : 0);
+      if (!Number.isFinite(raw)) {
+        input.value = String(fallback);
+        return;
+      }
+      const clamped = Math.min(max, Math.max(min, raw));
+      if (clamped !== raw) {
+        input.value = String(clamped);
+      }
+    });
+  });
+
+  if (enable3DBtn) {
+    enable3DBtn.addEventListener("click", () => {
+      if (!navigator.onLine && hudEl) {
+        hudEl.textContent = "Sin conexión a internet: usando visor paramétrico local.";
+      }
+    }, { capture: true });
+  }
+
+  // Validación rápida síncrona. La lectura JSON completa y sus errores
+  // se procesan una sola vez en app.js; un listener async no bloquearía
+  // el handler de importación y podría provocar mensajes contradictorios.
+  if (loadInput) {
+    loadInput.addEventListener("change", (event) => {
+      const file = event.target?.files?.[0];
+      if (!file) return;
+      if (file.size > 1024 * 1024 || !(/\.json$/i.test(file.name) || file.type === "application/json")) {
+        event.stopImmediatePropagation();
+        document.getElementById("status").textContent = "Selecciona un proyecto JSON de hasta 1 MB.";
+        loadInput.value = "";
+      }
+    }, { capture: true });
+  }
+})();
+</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script src="./furnitureCore.js"></script><script src="./viewer.js"></script><script src="./vision.js"></script><script src="./photoStudio.js"></script><script src="./renderer3d.js"></script><script src="./quoteEngine.js"></script><script src="./manufacturing.js"></script><script src="./app.js"></script>
+</body></html>
